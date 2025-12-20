@@ -10,7 +10,6 @@
         body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        /* ヘッダー周り */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin: 0; }
         .btn-share { display: flex; align-items: center; gap: 5px; background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; color: #555; transition: 0.2s; }
@@ -20,28 +19,23 @@
         
         .input-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        input[type="text"], input[type="url"], input[type="time"], select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; box-sizing: border-box; }
+        input[type="text"], input[type="url"], input[type="time"], select, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; box-sizing: border-box; }
         
-        /* 時間入力の横並び */
         .time-row { display: flex; gap: 10px; }
         .time-col { flex: 1; }
         
-        /* メインボタン */
         .btn-generate { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 30px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-generate:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn-generate:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* AIボタン */
         .btn-ai { background: #e8f0fe; color: #1a73e8; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; margin-top: 5px; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-ai:hover { background: #d2e3fc; }
 
-        /* レイアウト */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
         @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
 
         .panel { padding: 0 5px; }
         
-        /* プレビューカード領域 */
         .preview-area { display: flex; flex-direction: column; gap: 20px; align-items: center; background: #fafafa; padding: 20px; border-radius: 10px; border: 1px solid #eee; }
         .pop-card { background: white; border: 1px solid #ddd; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); width: 260px; position: relative; border-radius: 8px; }
         .pop-card.premium { border: 2px solid #d4af37; background: #fffdf5; }
@@ -53,46 +47,48 @@
         .card-footer { font-size: 0.7rem; color: #999; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 5px; }
         
         .password-display { font-family: monospace; font-size: 1.2rem; background: #333; color: #0f0; padding: 10px; text-align: center; border-radius: 4px; word-break: break-all; margin: 15px 0; }
-        
-        /* AI条件エリア */
         .ai-conditions { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #e8f0fe; }
+
+        /* 画像プレビュー用 */
+        #imagePreview { margin-top: 10px; max-width: 100%; height: auto; border-radius: 8px; display: none; border: 2px dashed #ddd; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>Quantum Wi-Fi & Info <span style="font-size:0.6em; color:#888;">Ver 0.4</span></h1>
+        <h1>Quantum Wi-Fi & Info <span style="font-size:0.6em; color:#888;">Ver 0.5</span></h1>
         <button class="btn-share" onclick="shareApp()">
-            <span class="material-icons-round" style="font-size:18px;">share</span>
-            共有
+            <span class="material-icons-round" style="font-size:18px;">share</span> 共有
         </button>
     </div>
 
     <div class="grid">
         <div class="panel">
             <h2>1. 店舗・施設情報 (HP用)</h2>
+            
+            <div class="input-group" style="background:#f9f9f9; padding:15px; border-radius:8px;">
+                <label><span class="material-icons-round" style="font-size:16px; vertical-align:text-bottom;">image</span> 店舗画像 (任意・1枚のみ)</label>
+                <input type="file" id="shopImage" accept="image/*" onchange="previewImage(this)">
+                <img id="imagePreview" src="" alt="Image Preview">
+                <p style="font-size:0.8rem; color:#888; margin:5px 0 0;">※QRコードに埋め込むため、自動的に縮小されます。</p>
+            </div>
+
             <div class="input-group">
                 <label>店舗名 / 施設名</label>
                 <input type="text" id="shopName" placeholder="例：Cafe Gemini" oninput="updatePreview()">
             </div>
             
             <div class="input-group">
-                <label>住所 (地図ボタンを自動作成します)</label>
+                <label>住所 (地図ボタンを自動作成)</label>
                 <input type="text" id="address" placeholder="例：東京都渋谷区...">
             </div>
 
             <div class="input-group">
                 <label>営業時間</label>
                 <div class="time-row">
-                    <div class="time-col">
-                        <span style="font-size:0.8rem; color:#666;">開始</span>
-                        <input type="time" id="openTime">
-                    </div>
-                    <div class="time-col">
-                        <span style="font-size:0.8rem; color:#666;">終了</span>
-                        <input type="time" id="closeTime">
-                    </div>
+                    <div class="time-col"><span style="font-size:0.8rem; color:#666;">開始</span><input type="time" id="openTime"></div>
+                    <div class="time-col"><span style="font-size:0.8rem; color:#666;">終了</span><input type="time" id="closeTime"></div>
                 </div>
             </div>
             <div class="input-group">
@@ -101,11 +97,8 @@
             </div>
 
             <h2>2. Wi-Fi SSID 設定</h2>
-            
             <div class="ai-conditions">
-                <label style="color:#1a73e8; display:flex; align-items:center; gap:5px;">
-                    <span class="material-icons-round">auto_awesome</span> AI 命名アシスタント (有料機能)
-                </label>
+                <label style="color:#1a73e8; display:flex; align-items:center; gap:5px;"><span class="material-icons-round">auto_awesome</span> AI 命名アシスタント (有料機能)</label>
                 <div class="time-row" style="margin-top:10px;">
                     <div class="time-col">
                         <select id="category">
@@ -126,7 +119,6 @@
                 </div>
                 <button class="btn-ai" onclick="autoGenerateSSID()">AIでSSIDを提案する</button>
             </div>
-
             <div class="input-group">
                 <label>SSID（ネットワーク名）</label>
                 <input type="text" id="ssid" placeholder="上のボタンで提案か、手動入力">
@@ -140,20 +132,18 @@
                 <div id="qrcode-wifi" class="qr-box"></div>
                 <div style="font-size:0.8rem;">Pass: <span id="wifiPassPreview" style="font-weight:bold; background:#eee; padding:2px 5px; border-radius:3px;">---</span></div>
             </div>
-
             <div class="pop-card premium">
                 <div class="premium-badge">PRO Info Card</div>
                 <div class="card-title" id="shopNamePreview">SHOP NAME</div>
-                <div class="card-desc" style="font-size:0.8rem;">お店の情報と地図を<br>スマホで表示</div>
+                <div class="card-desc" style="font-size:0.8rem;">写真、地図、お店の情報を<br>スマホで表示</div>
                 <div id="qrcode-info" class="qr-box"></div>
-                <div class="card-footer">Map & Info automatically generated</div>
+                <div class="card-footer">Photo, Map & Info generated</div>
             </div>
         </div>
     </div>
 
     <button class="btn-generate" onclick="generateAll()">
-        <span class="material-icons-round">qr_code_2</span>
-        量子乱数でキー生成 & カード作成
+        <span class="material-icons-round">qr_code_2</span> 量子乱数でキー生成 & カード作成
     </button>
     
     <div id="result-area" style="margin-top:30px; display:none; text-align:center; background:#f9f9f9; padding:20px; border-radius:10px;">
@@ -167,21 +157,53 @@
 </div>
 
 <script>
-    // 共有ボタンの機能
+    let compressedImage = ""; // 縮小された画像データを保持
+
+    // 画像選択時にプレビューと縮小処理を行う
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // 画像を縮小する処理（Canvasを使用）
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    // 最大幅を300pxに制限（QRコードの容量対策）
+                    const maxWidth = 300; 
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    // JPEG形式で圧縮率を下げてBase64化
+                    compressedImage = canvas.toDataURL('image/jpeg', 0.6);
+                    
+                    // プレビュー表示
+                    preview.src = compressedImage;
+                    preview.style.display = 'block';
+                };
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = "";
+            preview.style.display = 'none';
+            compressedImage = "";
+        }
+    }
+
     function shareApp() {
         const shareData = {
             title: 'Quantum Wi-Fi Generator',
-            text: '量子乱数で安全なWi-Fiパスワードと店舗情報QRを一瞬で作成！',
+            text: '量子乱数で安全なWi-Fiパスワードと、写真入り店舗情報QRを一瞬で作成！',
             url: window.location.href
         };
-
-        // スマホのネイティブ共有メニューを呼び出す
         if (navigator.share) {
             navigator.share(shareData).catch((err) => console.log('Share canceled', err));
         } else {
-            // PCなど非対応の場合はURLをコピー
             navigator.clipboard.writeText(window.location.href).then(() => {
-                alert("アプリのURLをコピーしました！\nメールやチャットで貼り付けて共有してください。");
+                alert("アプリのURLをコピーしました！");
             });
         }
     }
@@ -191,33 +213,20 @@
         document.getElementById('shopNamePreview').textContent = name;
     }
 
-    // AIによるSSID自動生成ロジック
     function autoGenerateSSID() {
         const name = document.getElementById('shopName').value.trim() || "Spot";
-        // 英数字以外を除去
         const cleanName = name.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, ''); 
         const category = document.getElementById('category').value;
         const style = document.getElementById('style').value;
-        
         let newSSID = "";
-
-        if (style === 'simple') {
-            newSSID = `${cleanName}_WiFi`;
-        } else if (style === 'stylish') {
-            newSSID = `${cleanName}.Connect`;
-        } else if (style === 'friendly') {
-            newSSID = `Welcome_to_${cleanName}`;
-        } else if (style === 'security') {
-            const random = Math.floor(Math.random() * 99);
-            newSSID = `${cleanName}_Secured_${random:02d}`;
-        }
-
+        if (style === 'simple') newSSID = `${cleanName}_WiFi`;
+        else if (style === 'stylish') newSSID = `${cleanName}.Connect`;
+        else if (style === 'friendly') newSSID = `Welcome_to_${cleanName}`;
+        else if (style === 'security') newSSID = `${cleanName}_Secured_${Math.floor(Math.random()*99):02d}`;
         if (category === 'guest' && style !== 'friendly') newSSID += "_Guest";
         if (category === 'office' && style === 'simple') newSSID = `${cleanName}_Office`;
         if (category === 'event') newSSID = `${cleanName}_Event_Free`;
-
         document.getElementById('ssid').value = newSSID;
-        
         const ssidBox = document.getElementById('ssid');
         ssidBox.style.backgroundColor = "#e8f0fe";
         setTimeout(() => { ssidBox.style.backgroundColor = "white"; }, 500);
@@ -234,20 +243,18 @@
             const data = await response.json();
             const password = generatePasswordFromQuantum(data.data);
 
-            // Wi-Fi QR生成
             const wifiString = `WIFI:S:${ssid};T:WPA;P:${password};;`;
             document.getElementById("qrcode-wifi").innerHTML = "";
             new QRCode(document.getElementById("qrcode-wifi"), {
                 text: wifiString, width: 120, height: 120
             });
             
-            // プレビュー更新
             document.getElementById('wifiSsidPreview').textContent = "SSID: " + ssid;
             document.getElementById('wifiPassPreview').textContent = password;
             document.getElementById('generatedPass').textContent = password;
             document.getElementById('result-area').style.display = 'block';
 
-            // 店舗情報QR生成（全ての情報を反映）
+            // 店舗情報QR生成（写真対応）
             generateShopInfoQR();
 
             btn.innerHTML = '<span class="material-icons-round">qr_code_2</span> 再生成する';
@@ -264,7 +271,6 @@
     function generateShopInfoQR() {
         const name = document.getElementById('shopName').value || "店舗情報";
         const address = document.getElementById('address').value || "";
-        
         const open = document.getElementById('openTime').value;
         const close = document.getElementById('closeTime').value;
         const lo = document.getElementById('loTime').value;
@@ -275,17 +281,19 @@
             if(lo) hoursText += ` (L.O. ${lo})`;
         }
 
-        // Googleマップボタンの自動生成
         let mapBtnHtml = "";
         if (address) {
-            // 住所をURLエンコードして地図検索URLを作成
             const mapQuery = encodeURIComponent(address);
-            // iOS/Androidでアプリが開きやすいURLスキーム
             const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
             mapBtnHtml = `<a href="${mapUrl}" class="btn-map" target="_blank"><span class="material-icons-round">place</span> Googleマップで開く</a>`;
         }
 
-        // QRコードの飛び先となるHTMLページの内容（全情報を反映）
+        // 画像HTMLの生成
+        let imageHtml = "";
+        if (compressedImage) {
+            imageHtml = `<img src="${compressedImage}" style="width:100%; max-width:350px; border-radius:15px; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">`;
+        }
+
         const htmlContent = `
             <!DOCTYPE html>
             <html lang="ja">
@@ -308,34 +316,24 @@
             </head>
             <body>
                 <div class="card">
-                    <h1>${name}</h1>
-                    
-                    <div class="info-group">
-                        <span class="label"><span class="material-icons-round" style="font-size:16px;">location_on</span> 住所・アクセス</span>
-                        <div class="val">${address || "---"}</div>
-                    </div>
-                    
-                    <div class="info-group">
-                        <span class="label"><span class="material-icons-round" style="font-size:16px;">schedule</span> 営業時間</span>
-                        <div class="val">${hoursText}</div>
-                    </div>
-
+                    ${imageHtml} <h1>${name}</h1>
+                    <div class="info-group"><span class="label"><span class="material-icons-round" style="font-size:16px;">location_on</span> 住所・アクセス</span><div class="val">${address || "---"}</div></div>
+                    <div class="info-group"><span class="label"><span class="material-icons-round" style="font-size:16px;">schedule</span> 営業時間</span><div class="val">${hoursText}</div></div>
                     ${mapBtnHtml}
-
                     <div class="footer">Powered by Quantum Info Card</div>
                 </div>
             </body>
             </html>
         `;
 
-        // HTMLをData URL化
         const dataUrl = "data:text/html;charset=utf-8," + encodeURIComponent(htmlContent);
 
         document.getElementById("qrcode-info").innerHTML = "";
+        // 画像を入れるとデータ量が増えるので、誤り訂正レベルを下げてバランスを取る
         new QRCode(document.getElementById("qrcode-info"), {
-            text: dataUrl, width: 120, height: 120,
-            colorDark : "#d4af37", // ゴールド
-            colorLight : "#ffffff"
+            text: dataUrl, width: 140, height: 140, // QRを少し大きくする
+            colorDark : "#d4af37", colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L // レベルをMからLへ（容量確保のため）
         });
     }
 
@@ -350,9 +348,8 @@
     
     function copyPass() {
         navigator.clipboard.writeText(document.getElementById('generatedPass').textContent);
-        alert("パスワードをコピーしました！\nルーターの設定画面に貼り付けてください。");
+        alert("パスワードをコピーしました！");
     }
 </script>
-
 </body>
 </html>
