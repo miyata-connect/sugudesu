@@ -24,15 +24,15 @@
         .btn-map { background: #4285f4; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3); }
         .btn-share { background: #333; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* SNSボタン */
+        /* SNSボタンのデザイン */
         .sns-container { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .btn-sns { flex: 1; min-width: 90px; padding: 12px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: 0.2s; }
         .btn-sns:active { transform: scale(0.95); }
-        /* Instagram Gradient */
+        /* Instagram (グラデーション) */
         .sns-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        /* X (Twitter) Black */
+        /* X (Twitter) (黒) */
         .sns-x { background: #000; }
-        /* Website Green */
+        /* Webサイト (緑) */
         .sns-web { background: #28a745; }
 
         #creator-mode { display: none; padding-bottom: 50px; }
@@ -128,7 +128,7 @@
         </div>
     </div>
     
-    <div class="footer-link">Powered by Quantum Wi-Fi</div>
+    <div class="footer-link">Powered by Q-Fi</div>
 </div>
 
 
@@ -181,6 +181,7 @@
     <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
         <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
             <h3 style="margin-top:0;">🎉 完成しました！</h3>
+            <p style="font-size:0.9rem; color:#666;">このQRコードがお店の入り口です。</p>
             <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
             <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
                 プレビューを確認する
@@ -342,4 +343,51 @@
             const x = document.getElementById('in-x').value;
             const web = document.getElementById('in-web').value;
 
-            const baseUrl = window
+            const baseUrl = window.location.href.split('?')[0];
+            const params = new URLSearchParams();
+            params.append('n', name);
+            params.append('a', address);
+            params.append('o', open);
+            params.append('c', close);
+            params.append('s', ssid);
+            params.append('p', pass);
+            params.append('i', uploadedImageUrl);
+            
+            // SNSパラメータ追加
+            if(insta) params.append('ig', insta);
+            if(x) params.append('tw', x);
+            if(web) params.append('wb', web);
+
+            generatedUrl = `${baseUrl}?${params.toString()}`;
+
+            const qrContainer = document.getElementById("qrcode-container");
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: generatedUrl, width: 180, height: 180, colorDark : "#d4af37", colorLight : "#ffffff"
+            });
+
+            document.getElementById('gen-pass-disp').textContent = pass;
+            document.getElementById('result-area').style.display = 'block';
+            
+            btn.textContent = "完了";
+            btn.disabled = false;
+
+        } catch (e) {
+            console.error(e);
+            alert("エラーが発生しました。");
+            btn.disabled = false;
+        }
+    }
+
+    function generatePasswordFromQuantum(numbers) {
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; 
+        let pass = "";
+        for (let i = 0; i < numbers.length; i++) {
+            pass += chars[numbers[i] % chars.length];
+        }
+        return pass.substring(0, 12);
+    }
+</script>
+
+</body>
+</html>
