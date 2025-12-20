@@ -2,49 +2,69 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi & Shop Info</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quantum Wi-Fi & Shop Info</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/000000/wifi-router.png">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
     <style>
-        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
         .container { width: 100%; max-width: 900px; background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
         
-        /* 共通デザイン要素 */
-        h1 { text-align: center; color: #2c3e50; margin: 0 0 20px; font-size: 1.5rem; }
-        .btn-primary { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5); }
+        /* 共通デザイン */
+        h1 { text-align: center; color: #2c3e50; margin: 10px 0 20px; font-size: 1.5rem; }
+        .btn-primary { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; outline: none; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
         .btn-map { background: #4285f4; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3); }
         .btn-share { background: #333; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* 作成モード用スタイル */
-        #creator-mode { display: none; }
+        /* 作成モード */
+        #creator-mode { display: none; padding-bottom: 50px; }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        input[type="text"], input[type="time"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; }
-        input:focus { background: white; border-color: #667eea; outline: none; }
+        input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
         .time-row { display: flex; gap: 10px; }
         .time-col { flex: 1; }
         
-        /* HP表示モード（カード）用スタイル */
-        #viewer-mode { display: none; width: 100%; max-width: 400px; margin: 20px auto; }
-        .info-card { background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
-        .premium-label { position: absolute; top: 0; right: 0; background: #d4af37; color: white; font-size: 0.7rem; font-weight: bold; padding: 5px 15px; border-bottom-left-radius: 10px; }
+        /* HP表示モード */
+        #viewer-mode { display: none; width: 100%; max-width: 400px; margin: 20px auto; padding-bottom: 50px; }
+        .info-card { background: white; border-radius: 20px; padding: 0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
         
-        .shop-name { font-size: 1.8rem; font-weight: bold; margin: 20px 0 10px; color: #333; line-height: 1.2; }
-        .info-row { margin: 15px 0; text-align: left; padding: 10px; background: #f8f9fa; border-radius: 10px; }
-        .info-label { font-size: 0.7rem; color: #888; display: flex; align-items: center; gap: 4px; font-weight: bold; margin-bottom: 4px; }
-        .info-val { font-size: 1rem; font-weight: 500; padding-left: 5px; }
-        
-        /* Wi-Fi カード部分 */
-        .wifi-card { background: #333; color: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .wifi-ssid { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
-        .wifi-pass { font-family: monospace; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; font-size: 1.1rem; display: inline-block; margin-top: 5px; }
-        
-        .qr-area { background: white; padding: 10px; border-radius: 10px; display: inline-block; margin: 15px 0; }
+        /* 画像エリア */
+        .hero-image { width: 100%; height: 220px; object-fit: cover; background: #eee; display: block; }
+        .no-image { height: 60px; background: linear-gradient(to right, #d4af37, #f2d06b); }
 
-        .footer-link { margin-top: 30px; font-size: 0.8rem; color: #aaa; text-align: center; }
-        .footer-link a { color: #667eea; text-decoration: none; }
+        .card-content { padding: 25px 20px; }
+        .premium-label { position: absolute; top: 0; right: 0; background: #d4af37; color: white; font-size: 0.7rem; font-weight: bold; padding: 6px 15px; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px; }
+        
+        .shop-name { font-size: 1.8rem; font-weight: bold; margin: 10px 0 20px; color: #333; line-height: 1.2; }
+        .info-row { margin: 15px 0; text-align: left; padding: 12px; background: #f8f9fa; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .info-label { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 4px; font-weight: bold; text-transform: uppercase; }
+        .info-val { font-size: 1.05rem; font-weight: 500; padding-left: 5px; color: #444; }
+        
+        /* Wi-Fi カード */
+        .wifi-card { background: #2c3e50; color: white; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3); position: relative; }
+        .wifi-ssid { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .wifi-pass { font-family: monospace; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 1.2rem; display: inline-block; margin-top: 5px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* HP内QRコード */
+        .share-qr-area { margin-top: 40px; border-top: 2px dashed #eee; padding-top: 30px; }
+        .share-title { font-size: 0.8rem; color: #aaa; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
+        #viewer-qr { display: inline-block; padding: 10px; background: white; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* ルーター設定エリア */
+        .router-setup { margin-top: 30px; text-align: left; background: #eef2f5; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
+        .router-setup h3 { margin-top: 0; font-size: 1rem; color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
+        
+        .footer-link { margin-top: 40px; font-size: 0.7rem; color: #ccc; text-align: center; padding-bottom: 20px; }
+        .footer-link a { color: #888; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -53,52 +73,64 @@
     <div class="info-card">
         <div class="premium-label">OFFICIAL INFO</div>
         
-        <div class="wifi-card" id="view-wifi-area">
-            <div class="material-icons-round" style="font-size:32px; margin-bottom:5px;">wifi</div>
-            <div class="wifi-ssid" id="view-ssid">SSID: ---</div>
-            <div style="font-size:0.8rem; opacity:0.8;">Password</div>
-            <div class="wifi-pass" id="view-pass">---</div>
-            <div style="margin-top:10px; font-size:0.7rem;">↑ Tap to Copy Pass</div>
-        </div>
+        <img id="view-img" class="hero-image" style="display:none;">
+        <div id="view-no-img" class="no-image" style="display:none;"></div>
 
-        <div class="shop-name" id="view-name">SHOP NAME</div>
-        
-        <div class="info-row">
-            <span class="info-label"><span class="material-icons-round" style="font-size:14px;">location_on</span> ADDRESS</span>
-            <div class="info-val" id="view-address">---</div>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label"><span class="material-icons-round" style="font-size:14px;">schedule</span> OPEN HOURS</span>
-            <div class="info-val" id="view-hours">---</div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
-            <a id="btn-map-link" href="#" target="_blank" class="btn-primary btn-map">
-                <span class="material-icons-round">place</span> Googleマップで開く
-            </a>
+        <div class="card-content">
+            <div class="shop-name" id="view-name">SHOP NAME</div>
             
-            <button onclick="sharePage()" class="btn-primary btn-share">
-                <span class="material-icons-round">share</span> 情報をシェアする
-            </button>
+            <div class="wifi-card" id="view-wifi-area">
+                <div class="material-icons-round" style="font-size:36px; margin-bottom:5px; opacity:0.8;">wifi</div>
+                <div class="wifi-ssid" id="view-ssid">SSID: ---</div>
+                <div class="wifi-pass" id="view-pass">---</div>
+                <div style="margin-top:10px; font-size:0.7rem; opacity:0.7;">Tap to Copy Password</div>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">location_on</span> ADDRESS</span>
+                <div class="info-val" id="view-address">---</div>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">schedule</span> OPEN HOURS</span>
+                <div class="info-val" id="view-hours">---</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:25px;">
+                <a id="btn-map-link" href="#" target="_blank" class="btn-primary btn-map">
+                    <span class="material-icons-round">place</span> Googleマップで開く
+                </a>
+                <button onclick="sharePage()" class="btn-primary btn-share">
+                    <span class="material-icons-round">ios_share</span> 友だちに教える
+                </button>
+            </div>
+
+            <div class="share-qr-area">
+                <div class="share-title">SCAN TO SHARE</div>
+                <div id="viewer-qr"></div>
+            </div>
         </div>
     </div>
     
-    <div class="footer-link">
-        Generated by <a href="?">Quantum Wi-Fi Generator</a>
-    </div>
+    <div class="footer-link">Powered by Quantum Wi-Fi</div>
 </div>
 
 
 <div id="creator-mode" class="container">
-    <h1>Quantum Wi-Fi & Info <span style="font-size:0.6em; color:#888;">Ver 0.6</span></h1>
+    <h1>Quantum Wi-Fi <span style="font-size:0.6em; color:#888;">Ver 0.8</span></h1>
     
+    <div class="input-group" style="background:#f0f8ff; padding:15px; border-radius:12px; border:1px dashed #4285f4;">
+        <label style="color:#4285f4;"><span class="material-icons-round" style="vertical-align:middle;">cloud_upload</span> 店舗画像のアップロード</label>
+        <input type="file" id="in-file" accept="image/*">
+        <p style="font-size:0.7rem; color:#666; margin:5px 0 0;">※画像は自動でクラウドに保存されます</p>
+    </div>
+
     <div class="input-group">
-        <label>店舗名 / 施設名</label>
+        <label>店舗名</label>
         <input type="text" id="in-name" placeholder="例：Cafe Gemini">
     </div>
     <div class="input-group">
-        <label>住所 (地図ボタン用)</label>
+        <label>住所</label>
         <input type="text" id="in-address" placeholder="例：徳島県...">
     </div>
     <div class="input-group">
@@ -113,115 +145,166 @@
         <input type="text" id="in-ssid" placeholder="My-Shop-WiFi">
     </div>
 
-    <button onclick="generateUrlAndQr()" class="btn-primary">
-        <span class="material-icons-round">qr_code_2</span> 量子乱数でページ生成
+    <button onclick="startGeneration()" class="btn-primary" id="btn-gen">
+        <span class="material-icons-round">qr_code_2</span> ページ作成開始
     </button>
 
-    <div id="result-area" style="display:none; margin-top:30px; text-align:center; background:#f9f9f9; padding:20px; border-radius:15px;">
-        <h3>🎉 あなたのお店のページが完成！</h3>
-        <p style="font-size:0.9rem;">このQRコードをお客様に読み取ってもらってください。</p>
-        
-        <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);"></div>
-        
-        <div style="margin-top:20px; text-align:left; background:#333; color:#0f0; padding:15px; border-radius:8px; font-family:monospace;">
-            <div>PASS: <span id="gen-pass-disp" style="font-weight:bold; color:white;">---</span></div>
-            <div style="font-size:0.7rem; color:#aaa; margin-top:5px;">※このパスワードをルーターに設定してください</div>
+    <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
+        <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+            <h3 style="margin-top:0;">🎉 完成しました！</h3>
+            <p style="font-size:0.9rem; color:#666;">このQRコードがお店の入り口です。</p>
+            <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
+            
+            <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
+                プレビューを確認する
+            </button>
         </div>
-        
-        <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; background:none; border:none; color:#667eea; text-decoration:underline; cursor:pointer;">
-            生成されたページを確認する
-        </button>
+
+        <div class="router-setup">
+            <h3><span class="material-icons-round" style="vertical-align:middle; color:#f39c12;">build</span> ルーター設定サポート</h3>
+            <p style="font-size:0.85rem; margin-bottom:10px;">生成されたパスワード (下記) をルーターに設定してください。</p>
+            
+            <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:20px; font-size:1.1rem; text-align:center;">
+                PASS: <span id="gen-pass-disp" style="font-weight:bold; color:white;">---</span>
+            </div>
+
+            <label>お使いのメーカーを選択:</label>
+            <select id="router-select" onchange="updateRouterLink()" style="margin-bottom:10px;">
+                <option value="">メーカーを選択してください...</option>
+                <option value="http://192.168.11.1">Buffalo (192.168.11.1)</option>
+                <option value="http://192.168.10.1">NEC Aterm (192.168.10.1)</option>
+                <option value="http://192.168.0.1">Elecom / I-O DATA (192.168.0.1)</option>
+                <option value="http://192.168.1.1">NTT / ASUS (192.168.1.1)</option>
+                <option value="http://tplinkwifi.net">TP-Link</option>
+            </select>
+            
+            <a id="router-link-btn" href="#" target="_blank" class="btn-primary" style="background:#555; display:none;">
+                設定画面を開く
+            </a>
+        </div>
     </div>
 </div>
 
 <script>
+    // ★ Cloudinary 設定 (スクショから反映済み) ★
+    const CLOUD_NAME = "dkda2jqxn";
+    const UPLOAD_PRESET = "ml_default";
+    // ★★★★★★★★★★★★★★★★★★★★★★★
+
     let generatedUrl = "";
 
-    // 起動時の分岐処理
     window.onload = function() {
         const params = new URLSearchParams(window.location.search);
-        
         if (params.has('n')) {
-            // パラメータがある場合 = HP表示モード
             document.getElementById('viewer-mode').style.display = 'block';
             renderViewer(params);
         } else {
-            // パラメータがない場合 = 作成モード
             document.getElementById('creator-mode').style.display = 'block';
         }
     };
 
-    // ▼ HP表示モードの処理
-    function renderViewer(params) {
-        // パラメータ読み込み
-        const name = params.get('n') || "No Name";
-        const address = params.get('a') || "";
-        const open = params.get('o') || "";
-        const close = params.get('c') || "";
-        const ssid = params.get('s') || "";
-        const pass = params.get('p') || "";
+    function updateRouterLink() {
+        const url = document.getElementById('router-select').value;
+        const btn = document.getElementById('router-link-btn');
+        if (url) {
+            btn.href = url;
+            btn.style.display = 'flex';
+        } else {
+            btn.style.display = 'none';
+        }
+    }
 
-        // 画面に反映
+    function renderViewer(params) {
+        const name = params.get('n');
+        const address = params.get('a');
+        const open = params.get('o');
+        const close = params.get('c');
+        const ssid = params.get('s');
+        const pass = params.get('p');
+        const imgUrl = params.get('i');
+
+        document.title = name;
         document.getElementById('view-name').textContent = name;
-        document.getElementById('view-address').textContent = address || "住所情報なし";
+        document.getElementById('view-address').textContent = address || "---";
         document.getElementById('view-ssid').textContent = "SSID: " + ssid;
         document.getElementById('view-pass').textContent = pass;
         
-        let hours = "営業時間: 未設定";
-        if(open && close) hours = `${open} - ${close}`;
-        document.getElementById('view-hours').textContent = hours;
+        if(open && close) document.getElementById('view-hours').textContent = `${open} - ${close}`;
+        else document.getElementById('view-hours').textContent = "---";
 
-        // 地図ボタンの設定
+        if (imgUrl && imgUrl !== "null" && imgUrl !== "") {
+            document.getElementById('view-img').src = imgUrl;
+            document.getElementById('view-img').style.display = 'block';
+        } else {
+            document.getElementById('view-no-img').style.display = 'block';
+        }
+
         if(address) {
-            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-            document.getElementById('btn-map-link').href = mapUrl;
+            document.getElementById('btn-map-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
         } else {
             document.getElementById('btn-map-link').style.display = 'none';
         }
 
-        // ページタイトル設定
-        document.title = name + " - Shop Info";
-
-        // パスワードコピー機能
         document.getElementById('view-wifi-area').onclick = function() {
             navigator.clipboard.writeText(pass);
             alert("パスワードをコピーしました: " + pass);
         };
+
+        new QRCode(document.getElementById("viewer-qr"), {
+            text: window.location.href,
+            width: 120,
+            height: 120,
+            colorDark : "#333", colorLight : "#fff"
+        });
     }
 
     function sharePage() {
         if (navigator.share) {
-            navigator.share({
-                title: document.title,
-                text: document.getElementById('view-name').textContent + ' のお店情報とWi-Fi',
-                url: window.location.href
-            });
+            navigator.share({ title: document.title, url: window.location.href });
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert("URLをコピーしました。LINE等に貼り付けてください。");
+            alert("URLをコピーしました！");
         }
     }
 
-
-    // ▼ 作成モードの処理
-    async function generateUrlAndQr() {
-        const name = document.getElementById('in-name').value || "Shop";
-        const address = document.getElementById('in-address').value || "";
-        const open = document.getElementById('in-open').value;
-        const close = document.getElementById('in-close').value;
-        const ssid = document.getElementById('in-ssid').value || "WiFi";
-        
-        const btn = document.querySelector('.btn-primary');
+    async function startGeneration() {
+        const btn = document.getElementById('btn-gen');
         btn.disabled = true;
-        btn.textContent = "量子データを取得中...";
+        btn.textContent = "処理中...";
 
         try {
-            // 量子乱数取得
-            const response = await fetch('https://qrng.anu.edu.au/API/jsonI.php?length=16&type=uint8');
-            const data = await response.json();
-            const pass = generatePasswordFromQuantum(data.data);
+            // 画像アップロード
+            let uploadedImageUrl = "";
+            const fileInput = document.getElementById('in-file');
+            
+            if (fileInput.files.length > 0) {
+                btn.textContent = "画像を保存中...";
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                formData.append("upload_preset", UPLOAD_PRESET);
 
-            // URL生成 (パラメータ埋め込み)
+                const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                    method: "POST", body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (uploadData.secure_url) {
+                    uploadedImageUrl = uploadData.secure_url;
+                }
+            }
+
+            // 量子乱数取得
+            btn.textContent = "量子キー生成中...";
+            const qRes = await fetch('https://qrng.anu.edu.au/API/jsonI.php?length=16&type=uint8');
+            const qData = await qRes.json();
+            const pass = generatePasswordFromQuantum(qData.data);
+
+            // URL生成
+            const name = document.getElementById('in-name').value || "Shop";
+            const address = document.getElementById('in-address').value || "";
+            const open = document.getElementById('in-open').value;
+            const close = document.getElementById('in-close').value;
+            const ssid = document.getElementById('in-ssid').value || "WiFi";
+
             const baseUrl = window.location.href.split('?')[0];
             const params = new URLSearchParams();
             params.append('n', name);
@@ -230,30 +313,27 @@
             params.append('c', close);
             params.append('s', ssid);
             params.append('p', pass);
+            params.append('i', uploadedImageUrl);
 
             generatedUrl = `${baseUrl}?${params.toString()}`;
 
-            // QR生成
+            // 表示更新
             const qrContainer = document.getElementById("qrcode-container");
             qrContainer.innerHTML = "";
             new QRCode(qrContainer, {
-                text: generatedUrl,
-                width: 180,
-                height: 180,
-                colorDark : "#d4af37",
-                colorLight : "#ffffff"
+                text: generatedUrl, width: 180, height: 180,
+                colorDark : "#d4af37", colorLight : "#ffffff"
             });
 
-            // 結果表示
             document.getElementById('gen-pass-disp').textContent = pass;
             document.getElementById('result-area').style.display = 'block';
             
-            btn.textContent = "再生成する";
+            btn.textContent = "完了";
             btn.disabled = false;
 
         } catch (e) {
             console.error(e);
-            alert("エラーが発生しました");
+            alert("エラーが発生しました。");
             btn.disabled = false;
         }
     }
