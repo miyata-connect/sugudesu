@@ -36,11 +36,11 @@
         #creator-mode { display: none; padding-bottom: 50px; }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        input[type="text"], input[type="time"], input[type="file"], input[type="url"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
+        input[type="text"], input[type="time"], input[type="file"], input[type="url"], input[type="email"], input[type="tel"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
         .time-row { display: flex; gap: 10px; }
         .time-col { flex: 1; }
 
-        #viewer-mode { display: none; width: 100%; max-width: 400px; margin: 20px auto; padding-bottom: 50px; }
+        #viewer-mode { display: none; width: 100%; max-width: 420px; margin: 20px auto; padding-bottom: 50px; }
         .info-card { background: white; border-radius: 20px; padding: 0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
 
         .hero-image { width: 100%; height: 220px; object-fit: cover; background: #eee; display: block; }
@@ -50,17 +50,24 @@
         .premium-label { position: absolute; top: 0; right: 0; background: #d4af37; color: white; font-size: 0.7rem; font-weight: bold; padding: 6px 15px; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px; }
 
         .shop-name { font-size: 1.8rem; font-weight: bold; margin: 10px 0 20px; color: #333; line-height: 1.2; }
-        .info-row { margin: 15px 0; text-align: left; padding: 12px; background: #f8f9fa; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .info-row { margin: 12px 0; text-align: left; padding: 12px; background: #f8f9fa; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; }
         .info-label { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 4px; font-weight: bold; text-transform: uppercase; }
-        .info-val { font-size: 1.05rem; font-weight: 500; padding-left: 5px; color: #444; }
+        .info-val { font-size: 1.02rem; font-weight: 500; padding-left: 5px; color: #444; word-break: break-word; }
 
-        .wifi-card { background: #2c3e50; color: white; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3); position: relative; }
+        .wifi-card { background: #2c3e50; color: white; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3); position: relative; }
         .wifi-ssid { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; letter-spacing: 0.5px; }
         .wifi-pass { font-family: monospace; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 1.2rem; display: inline-block; margin-top: 5px; border: 1px solid rgba(255,255,255,0.2); }
 
-        .share-qr-area { margin-top: 40px; border-top: 2px dashed #eee; padding-top: 30px; }
-        .share-title { font-size: 0.8rem; color: #aaa; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
+        .share-qr-area { margin-top: 28px; border-top: 2px dashed #eee; padding-top: 22px; }
+        .share-title { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; font-weight: bold; letter-spacing: 1px; }
         #viewer-qr { display: inline-block; padding: 10px; background: white; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .sns-qr-area { margin-top: 16px; border-top: 2px dashed #eee; padding-top: 18px; }
+        .sns-qr-title { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; font-weight: bold; letter-spacing: 1px; }
+        .sns-qr-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .sns-qr-item { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .sns-qr-label { font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 8px; text-align: center; }
+        .sns-qr-code { display: flex; justify-content: center; }
 
         .router-setup { margin-top: 30px; text-align: left; background: #eef2f5; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
         .router-setup h3 { margin-top: 0; font-size: 1rem; color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
@@ -75,6 +82,13 @@
 
         .premium-feature { display: none; border: 2px solid #d4af37; padding: 15px; border-radius: 12px; margin-bottom: 15px; background: #fffdf5; position: relative; }
         .premium-badge-ui { position: absolute; top: -10px; right: 10px; background: #d4af37; color: white; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; font-weight: bold; }
+
+        .hint { font-size: 0.75rem; color: #888; margin-top: 6px; line-height: 1.4; }
+        .pill { display: inline-block; background: #eef2f5; border: 1px solid #dde3ea; color: #555; padding: 4px 8px; border-radius: 999px; font-size: 0.75rem; }
+
+        @media (max-width: 420px) {
+            .sns-qr-grid { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -86,26 +100,71 @@
         <div id="view-no-img" class="no-image" style="display:none;"></div>
         <div class="card-content">
             <div class="shop-name" id="view-name">SHOP NAME</div>
+
             <div class="wifi-card" id="view-wifi-area">
                 <div class="material-icons-round" style="font-size:36px; margin-bottom:5px; opacity:0.8;">wifi</div>
                 <div class="wifi-ssid" id="view-ssid">SSID: ---</div>
                 <div class="wifi-pass" id="view-pass">---</div>
                 <div style="margin-top:10px; font-size:0.7rem; opacity:0.7;">Tap to Copy Password</div>
             </div>
-            <div class="info-row">
-                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">location_on</span> ADDRESS</span>
-                <div class="info-val" id="view-address">---</div>
-            </div>
-            <div class="info-row">
+
+            <div class="info-row" id="row-hours">
                 <span class="info-label"><span class="material-icons-round" style="font-size:16px;">schedule</span> OPEN HOURS</span>
                 <div class="info-val" id="view-hours">---</div>
+                <div class="info-val" id="view-lo" style="display:none; margin-top:4px;"><span class="pill">LAST ORDER</span> <span id="view-lo-val"></span></div>
             </div>
+
+            <div class="info-row" id="row-address">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">location_on</span> ADDRESS</span>
+                <div class="info-val" id="view-zip">〒---</div>
+                <div class="info-val" id="view-address">---</div>
+            </div>
+
+            <div class="info-row" id="row-access" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">directions_walk</span> ACCESS</span>
+                <div class="info-val" id="view-access">---</div>
+            </div>
+
+            <div class="info-row" id="row-email" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">mail</span> EMAIL</span>
+                <div class="info-val" id="view-email">---</div>
+            </div>
+
+            <div class="info-row" id="row-phone" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">call</span> PHONE</span>
+                <div class="info-val" id="view-phone">---</div>
+            </div>
+
+            <div class="info-row" id="row-holiday" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">event_busy</span> HOLIDAY</span>
+                <div class="info-val" id="view-holiday">---</div>
+            </div>
+
             <div class="sns-container" id="sns-area">
                 <a id="btn-insta" href="#" target="_blank" class="btn-sns sns-insta" style="display:none;">Instagram</a>
                 <a id="btn-x" href="#" target="_blank" class="btn-sns sns-x" style="display:none;">X</a>
                 <a id="btn-web" href="#" target="_blank" class="btn-sns sns-web" style="display:none;">Website</a>
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px; margin-top:25px;">
+
+            <div class="sns-qr-area" id="sns-qr-area" style="display:none;">
+                <div class="sns-qr-title">SNS QR</div>
+                <div class="sns-qr-grid" id="sns-qr-grid">
+                    <div class="sns-qr-item" id="snsqr-insta" style="display:none;">
+                        <div class="sns-qr-label">Instagram</div>
+                        <div class="sns-qr-code" id="snsqr-insta-code"></div>
+                    </div>
+                    <div class="sns-qr-item" id="snsqr-x" style="display:none;">
+                        <div class="sns-qr-label">X</div>
+                        <div class="sns-qr-code" id="snsqr-x-code"></div>
+                    </div>
+                    <div class="sns-qr-item" id="snsqr-web" style="display:none;">
+                        <div class="sns-qr-label">Website</div>
+                        <div class="sns-qr-code" id="snsqr-web-code"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:22px;">
                 <a id="btn-map-link" href="#" target="_blank" class="btn-primary btn-map">
                     <span class="material-icons-round">place</span> Googleマップで開く
                 </a>
@@ -113,6 +172,7 @@
                     <span class="material-icons-round">ios_share</span> 友だちに教える
                 </button>
             </div>
+
             <div class="share-qr-area">
                 <div class="share-title">SCAN TO SHARE</div>
                 <div id="viewer-qr"></div>
@@ -146,9 +206,16 @@
         <p id="auth-log" style="font-size:0.7rem; color:#ff8888; margin-top:5px;"></p>
     </div>
 
+    <div class="premium-feature" id="pro-feature-slug">
+        <div class="premium-badge-ui">PRO</div>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">link</span> HPアカウント名（任意）</label>
+        <input type="text" id="in-slug" placeholder="例: onepage_cafe / tokushima123" style="margin-top:5px;">
+        <div class="hint">URLは <span class="pill">.../index.html#/onepage/アカウント名</span> になります。未入力の場合はランダムIDを発行します。推測されやすい文字列は避けるのが安全です。</div>
+    </div>
+
     <div class="premium-feature" id="pro-feature-img">
         <div class="premium-badge-ui">PRO</div>
-        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">cloud_upload</span> 店舗画像のアップロード</label>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">cloud_upload</span> 店舗写真のアップロード</label>
         <input type="file" id="in-file" accept="image/*" style="margin-top:5px;">
     </div>
 
@@ -156,16 +223,45 @@
         <label>店舗名</label>
         <input type="text" id="in-name" placeholder="例：Cafe One Page">
     </div>
+
+    <div class="input-group">
+        <label>郵便番号</label>
+        <input type="text" id="in-zip" placeholder="例：770-0000">
+    </div>
+
     <div class="input-group">
         <label>住所</label>
         <input type="text" id="in-address" placeholder="例：徳島県...">
     </div>
+
     <div class="input-group">
-        <label>営業時間</label>
+        <label>アクセス（任意）</label>
+        <input type="text" id="in-access" placeholder="例：徳島駅から徒歩5分 / 駐車場あり">
+    </div>
+
+    <div class="input-group">
+        <label>営業時間（開始 / L.O. 任意 / 終了）</label>
         <div class="time-row">
             <div class="time-col"><input type="time" id="in-open"></div>
+            <div class="time-col"><input type="time" id="in-lo" title="ラストオーダー（任意）"></div>
             <div class="time-col"><input type="time" id="in-close"></div>
         </div>
+        <div class="hint">中央がL.O.（任意）です。不要なら空欄のままでOKです。</div>
+    </div>
+
+    <div class="input-group">
+        <label>休日（任意）</label>
+        <input type="text" id="in-holiday" placeholder="例：火曜 / 不定休 / 年末年始">
+    </div>
+
+    <div class="input-group">
+        <label>Eメール（任意）</label>
+        <input type="email" id="in-email" placeholder="例：info@example.com">
+    </div>
+
+    <div class="input-group">
+        <label>電話番号（任意）</label>
+        <input type="tel" id="in-phone" placeholder="例：090-0000-0000">
     </div>
 
     <div class="premium-feature" id="pro-feature-sns">
@@ -179,7 +275,7 @@
             <input type="text" id="in-x" placeholder="例: onepage_jp">
         </div>
         <div class="input-group">
-            <label>Webサイト URL</label>
+            <label>Webサイト URL（任意）</label>
             <input type="url" id="in-web" placeholder="例: https://onepage.com">
         </div>
     </div>
@@ -196,6 +292,9 @@
     <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
         <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
             <h3 style="margin-top:0;">🎉 完成しました！</h3>
+            <div style="font-size:0.85rem; color:#555; margin-bottom:10px; word-break:break-all;">
+                URL: <span id="gen-url" style="font-weight:bold;"></span>
+            </div>
             <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
             <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
                 プレビューを確認する
@@ -229,9 +328,15 @@
         getRedirectResult,
         signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+        runTransaction,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    // ★★★ あなたのOnePage専用キー（設定済み） ★★★
     const firebaseConfig = {
       apiKey: "AIzaSyDO9G5EdRX1U1H5dLPaFzOWGqjWx3qi9i0",
       authDomain: "onepage-jp.firebaseapp.com",
@@ -242,7 +347,6 @@
       measurementId: "G-RKZRXEWC8G"
     };
 
-    // Cloudinary 設定 (画像サーバー)
     const CLOUD_NAME = "dkda2jqxn";
     const UPLOAD_PRESET = "ml_default";
 
@@ -252,6 +356,7 @@
 
     const LICENSES_COL = "licenses";
     const USERS_COL = "users";
+    const PAGES_COL = "pages";
 
     const INSTALL_ID_KEY = "onepage_install_id";
     function getOrCreateInstallId() {
@@ -268,6 +373,50 @@
         return id;
     }
 
+    function normalizeHttpUrl(url) {
+        try {
+            const u = new URL(url);
+            if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+            return u.toString();
+        } catch (_) {
+            return "";
+        }
+    }
+
+    function sanitizeSlug(input) {
+        const raw = (input || "").trim().toLowerCase();
+        if (!raw) return "";
+        const s = raw.replace(/[^a-z0-9_-]/g, "").replace(/_{2,}/g, "_").replace(/-{2,}/g, "-");
+        return s.substring(0, 32);
+    }
+
+    function randomSlug(len) {
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789";
+        let out = "";
+        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        return out;
+    }
+
+    function getBasePathNoQuery() {
+        return window.location.href.split("?")[0].split("#")[0];
+    }
+
+    function buildPrettyUrl(slug) {
+        const base = getBasePathNoQuery();
+        return `${base}#/onepage/${encodeURIComponent(slug)}`;
+    }
+
+    function parsePrettySlugFromHash() {
+        const h = (window.location.hash || "").trim();
+        const m = h.match(/^#\/onepage\/([^/?#]+)(\?.*)?$/);
+        if (!m) return "";
+        try {
+            return decodeURIComponent(m[1]);
+        } catch (_) {
+            return m[1];
+        }
+    }
+
     let isPro = false;
     let generatedUrl = "";
 
@@ -277,7 +426,8 @@
         logoutBtn: () => document.getElementById("google-logout-btn"),
         licenseInput: () => document.getElementById("license-input"),
         activateBtn: () => document.getElementById("activate-btn"),
-        authLog: () => document.getElementById("auth-log")
+        authLog: () => document.getElementById("auth-log"),
+        genUrl: () => document.getElementById("gen-url")
     };
 
     function setAuthUiLoggedOut() {
@@ -300,7 +450,6 @@
         ui.authLog().style.color = "#ff8888";
     }
 
-    // Googleログイン（iOS含め安定のリダイレクト方式）
     window.googleLogin = async function() {
         ui.authLog().textContent = "";
         const provider = new GoogleAuthProvider();
@@ -312,7 +461,6 @@
         setAuthUiLoggedOut();
     };
 
-    // リダイレクト結果の回収
     getRedirectResult(auth).catch((e) => {
         console.error("Redirect result error", e);
         ui.authLog().textContent = "ログインに失敗しました";
@@ -323,7 +471,6 @@
             setAuthUiLoggedOut();
             return;
         }
-
         setAuthUiLoggedIn(user);
         await checkEntitlement(user.uid);
     });
@@ -367,7 +514,6 @@
         }
     }
 
-    // ライセンス認証処理（Googleログイン必須 + claimedByUid固定 + 台数はinstallIdで判定）
     window.activateLicense = async function() {
         const keyInput = ui.licenseInput();
         const btn = ui.activateBtn();
@@ -456,6 +602,8 @@
         isPro = true;
         document.getElementById('pro-feature-img').style.display = 'block';
         document.getElementById('pro-feature-sns').style.display = 'block';
+        document.getElementById('pro-feature-slug').style.display = 'block';
+
         ui.licenseInput().value = "認証済み";
         ui.licenseInput().disabled = true;
         ui.activateBtn().style.display = 'none';
@@ -483,6 +631,40 @@
         }
     }
 
+    function generatePasswordFromQuantum(numbers) {
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+        let pass = "";
+        for (let i = 0; i < numbers.length; i++) {
+            pass += chars[numbers[i] % chars.length];
+        }
+        return pass.substring(0, 12);
+    }
+
+    async function savePageDoc(slug, data, ownerUid) {
+        const ref = doc(db, PAGES_COL, slug);
+        await runTransaction(db, async (tx) => {
+            const snap = await tx.get(ref);
+            if (snap.exists()) {
+                const cur = snap.data() || {};
+                if (cur.ownerUid && cur.ownerUid !== ownerUid) {
+                    throw "このアカウント名は既に使用されています";
+                }
+                tx.set(ref, {
+                    ...data,
+                    ownerUid: ownerUid,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+            } else {
+                tx.set(ref, {
+                    ...data,
+                    ownerUid: ownerUid,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                }, { merge: false });
+            }
+        });
+    }
+
     async function startGeneration() {
         const btn = document.getElementById('btn-gen');
         btn.disabled = true;
@@ -492,8 +674,8 @@
             let uploadedImageUrl = "";
             const fileInput = document.getElementById('in-file');
 
-            if (isPro && fileInput.files.length > 0) {
-                btn.textContent = "画像を保存中...";
+            if (isPro && fileInput && fileInput.files && fileInput.files.length > 0) {
+                btn.textContent = "写真を保存中...";
                 const formData = new FormData();
                 formData.append("file", fileInput.files[0]);
                 formData.append("upload_preset", UPLOAD_PRESET);
@@ -517,29 +699,80 @@
             }
 
             const name = document.getElementById('in-name').value || "Shop";
+            const zip = (document.getElementById('in-zip').value || "").trim();
             const address = document.getElementById('in-address').value || "";
+            const access = (document.getElementById('in-access').value || "").trim();
+
             const open = document.getElementById('in-open').value;
+            const lo = document.getElementById('in-lo').value;
             const close = document.getElementById('in-close').value;
+
+            const holiday = (document.getElementById('in-holiday').value || "").trim();
+            const email = (document.getElementById('in-email').value || "").trim();
+            const phone = (document.getElementById('in-phone').value || "").trim();
+
             const ssid = document.getElementById('in-ssid').value || "WiFi";
 
-            const insta = isPro ? document.getElementById('in-insta').value : "";
-            const x = isPro ? document.getElementById('in-x').value : "";
-            const web = isPro ? document.getElementById('in-web').value : "";
+            const insta = isPro ? (document.getElementById('in-insta').value || "").trim() : "";
+            const x = isPro ? (document.getElementById('in-x').value || "").trim() : "";
+            const web = isPro ? (document.getElementById('in-web').value || "").trim() : "";
 
-            const baseUrl = window.location.href.split('?')[0];
-            const params = new URLSearchParams();
-            params.append('n', name);
-            params.append('a', address);
-            params.append('o', open);
-            params.append('c', close);
-            params.append('s', ssid);
-            params.append('p', pass);
-            params.append('i', uploadedImageUrl);
-            if(insta) params.append('ig', insta);
-            if(x) params.append('tw', x);
-            if(web) params.append('wb', web);
+            const safeWeb = web ? normalizeHttpUrl(web) : "";
 
-            generatedUrl = `${baseUrl}?${params.toString()}`;
+            const payload = {
+                name,
+                zip,
+                address,
+                access,
+                open,
+                lo,
+                close,
+                holiday,
+                email,
+                phone,
+                ssid,
+                pass,
+                imgUrl: uploadedImageUrl,
+                ig: insta,
+                tw: x,
+                wb: safeWeb
+            };
+
+            if (isPro) {
+                const user = auth.currentUser;
+                if (!user) throw "未ログインです。Googleログインしてください。";
+
+                btn.textContent = "HPを作成中...";
+                let slug = sanitizeSlug(document.getElementById('in-slug').value);
+                if (!slug) slug = randomSlug(10);
+
+                await savePageDoc(slug, payload, user.uid);
+
+                generatedUrl = buildPrettyUrl(slug);
+            } else {
+                const baseUrl = getBasePathNoQuery();
+                const params = new URLSearchParams();
+                params.append('n', name);
+                params.append('z', zip);
+                params.append('a', address);
+                params.append('ac', access);
+                params.append('o', open);
+                params.append('lo', lo);
+                params.append('c', close);
+                params.append('h', holiday);
+                params.append('em', email);
+                params.append('ph', phone);
+                params.append('s', ssid);
+                params.append('p', pass);
+                params.append('i', uploadedImageUrl);
+                if(insta) params.append('ig', insta);
+                if(x) params.append('tw', x);
+                if(safeWeb) params.append('wb', safeWeb);
+
+                generatedUrl = `${baseUrl}?${params.toString()}`;
+            }
+
+            ui.genUrl().textContent = generatedUrl;
 
             const qrContainer = document.getElementById("qrcode-container");
             qrContainer.innerHTML = "";
@@ -555,78 +788,139 @@
 
         } catch (e) {
             console.error(e);
-            alert("エラーが発生しました");
+            alert(typeof e === "string" ? e : "エラーが発生しました");
             btn.disabled = false;
             btn.textContent = "ページ作成開始";
         }
     }
 
-    function generatePasswordFromQuantum(numbers) {
-        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-        let pass = "";
-        for (let i = 0; i < numbers.length; i++) {
-            pass += chars[numbers[i] % chars.length];
-        }
-        return pass.substring(0, 12);
+    function setText(id, value, fallback) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value ? value : (fallback || "");
     }
 
-    function normalizeHttpUrl(url) {
-        try {
-            const u = new URL(url);
-            if (u.protocol !== "http:" && u.protocol !== "https:") return "";
-            return u.toString();
-        } catch (_) {
-            return "";
-        }
+    function showIf(id, cond) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = cond ? "block" : "none";
     }
 
-    window.onload = function() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('n')) {
-            document.getElementById('viewer-mode').style.display = 'block';
-            renderViewer(params);
-        } else {
-            document.getElementById('creator-mode').style.display = 'block';
-        }
-    };
+    function setFlexIf(id, cond) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = cond ? "flex" : "none";
+    }
 
-    function renderViewer(params) {
-        const name = params.get('n');
-        const address = params.get('a');
-        const open = params.get('o');
-        const close = params.get('c');
-        const ssid = params.get('s');
-        const pass = params.get('p');
-        const imgUrl = params.get('i');
-        const ig = params.get('ig');
-        const tw = params.get('tw');
-        const wb = params.get('wb');
+    function clearQr(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = "";
+    }
+
+    function makeQr(targetId, text, size) {
+        const el = document.getElementById(targetId);
+        if (!el) return;
+        el.innerHTML = "";
+        new QRCode(el, { text, width: size, height: size, colorDark: "#333", colorLight: "#fff" });
+    }
+
+    function renderViewerFromData(data) {
+        const name = data.name || "Shop";
+        const zip = (data.zip || "").trim();
+        const address = (data.address || "").trim();
+        const access = (data.access || "").trim();
+
+        const open = (data.open || "").trim();
+        const lo = (data.lo || "").trim();
+        const close = (data.close || "").trim();
+
+        const holiday = (data.holiday || "").trim();
+        const email = (data.email || "").trim();
+        const phone = (data.phone || "").trim();
+
+        const ssid = data.ssid || "WiFi";
+        const pass = data.pass || "";
+        const imgUrl = (data.imgUrl || "").trim();
+
+        const ig = (data.ig || "").trim();
+        const tw = (data.tw || "").trim();
+        const wb = (data.wb || "").trim();
 
         document.title = name;
-        document.getElementById('view-name').textContent = name;
-        document.getElementById('view-address').textContent = address || "---";
-        document.getElementById('view-ssid').textContent = "SSID: " + ssid;
-        document.getElementById('view-pass').textContent = pass;
+        setText("view-name", name, "SHOP");
+        setText("view-ssid", "SSID: " + ssid, "SSID: ---");
+        setText("view-pass", pass, "---");
 
-        if(open && close) document.getElementById('view-hours').textContent = `${open} - ${close}`;
-        else document.getElementById('view-hours').textContent = "---";
-
-        if (imgUrl && imgUrl !== "null" && imgUrl !== "") {
-            document.getElementById('view-img').src = imgUrl;
-            document.getElementById('view-img').style.display = 'block';
+        if (open || close) {
+            const hours = `${open || "--:--"} - ${close || "--:--"}`;
+            setText("view-hours", hours, "---");
         } else {
-            document.getElementById('view-no-img').style.display = 'block';
+            setText("view-hours", "---", "---");
         }
 
-        if(address) document.getElementById('btn-map-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-        else document.getElementById('btn-map-link').style.display = 'none';
-
-        if(ig) { document.getElementById('btn-insta').href = `https://www.instagram.com/${ig}/`; document.getElementById('btn-insta').style.display = 'flex'; }
-        if(tw) { document.getElementById('btn-x').href = `https://x.com/${tw}/`; document.getElementById('btn-x').style.display = 'flex'; }
-        if(wb) {
-            const safe = normalizeHttpUrl(wb);
-            if (safe) { document.getElementById('btn-web').href = safe; document.getElementById('btn-web').style.display = 'flex'; }
+        if (lo) {
+            document.getElementById("view-lo").style.display = "block";
+            setText("view-lo-val", lo, "");
+        } else {
+            document.getElementById("view-lo").style.display = "none";
         }
+
+        setText("view-zip", zip ? `〒${zip}` : "〒---", "〒---");
+        setText("view-address", address || "---", "---");
+
+        showIf("row-access", !!access);
+        setText("view-access", access, "---");
+
+        showIf("row-email", !!email);
+        setText("view-email", email, "---");
+
+        showIf("row-phone", !!phone);
+        setText("view-phone", phone, "---");
+
+        showIf("row-holiday", !!holiday);
+        setText("view-holiday", holiday, "---");
+
+        if (imgUrl && imgUrl !== "null") {
+            const img = document.getElementById('view-img');
+            img.src = imgUrl;
+            img.style.display = 'block';
+            showIf("view-no-img", false);
+        } else {
+            showIf("view-no-img", true);
+            showIf("view-img", false);
+        }
+
+        if (address) {
+            const q = encodeURIComponent([zip, address].filter(Boolean).join(" "));
+            document.getElementById('btn-map-link').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+            document.getElementById('btn-map-link').style.display = 'flex';
+        } else {
+            document.getElementById('btn-map-link').style.display = 'none';
+        }
+
+        const instaUrl = ig ? `https://www.instagram.com/${ig.replace(/^@/, "")}/` : "";
+        const xUrl = tw ? `https://x.com/${tw.replace(/^@/, "")}/` : "";
+        const webUrl = wb ? normalizeHttpUrl(wb) : "";
+
+        if (instaUrl) { document.getElementById('btn-insta').href = instaUrl; setFlexIf('btn-insta', true); } else { setFlexIf('btn-insta', false); }
+        if (xUrl) { document.getElementById('btn-x').href = xUrl; setFlexIf('btn-x', true); } else { setFlexIf('btn-x', false); }
+        if (webUrl) { document.getElementById('btn-web').href = webUrl; setFlexIf('btn-web', true); } else { setFlexIf('btn-web', false); }
+
+        const anySns = !!(instaUrl || xUrl || webUrl);
+        showIf("sns-qr-area", anySns);
+
+        clearQr("snsqr-insta-code");
+        clearQr("snsqr-x-code");
+        clearQr("snsqr-web-code");
+
+        showIf("snsqr-insta", !!instaUrl);
+        showIf("snsqr-x", !!xUrl);
+        showIf("snsqr-web", !!webUrl);
+
+        if (instaUrl) makeQr("snsqr-insta-code", instaUrl, 110);
+        if (xUrl) makeQr("snsqr-x-code", xUrl, 110);
+        if (webUrl) makeQr("snsqr-web-code", webUrl, 110);
 
         document.getElementById('view-wifi-area').onclick = function() {
             navigator.clipboard.writeText(pass);
@@ -639,6 +933,64 @@
             text: window.location.href, width: 120, height: 120, colorDark : "#333", colorLight : "#fff"
         });
     }
+
+    async function loadPrettyPage(slug) {
+        const ref = doc(db, PAGES_COL, slug);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+            throw "ページが見つかりません";
+        }
+        return snap.data();
+    }
+
+    function parseLegacyQuery() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('n')) return null;
+
+        const legacy = {
+            name: params.get('n') || "Shop",
+            zip: params.get('z') || "",
+            address: params.get('a') || "",
+            access: params.get('ac') || "",
+            open: params.get('o') || "",
+            lo: params.get('lo') || "",
+            close: params.get('c') || "",
+            holiday: params.get('h') || "",
+            email: params.get('em') || "",
+            phone: params.get('ph') || "",
+            ssid: params.get('s') || "WiFi",
+            pass: params.get('p') || "",
+            imgUrl: params.get('i') || "",
+            ig: params.get('ig') || "",
+            tw: params.get('tw') || "",
+            wb: params.get('wb') || ""
+        };
+        return legacy;
+    }
+
+    window.onload = async function() {
+        const prettySlug = parsePrettySlugFromHash();
+        const legacy = parseLegacyQuery();
+
+        if (prettySlug || legacy) {
+            document.getElementById('viewer-mode').style.display = 'block';
+
+            try {
+                if (prettySlug) {
+                    const data = await loadPrettyPage(prettySlug);
+                    renderViewerFromData(data);
+                } else {
+                    renderViewerFromData(legacy);
+                }
+            } catch (e) {
+                console.error(e);
+                alert(typeof e === "string" ? e : "表示エラーが発生しました");
+            }
+
+        } else {
+            document.getElementById('creator-mode').style.display = 'block';
+        }
+    };
 </script>
 
 </body>
