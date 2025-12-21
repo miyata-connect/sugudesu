@@ -434,11 +434,25 @@
         return s.substring(0, 32);
     }
 
-    function randomSlug(len) {
-        const chars = "abcdefghijkmnpqrstuvwxyz23456789";
+    function randInt(max) {
+        if (max <= 0) return 0;
+        if (window.crypto && window.crypto.getRandomValues) {
+            const buf = new Uint32Array(1);
+            window.crypto.getRandomValues(buf);
+            return buf[0] % max;
+        }
+        return Math.floor(Math.random() * max);
+    }
+
+    function randomToken(len, chars) {
+        const c = chars || "abcdefghijkmnpqrstuvwxyz23456789";
         let out = "";
-        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        for (let i = 0; i < len; i++) out += c[randInt(c.length)];
         return out;
+    }
+
+    function randomSlug(len) {
+        return randomToken(len, "abcdefghijkmnpqrstuvwxyz23456789");
     }
 
     function getBasePathNoQuery() {
@@ -496,7 +510,27 @@
         return cleaned.substring(0, 32);
     }
 
-    function makeSsidCandidates() {
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = randInt(i + 1);
+            const t = arr[i];
+            arr[i] = arr[j];
+            arr[j] = t;
+        }
+        return arr;
+    }
+
+    function pickNonEmpty(...vals) {
+        for (let i = 0; i < vals.length; i++) {
+            const v = (vals[i] || "").trim();
+            if (v) return v;
+        }
+        return "";
+    }
+
+    function makeSsidCandidates(count) {
+        const want = Math.max(6, Math.min(24, Number(count || 12)));
+
         const name = document.getElementById("in-name") ? document.getElementById("in-name").value : "";
         const slug = document.getElementById("in-slug") ? document.getElementById("in-slug").value : "";
         const address = document.getElementById("in-address") ? document.getElementById("in-address").value : "";
@@ -505,31 +539,63 @@
         const sTok = toAsciiToken(slug);
         const aTok = toAsciiToken(address);
 
-        const suffix1 = randomSlug(4).toUpperCase();
-        const suffix2 = randomSlug(4).toUpperCase();
-        const suffix3 = randomSlug(4).toUpperCase();
+        const baseBrand = pickNonEmpty(nTok, sTok, "SHOP");
+        const brand = clampSsid(baseBrand.toUpperCase()).replace(/\s+/g, "-").substring(0, 16) || "SHOP";
 
-        const baseA = nTok || sTok || "SUGUSURU";
-        const baseB = sTok || nTok || "SHOP";
-        const baseC = aTok || "WIFI";
+        const baseArea = pickNonEmpty(aTok, "WIFI");
+        const area = clampSsid(baseArea.toUpperCase()).replace(/\s+/g, "-").substring(0, 12) || "WIFI";
 
-        const c1 = clampSsid(`${baseA}-${suffix1}`);
-        const c2 = clampSsid(`${baseB}-GUEST-${suffix2}`);
-        const c3 = clampSsid(`${baseC}-${baseA}-${suffix3}`);
+        const suffix4 = () => randomToken(4, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+        const suffix6 = () => randomToken(6, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+        const short = () => randomToken(3, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
 
         const uniq = [];
-        [c1, c2, c3].forEach((x) => {
-            if (!x) return;
-            if (uniq.includes(x)) return;
-            uniq.push(x);
-        });
+        const add = (x) => {
+            const v = clampSsid(x);
+            if (!v) return;
+            if (uniq.includes(v)) return;
+            uniq.push(v);
+        };
 
-        while (uniq.length < 3) {
-            const extra = clampSsid(`SUGUSURU-${randomSlug(6).toUpperCase()}`);
-            if (extra && !uniq.includes(extra)) uniq.push(extra);
+        const templates = [
+            () => `${brand}-GUEST-${suffix4()}`,
+            () => `${brand}-WIFI-${suffix4()}`,
+            () => `${brand}_${suffix4()}`,
+            () => `${brand}-NET-${suffix4()}`,
+            () => `${brand}-5G-${suffix4()}`,
+            () => `${brand}-2G-${suffix4()}`,
+            () => `GUEST-${brand}-${suffix4()}`,
+            () => `WIFI-${brand}-${suffix4()}`,
+            () => `SUGUSURU-${brand}-${suffix4()}`,
+            () => `SUGUSURU-GUEST-${suffix4()}`,
+            () => `SUGU-${brand}-${suffix4()}`,
+            () => `SUGUSURU-${suffix6()}`,
+            () => `${area}-${brand}-${suffix4()}`,
+            () => `${area}-GUEST-${suffix4()}`,
+            () => `VISITOR-${brand}-${suffix4()}`,
+            () => `PUBLIC-${brand}-${suffix4()}`,
+            () => `NET-${suffix6()}`,
+            () => `${brand}-${short()}-${suffix4()}`
+        ];
+
+        const fixed = [
+            `${brand}-GUEST-${suffix4()}`,
+            `${brand}-WIFI-${suffix4()}`,
+            `SUGUSURU-${brand}-${suffix4()}`,
+            `SUGUSURU-GUEST-${suffix4()}`
+        ];
+        fixed.forEach(add);
+
+        const pool = shuffleArray(templates.slice());
+        for (let i = 0; i < pool.length && uniq.length < want; i++) {
+            add(pool[i]());
         }
 
-        return uniq.slice(0, 3);
+        while (uniq.length < want) {
+            add(`SUGUSURU-${suffix6()}`);
+        }
+
+        return uniq.slice(0, want);
     }
 
     let isPro = false;
@@ -742,7 +808,7 @@
             return;
         }
 
-        const list = makeSsidCandidates();
+        const list = makeSsidCandidates(12);
         const wrap = document.getElementById("ssid-suggestions");
         wrap.innerHTML = "";
         wrap.style.display = "flex";
