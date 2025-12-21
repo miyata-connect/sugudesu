@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/000000/wifi-router.png">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <style>
@@ -86,6 +87,19 @@
         .hint { font-size: 0.75rem; color: #888; margin-top: 6px; line-height: 1.4; }
         .pill { display: inline-block; background: #eef2f5; border: 1px solid #dde3ea; color: #555; padding: 4px 8px; border-radius: 999px; font-size: 0.75rem; }
 
+        .link-action { display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; color: #4285f4; text-decoration: underline; cursor: pointer; font-weight: 700; padding-left: 5px; }
+        .link-action:active { opacity: 0.8; }
+
+        .pdf-pro-btn { margin-top: 14px; width: 100%; background: #d4af37; color: #fff; border: none; padding: 12px; font-size: 0.95rem; font-weight: 900; border-radius: 14px; cursor: pointer; display: none; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(212, 175, 55, 0.35); }
+        .pdf-pro-btn:active { transform: scale(0.98); }
+
+        .ssid-tools { display: flex; flex-direction: column; gap: 10px; }
+        .ssid-btn { width: 100%; background: #2c3e50; color: #fff; border: none; padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(44, 62, 80, 0.22); }
+        .ssid-btn:active { transform: scale(0.98); }
+        .ssid-suggestions { display: none; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .ssid-chip { border: 1px solid #d4af37; background: #fff; color: #333; border-radius: 999px; padding: 8px 12px; cursor: pointer; font-weight: 900; }
+        .ssid-chip:active { transform: scale(0.98); }
+
         @media (max-width: 420px) {
             .sns-qr-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -108,6 +122,10 @@
                 <div style="margin-top:10px; font-size:0.7rem; opacity:0.7;">Tap to Copy Password</div>
             </div>
 
+            <button id="btn-wifi-pdf" class="pdf-pro-btn" onclick="downloadWifiPdf()">
+                <span class="material-icons-round" style="font-size:20px;">picture_as_pdf</span> Wi-Fi QRをPDFで保存（PRO）
+            </button>
+
             <div class="info-row" id="row-hours">
                 <span class="info-label"><span class="material-icons-round" style="font-size:16px;">schedule</span> OPEN HOURS</span>
                 <div class="info-val" id="view-hours">---</div>
@@ -123,6 +141,9 @@
             <div class="info-row" id="row-access" style="display:none;">
                 <span class="info-label"><span class="material-icons-round" style="font-size:16px;">directions_walk</span> ACCESS</span>
                 <div class="info-val" id="view-access">---</div>
+                <div class="link-action" id="btn-nav-start" style="display:none;" onclick="openGoogleMapsNavigation()">
+                    <span class="material-icons-round" style="font-size:18px;">navigation</span> GoogleMapsで案内を開始する
+                </div>
             </div>
 
             <div class="info-row" id="row-email" style="display:none;">
@@ -285,6 +306,18 @@
         <input type="text" id="in-ssid" placeholder="My-Shop-WiFi">
     </div>
 
+    <div class="premium-feature" id="pro-feature-ssid">
+        <div class="premium-badge-ui">PRO</div>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">auto_awesome</span> SSIDおすすめ（自動提案）</label>
+        <div class="ssid-tools" style="margin-top:8px;">
+            <button class="ssid-btn" type="button" onclick="suggestSsid()">
+                <span class="material-icons-round" style="font-size:18px;">lightbulb</span> おすすめSSIDを生成
+            </button>
+            <div class="ssid-suggestions" id="ssid-suggestions"></div>
+        </div>
+        <div class="hint">英数字と「-」「_」中心で提案します。SSIDは推測されやすい文字列にすると安全面で問題に発展する可能性があります。</div>
+    </div>
+
     <button onclick="startGeneration()" class="btn-primary" id="btn-gen">
         <span class="material-icons-round">qr_code_2</span> ページ作成開始
     </button>
@@ -300,6 +333,7 @@
                 プレビューを確認する
             </button>
         </div>
+
         <div class="router-setup">
             <h3><span class="material-icons-round" style="vertical-align:middle; color:#f39c12;">build</span> ルーター設定サポート</h3>
             <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:20px; font-size:1.1rem; text-align:center;">
@@ -318,6 +352,8 @@
     </div>
 </div>
 
+<div id="wifi-qr-tmp" style="position:fixed; left:-99999px; top:-99999px; width:1px; height:1px; overflow:hidden;"></div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
@@ -332,7 +368,6 @@
         getFirestore,
         doc,
         getDoc,
-        setDoc,
         runTransaction,
         serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
@@ -417,8 +452,88 @@
         }
     }
 
+    function buildMapsOpenUrl(destText) {
+        const d = encodeURIComponent(destText || "");
+        if (!d) return "";
+        return `https://www.google.com/maps/search/?api=1&query=${d}`;
+    }
+
+    function buildMapsNavUrl(destText) {
+        const d = encodeURIComponent(destText || "");
+        if (!d) return "";
+        return `https://www.google.com/maps/dir/?api=1&destination=${d}&travelmode=walking&dir_action=navigate`;
+    }
+
+    function buildWifiQrPayload(ssid, pass) {
+        const s = (ssid || "").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/:/g, "\\:");
+        const p = (pass || "").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/:/g, "\\:");
+        return `WIFI:T:WPA;S:${s};P:${p};;`;
+    }
+
+    function toAsciiToken(s) {
+        const raw = (s || "").trim();
+        if (!raw) return "";
+        const only = raw.replace(/[^A-Za-z0-9 _-]/g, "");
+        const squashed = only.replace(/\s+/g, "-").replace(/-{2,}/g, "-").replace(/_{2,}/g, "_");
+        const trimmed = squashed.replace(/^[-_]+|[-_]+$/g, "");
+        return trimmed.substring(0, 24);
+    }
+
+    function clampSsid(s) {
+        const raw = (s || "").trim();
+        if (!raw) return "";
+        const allowed = raw.replace(/[^A-Za-z0-9 _-]/g, "");
+        const cleaned = allowed.replace(/\s+/g, " ").trim();
+        return cleaned.substring(0, 32);
+    }
+
+    function makeSsidCandidates() {
+        const name = document.getElementById("in-name") ? document.getElementById("in-name").value : "";
+        const slug = document.getElementById("in-slug") ? document.getElementById("in-slug").value : "";
+        const address = document.getElementById("in-address") ? document.getElementById("in-address").value : "";
+
+        const nTok = toAsciiToken(name);
+        const sTok = toAsciiToken(slug);
+        const aTok = toAsciiToken(address);
+
+        const suffix1 = randomSlug(4).toUpperCase();
+        const suffix2 = randomSlug(4).toUpperCase();
+        const suffix3 = randomSlug(4).toUpperCase();
+
+        const baseA = nTok || sTok || "SUGUSURU";
+        const baseB = sTok || nTok || "SHOP";
+        const baseC = aTok || "WIFI";
+
+        const c1 = clampSsid(`${baseA}-${suffix1}`);
+        const c2 = clampSsid(`${baseB}-GUEST-${suffix2}`);
+        const c3 = clampSsid(`${baseC}-${baseA}-${suffix3}`);
+
+        const uniq = [];
+        [c1, c2, c3].forEach((x) => {
+            if (!x) return;
+            if (uniq.includes(x)) return;
+            uniq.push(x);
+        });
+
+        while (uniq.length < 3) {
+            const extra = clampSsid(`SUGUSURU-${randomSlug(6).toUpperCase()}`);
+            if (extra && !uniq.includes(extra)) uniq.push(extra);
+        }
+
+        return uniq.slice(0, 3);
+    }
+
     let isPro = false;
     let generatedUrl = "";
+    let viewerProDoc = false;
+
+    let viewerState = {
+        name: "",
+        zip: "",
+        address: "",
+        ssid: "",
+        pass: ""
+    };
 
     const ui = {
         uid: () => document.getElementById("my-uid"),
@@ -603,6 +718,7 @@
         document.getElementById('pro-feature-img').style.display = 'block';
         document.getElementById('pro-feature-sns').style.display = 'block';
         document.getElementById('pro-feature-slug').style.display = 'block';
+        document.getElementById('pro-feature-ssid').style.display = 'block';
 
         ui.licenseInput().value = "認証済み";
         ui.licenseInput().disabled = true;
@@ -610,6 +726,31 @@
         ui.authLog().textContent = "Pro Active";
         ui.authLog().style.color = "#0f0";
     }
+
+    window.suggestSsid = function() {
+        if (!isPro) {
+            alert("この機能はPRO専用です");
+            return;
+        }
+
+        const list = makeSsidCandidates();
+        const wrap = document.getElementById("ssid-suggestions");
+        wrap.innerHTML = "";
+        wrap.style.display = "flex";
+
+        list.forEach((cand) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "ssid-chip";
+            b.textContent = cand;
+            b.onclick = function() {
+                const input = document.getElementById("in-ssid");
+                input.value = cand;
+                alert("SSIDにセットしました: " + cand);
+            };
+            wrap.appendChild(b);
+        });
+    };
 
     window.startGeneration = startGeneration;
     window.updateRouterLink = updateRouterLink;
@@ -711,7 +852,8 @@
             const email = (document.getElementById('in-email').value || "").trim();
             const phone = (document.getElementById('in-phone').value || "").trim();
 
-            const ssid = document.getElementById('in-ssid').value || "WiFi";
+            const ssidRaw = document.getElementById('in-ssid').value || "WiFi";
+            const ssid = clampSsid(ssidRaw) || "WiFi";
 
             const insta = isPro ? (document.getElementById('in-insta').value || "").trim() : "";
             const x = isPro ? (document.getElementById('in-x').value || "").trim() : "";
@@ -847,6 +989,12 @@
         const tw = (data.tw || "").trim();
         const wb = (data.wb || "").trim();
 
+        viewerState.name = name;
+        viewerState.zip = zip;
+        viewerState.address = address;
+        viewerState.ssid = ssid;
+        viewerState.pass = pass;
+
         document.title = name;
         setText("view-name", name, "SHOP");
         setText("view-ssid", "SSID: " + ssid, "SSID: ---");
@@ -869,8 +1017,12 @@
         setText("view-zip", zip ? `〒${zip}` : "〒---", "〒---");
         setText("view-address", address || "---", "---");
 
-        showIf("row-access", !!access);
-        setText("view-access", access, "---");
+        showIf("row-access", !!access || !!address || !!zip);
+        setText("view-access", access || "---", "---");
+
+        const destText = [zip, address].filter(Boolean).join(" ");
+        const canNav = !!destText;
+        document.getElementById("btn-nav-start").style.display = canNav ? "inline-flex" : "none";
 
         showIf("row-email", !!email);
         setText("view-email", email, "---");
@@ -891,9 +1043,8 @@
             showIf("view-img", false);
         }
 
-        if (address) {
-            const q = encodeURIComponent([zip, address].filter(Boolean).join(" "));
-            document.getElementById('btn-map-link').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+        if (destText) {
+            document.getElementById('btn-map-link').href = buildMapsOpenUrl(destText);
             document.getElementById('btn-map-link').style.display = 'flex';
         } else {
             document.getElementById('btn-map-link').style.display = 'none';
@@ -932,6 +1083,13 @@
         new QRCode(qrHost, {
             text: window.location.href, width: 120, height: 120, colorDark : "#333", colorLight : "#fff"
         });
+
+        const pdfBtn = document.getElementById("btn-wifi-pdf");
+        if (viewerProDoc) {
+            pdfBtn.style.display = "flex";
+        } else {
+            pdfBtn.style.display = "none";
+        }
     }
 
     async function loadPrettyPage(slug) {
@@ -968,6 +1126,97 @@
         return legacy;
     }
 
+    window.openGoogleMapsNavigation = function() {
+        const destText = [viewerState.zip, viewerState.address].filter(Boolean).join(" ");
+        const url = buildMapsNavUrl(destText);
+        if (!url) return;
+        window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    window.downloadWifiPdf = function() {
+        if (!viewerProDoc) {
+            alert("このPDF機能はPROページのみです");
+            return;
+        }
+
+        const ssid = viewerState.ssid || "";
+        const pass = viewerState.pass || "";
+        const name = viewerState.name || "One Page";
+        if (!ssid || !pass) {
+            alert("Wi-Fi情報が不足しています");
+            return;
+        }
+
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("PDFライブラリの読み込みに失敗しました");
+            return;
+        }
+
+        const qrPayload = buildWifiQrPayload(ssid, pass);
+
+        const tmp = document.getElementById("wifi-qr-tmp");
+        tmp.innerHTML = "";
+        const holder = document.createElement("div");
+        holder.style.width = "240px";
+        holder.style.height = "240px";
+        tmp.appendChild(holder);
+
+        new QRCode(holder, {
+            text: qrPayload,
+            width: 220,
+            height: 220,
+            colorDark: "#000000",
+            colorLight: "#ffffff"
+        });
+
+        const canvas = holder.querySelector("canvas");
+        let dataUrl = "";
+        if (canvas && typeof canvas.toDataURL === "function") {
+            dataUrl = canvas.toDataURL("image/png");
+        } else {
+            const img = holder.querySelector("img");
+            if (img && img.src) dataUrl = img.src;
+        }
+
+        if (!dataUrl) {
+            alert("QR生成に失敗しました");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+        const margin = 18;
+        let y = 20;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.text("Wi-Fi Access QR", margin, y);
+
+        y += 10;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(12);
+        pdf.text(`Shop: ${name}`, margin, y);
+
+        y += 8;
+        pdf.text(`SSID: ${ssid}`, margin, y);
+
+        y += 8;
+        pdf.text(`PASS: ${pass}`, margin, y);
+
+        y += 10;
+        const qrSizeMm = 80;
+        const x = margin;
+        pdf.addImage(dataUrl, "PNG", x, y, qrSizeMm, qrSizeMm);
+
+        y += qrSizeMm + 10;
+        pdf.setFontSize(10);
+        pdf.text("Scan this QR to join Wi-Fi. Print and place near the router or counter.", margin, y);
+
+        const fileSafeName = (name || "wifi").replace(/[\\\/:*?"<>|]/g, "_").substring(0, 40);
+        pdf.save(`wifi-qr_${fileSafeName}.pdf`);
+    };
+
     window.onload = async function() {
         const prettySlug = parsePrettySlugFromHash();
         const legacy = parseLegacyQuery();
@@ -977,9 +1226,11 @@
 
             try {
                 if (prettySlug) {
+                    viewerProDoc = true;
                     const data = await loadPrettyPage(prettySlug);
                     renderViewerFromData(data);
                 } else {
+                    viewerProDoc = false;
                     renderViewerFromData(legacy);
                 }
             } catch (e) {
