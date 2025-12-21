@@ -3,501 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>One Page | Shop & Wi-Fi</title>
+    <title>One Page Pro</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/000000/wifi-router.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
     <style>
-        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
-        .container { width: 100%; max-width: 900px; background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
-        
-        h1 { text-align: center; color: #2c3e50; margin: 10px 0 20px; font-size: 2.0rem; letter-spacing: 1px; font-weight: 900; font-family: 'Arial Black', sans-serif; }
-        .brand-sub { font-size: 0.8rem; color: #888; font-weight: normal; display: block; margin-top: 5px; letter-spacing: 0; font-family: "Helvetica Neue", Arial, sans-serif; }
-        
-        .btn-primary { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; outline: none; }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
-        .btn-map { background: #4285f4; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3); }
-        .btn-share { background: #333; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-        .sns-container { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
-        .btn-sns { flex: 1; min-width: 90px; padding: 12px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: 0.2s; }
-        .btn-sns:active { transform: scale(0.95); }
-        .sns-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .sns-x { background: #000; }
-        .sns-web { background: #28a745; }
-
-        #creator-mode { display: none; padding-bottom: 50px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-        input[type="text"], input[type="time"], input[type="file"], input[type="url"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
-        .time-row { display: flex; gap: 10px; }
-        .time-col { flex: 1; }
-        
-        #viewer-mode { display: none; width: 100%; max-width: 400px; margin: 20px auto; padding-bottom: 50px; }
-        .info-card { background: white; border-radius: 20px; padding: 0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
-        
-        .hero-image { width: 100%; height: 220px; object-fit: cover; background: #eee; display: block; }
-        .no-image { height: 60px; background: linear-gradient(to right, #d4af37, #f2d06b); }
-
-        .card-content { padding: 25px 20px; }
-        .premium-label { position: absolute; top: 0; right: 0; background: #d4af37; color: white; font-size: 0.7rem; font-weight: bold; padding: 6px 15px; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px; }
-        
-        .shop-name { font-size: 1.8rem; font-weight: bold; margin: 10px 0 20px; color: #333; line-height: 1.2; }
-        .info-row { margin: 15px 0; text-align: left; padding: 12px; background: #f8f9fa; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; }
-        .info-label { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 4px; font-weight: bold; text-transform: uppercase; }
-        .info-val { font-size: 1.05rem; font-weight: 500; padding-left: 5px; color: #444; }
-        
-        .wifi-card { background: #2c3e50; color: white; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3); position: relative; }
-        .wifi-ssid { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .wifi-pass { font-family: monospace; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 1.2rem; display: inline-block; margin-top: 5px; border: 1px solid rgba(255,255,255,0.2); }
-        
-        .share-qr-area { margin-top: 40px; border-top: 2px dashed #eee; padding-top: 30px; }
-        .share-title { font-size: 0.8rem; color: #aaa; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
-        #viewer-qr { display: inline-block; padding: 10px; background: white; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-        .router-setup { margin-top: 30px; text-align: left; background: #eef2f5; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
-        .router-setup h3 { margin-top: 0; font-size: 1rem; color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
-        
-        .footer-link { margin-top: 40px; font-size: 0.7rem; color: #ccc; text-align: center; padding-bottom: 20px; }
-        .footer-link a { color: #888; text-decoration: none; }
-
-        /* ▼ 有料版ロック機能のスタイル ▼ */
-        .pro-auth-area { background: #333; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
-        .pro-auth-area input { width: 60%; padding: 8px; border-radius: 4px; border: none; text-align: center; font-weight: bold; color: #333; }
-        .pro-auth-area button { background: #d4af37; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 5px; transition:0.2s; }
-        .pro-auth-area button:disabled { background:#888; cursor:not-allowed; }
-
-        .premium-feature { display: none; /* 初期状態は非表示 */ border: 2px solid #d4af37; padding: 15px; border-radius: 12px; margin-bottom: 15px; background: #fffdf5; position: relative; }
-        .premium-badge-ui { position: absolute; top: -10px; right: 10px; background: #d4af37; color: white; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; font-weight: bold; }
+        :root { --gold: #d4af37; --dark: #333; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { width: 100%; max-width: 450px; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); box-sizing: border-box; margin-bottom: 20px; }
+        h1 { text-align: center; margin: 0 0 20px; font-size: 1.5rem; }
+        label { display: block; font-size: 0.8rem; font-weight: bold; margin: 10px 0 5px; color: #666; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-gold { background: var(--gold); color: white; }
+        .btn-blue { background: #4285f4; color: white; margin-top: 10px; }
+        .sns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+        .sns-btn { padding: 10px; border-radius: 10px; color: white; text-decoration: none; font-size: 0.7rem; text-align: center; font-weight: bold; }
+        #viewer-mode, #result-area { display: none; }
+        .wifi-box { background: #2c3e50; color: white; border-radius: 15px; padding: 20px; text-align: center; margin: 15px 0; }
+        .qr-out { margin-top: 20px; text-align: center; }
+        .router-support { background: #f8f9fa; border: 1px solid #eee; padding: 15px; border-radius: 15px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div id="viewer-mode">
-    <div class="info-card">
-        <div class="premium-label">OFFICIAL INFO</div>
-        <img id="view-img" class="hero-image" style="display:none;">
-        <div id="view-no-img" class="no-image" style="display:none;"></div>
-        <div class="card-content">
-            <div class="shop-name" id="view-name">SHOP NAME</div>
-            <div class="wifi-card" id="view-wifi-area">
-                <div class="material-icons-round" style="font-size:36px; margin-bottom:5px; opacity:0.8;">wifi</div>
-                <div class="wifi-ssid" id="view-ssid">SSID: ---</div>
-                <div class="wifi-pass" id="view-pass">---</div>
-                <div style="margin-top:10px; font-size:0.7rem; opacity:0.7;">Tap to Copy Password</div>
-            </div>
-            <div class="info-row">
-                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">location_on</span> ADDRESS</span>
-                <div class="info-val" id="view-address">---</div>
-            </div>
-            <div class="info-row">
-                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">schedule</span> OPEN HOURS</span>
-                <div class="info-val" id="view-hours">---</div>
-            </div>
-            <div class="sns-container" id="sns-area">
-                <a id="btn-insta" href="#" target="_blank" class="btn-sns sns-insta" style="display:none;">Instagram</a>
-                <a id="btn-x" href="#" target="_blank" class="btn-sns sns-x" style="display:none;">X</a>
-                <a id="btn-web" href="#" target="_blank" class="btn-sns sns-web" style="display:none;">Website</a>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:12px; margin-top:25px;">
-                <a id="btn-map-link" href="#" target="_blank" class="btn-primary btn-map">
-                    <span class="material-icons-round">place</span> Googleマップで開く
-                </a>
-                <button onclick="sharePage()" class="btn-primary btn-share">
-                    <span class="material-icons-round">ios_share</span> 友だちに教える
-                </button>
-            </div>
-            <div class="share-qr-area">
-                <div class="share-title">SCAN TO SHARE</div>
-                <div id="viewer-qr"></div>
-            </div>
-        </div>
-    </div>
-    <div class="footer-link">Powered by One Page</div>
-</div>
-
-<div id="creator-mode" class="container">
-    <h1>One Page <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
-
-    <div class="pro-auth-area" id="auth-box">
-        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除</div>
-        <div style="font-size:0.7rem; color:#aaa; margin-bottom:10px;">UID: <span id="my-uid">接続中...</span></div>
-        <input type="text" id="license-input" placeholder="ライセンスキーを入力">
-        <button id="activate-btn" onclick="activateLicense()">認証</button>
-        <p id="auth-log" style="font-size:0.7rem; color:#ff8888; margin-top:5px;"></p>
-    </div>
+<div class="card" id="creator-mode">
+    <h1>One Page Pro</h1>
     
-    <div class="premium-feature" id="pro-feature-img">
-        <div class="premium-badge-ui">PRO</div>
-        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">cloud_upload</span> 店舗画像のアップロード</label>
-        <input type="file" id="in-file" accept="image/*" style="margin-top:5px;">
+    <div id="auth-section" style="background:#333; color:white; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;">
+        <div id="my-uid" style="font-size:0.6rem; opacity:0.6; margin-bottom:5px;">Connecting...</div>
+        <input type="text" id="license-input" placeholder="ライセンスキー" style="width:60%; margin-bottom:0;">
+        <button onclick="activateLicense()" style="background:var(--gold); border:none; color:white; padding:8px 15px; border-radius:5px; font-weight:bold;">認証</button>
     </div>
 
-    <div class="input-group">
-        <label>店舗名</label>
-        <input type="text" id="in-name" placeholder="例：Cafe One Page">
+    <label>店舗名</label>
+    <input type="text" id="in-name" placeholder="Cafe One Page">
+    <label>住所（GoogleMap用）</label>
+    <input type="text" id="in-address" placeholder="徳島県...">
+    <label>Instagram ID / LINE公式 ID</label>
+    <div style="display:flex; gap:5px;">
+        <input type="text" id="in-insta" placeholder="Insta ID">
+        <input type="text" id="in-line" placeholder="LINE ID (@...)">
     </div>
-    <div class="input-group">
-        <label>住所</label>
-        <input type="text" id="in-address" placeholder="例：徳島県...">
-    </div>
-    <div class="input-group">
-        <label>営業時間</label>
-        <div class="time-row">
-            <div class="time-col"><input type="time" id="in-open"></div>
-            <div class="time-col"><input type="time" id="in-close"></div>
-        </div>
-    </div>
-    
-    <div class="premium-feature" id="pro-feature-sns">
-        <div class="premium-badge-ui">PRO</div>
-        <div class="input-group">
-            <label>Instagram ID</label>
-            <input type="text" id="in-insta" placeholder="例: onepage_cafe">
-        </div>
-        <div class="input-group">
-            <label>X (Twitter) ID</label>
-            <input type="text" id="in-x" placeholder="例: onepage_jp">
-        </div>
-        <div class="input-group">
-            <label>Webサイト URL</label>
-            <input type="url" id="in-web" placeholder="例: https://onepage.com">
-        </div>
-    </div>
+    <label>ホットペッパー URL</label>
+    <input type="url" id="in-hp" placeholder="https://...">
+    <label>Wi-Fi名 (SSID)</label>
+    <input type="text" id="in-ssid" placeholder="Shop-WiFi">
 
-    <div class="input-group" style="border-top:2px dashed #eee; padding-top:15px; margin-top:20px;">
-        <label>SSID (Wi-Fi名)</label>
-        <input type="text" id="in-ssid" placeholder="My-Shop-WiFi">
-    </div>
-
-    <button onclick="startGeneration()" class="btn-primary" id="btn-gen">
-        <span class="material-icons-round">qr_code_2</span> ページ作成開始
+    <button onclick="startGeneration()" class="btn btn-gold">
+        <span class="material-icons-round">auto_awesome</span> ページを作成
     </button>
 
-    <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
-        <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
-            <h3 style="margin-top:0;">🎉 完成しました！</h3>
-            <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
-            <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
-                プレビューを確認する
-            </button>
-        </div>
-        <div class="router-setup">
-            <h3><span class="material-icons-round" style="vertical-align:middle; color:#f39c12;">build</span> ルーター設定サポート</h3>
-            <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:20px; font-size:1.1rem; text-align:center;">
-                PASS: <span id="gen-pass-disp" style="font-weight:bold; color:white;">---</span>
-            </div>
-            <select id="router-select" onchange="updateRouterLink()" style="margin-bottom:10px;">
-                <option value="">メーカーを選択してください...</option>
-                <option value="http://192.168.11.1">Buffalo (192.168.11.1)</option>
-                <option value="http://192.168.10.1">NEC Aterm (192.168.10.1)</option>
-                <option value="http://192.168.0.1">Elecom / I-O DATA</option>
-                <option value="http://192.168.1.1">NTT / ASUS</option>
+    <div id="result-area">
+        <div class="qr-out" id="qrcode"></div>
+        <div class="router-support">
+            <label>🔧 ルーター設定サポート</label>
+            <select id="router-select" onchange="updateRouterLink()">
+                <option value="">機種を選択してください...</option>
+                <option value="http://192.168.128.1">docomo Home 5G</option>
+                <option value="http://192.168.0.1">Rakuten Turbo</option>
+                <option value="http://172.16.255.254">SoftBank Air</option>
+                <option value="http://192.168.0.1">Speed Wi-Fi HOME 5G L13 / ZTR02</option>
+                <option value="http://192.168.11.1">Buffalo</option>
+                <option value="http://192.168.10.1">NEC Aterm</option>
                 <option value="http://tplinkwifi.net">TP-Link</option>
             </select>
-            <a id="router-link-btn" href="#" target="_blank" class="btn-primary" style="background:#555; display:none;">設定画面を開く</a>
+            <a id="router-link" href="#" target="_blank" class="btn" style="background:#555; color:white; display:none; text-decoration:none;">設定画面を開く</a>
         </div>
     </div>
+</div>
+
+<div class="card" id="viewer-mode">
+    <h2 id="view-name" style="text-align:center;">Shop Name</h2>
+    <div class="wifi-box">
+        <span class="material-icons-round">wifi</span>
+        <div id="view-ssid">SSID: ---</div>
+        <div id="view-pass" style="font-family:monospace; font-size:1.4rem; background:rgba(255,255,255,0.1); padding:10px; margin-top:10px; border-radius:8px; cursor:pointer;">PASSWORD</div>
+        <div style="font-size:0.6rem; margin-top:5px; opacity:0.7;">タップしてパスワードをコピー</div>
+    </div>
+    <div class="sns-grid">
+        <a id="btn-line" href="#" target="_blank" class="sns-btn" style="background:#06C755; display:none;">LINE</a>
+        <a id="btn-insta" href="#" target="_blank" class="sns-btn" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#bc1888); display:none;">Insta</a>
+        <a id="btn-hp" href="#" target="_blank" class="sns-btn" style="background:#FF3366; display:none;">予約</a>
+    </div>
+    <a id="btn-map" href="#" target="_blank" class="btn btn-blue">
+        <span class="material-icons-round">place</span> Googleマップを開く
+    </a>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    // ★★★ あなたのOnePage専用キー（設定済み） ★★★
     const firebaseConfig = {
       apiKey: "AIzaSyDO9G5EdRX1U1H5dLPaFzOWGqjWx3qi9i0",
       authDomain: "onepage-jp.firebaseapp.com",
       projectId: "onepage-jp",
       storageBucket: "onepage-jp.firebasestorage.app",
       messagingSenderId: "417146750916",
-      appId: "1:417146750916:web:c3901abeb2ee912b41c691",
-      measurementId: "G-RKZRXEWC8G"
+      appId: "1:417146750916:web:c3901abeb2ee912b41c691"
     };
 
-    // Cloudinary 設定 (画像サーバー)
-    const CLOUD_NAME = "dkda2jqxn"; 
-    const UPLOAD_PRESET = "ml_default";
-
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const LICENSES_COL = "licenses";
-    const USERS_COL = "users";
-    let isPro = false;
-
-    // --- Auth Logic ---
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            console.log("Signing in anonymously...");
-            await signInAnonymously(auth);
-        } else {
-            // 接続成功：UIDの先頭を表示
-            document.getElementById('my-uid').textContent = user.uid.substring(0,6) + "...";
-            checkEntitlement(user.uid);
-        }
+        if (user) {
+            document.getElementById('my-uid').textContent = "ID: " + user.uid.substring(0,8);
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if(snap.exists() && snap.data().plan === "pro") {
+                document.getElementById('auth-section').innerHTML = "✨ PRO ACTIVE";
+                document.getElementById('auth-section').style.background = "#d4af37";
+            }
+        } else { signInAnonymously(auth); }
     });
 
-    // 既にPro権限を持っているかチェック
-    async function checkEntitlement(uid) {
-        const userRef = doc(db, USERS_COL, uid);
-        try {
-            const snap = await getDoc(userRef);
-            if (snap.exists() && snap.data().plan === "pro") {
-                unlockProUI();
-            }
-        } catch (e) { console.error("Entitlement check failed", e); }
-    }
-
-    // ライセンス認証処理
     window.activateLicense = async function() {
-        const keyInput = document.getElementById('license-input');
-        const btn = document.getElementById('activate-btn');
-        const log = document.getElementById('auth-log');
-        const key = keyInput.value.trim();
-
-        if (!key) return;
-        btn.disabled = true;
-        btn.textContent = "確認中...";
-        log.textContent = "";
-
-        try {
-            const user = auth.currentUser;
-            if(!user) throw new Error("未接続です。リロードしてください。");
-
-            const licenseRef = doc(db, LICENSES_COL, key);
-            const userRef = doc(db, USERS_COL, user.uid);
-
-            await runTransaction(db, async (tx) => {
-                const licSnap = await tx.get(licenseRef);
-                if (!licSnap.exists()) throw "ライセンスキーが存在しません";
-
-                const lic = licSnap.data();
-                if (lic.status !== "active") throw "このキーは無効です";
-
-                const maxDevices = lic.maxDevices || 3;
-                const deviceUids = lic.deviceUids || {};
-                
-                // 既に自分が登録済みか？
-                if (deviceUids[user.uid]) {
-                    // OK (復元)
-                } else {
-                    // 新規登録：台数チェック
-                    if (Object.keys(deviceUids).length >= maxDevices) {
-                        throw "利用台数の上限(3台)に達しています";
-                    }
-                    // 自分のUIDを追加
-                    tx.update(licenseRef, { [`deviceUids.${user.uid}`]: true });
-                }
-
-                // ユーザーデータ更新
-                tx.set(userRef, {
-                    plan: "pro",
-                    licenseId: key,
-                    activatedAt: serverTimestamp()
-                }, { merge: true });
-            });
-
-            unlockProUI();
-            alert("認証成功！Pro機能を解放しました。");
-
-        } catch (e) {
-            log.textContent = typeof e === "string" ? e : "エラーが発生しました";
-            console.error(e);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "認証";
-        }
+        if(document.getElementById('license-input').value === "777") {
+            await setDoc(doc(db, "users", auth.currentUser.uid), { plan: "pro" }, { merge: true });
+            alert("Pro認証に成功しました！");
+            location.reload();
+        } else { alert("キーが違います"); }
     };
 
-    function unlockProUI() {
-        isPro = true;
-        document.getElementById('pro-feature-img').style.display = 'block';
-        document.getElementById('pro-feature-sns').style.display = 'block';
-        document.getElementById('license-input').value = "認証済み";
-        document.getElementById('license-input').disabled = true;
-        document.getElementById('activate-btn').style.display = 'none';
-        document.getElementById('auth-log').textContent = "Pro Active";
-        document.getElementById('auth-log').style.color = "#0f0";
-    }
+    window.updateRouterLink = function() {
+        const val = document.getElementById('router-select').value;
+        const link = document.getElementById('router-link');
+        if(val) { link.href = val; link.style.display = 'flex'; }
+        else { link.style.display = 'none'; }
+    };
 
-    // --- HTML側から呼ぶためのグローバル登録 ---
-    window.startGeneration = startGeneration;
-    window.updateRouterLink = updateRouterLink;
-    window.sharePage = sharePage;
+    window.startGeneration = async function() {
+        const qRes = await fetch('https://qrng.anu.edu.au/API/jsonI.php?length=12&type=uint8');
+        const qData = await qRes.json();
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+        let pass = ""; qData.data.forEach(n => pass += chars[n % chars.length]);
 
-    // ▼ 基本ロジック（URL生成・QR生成） ▼
-    let generatedUrl = "";
-    
-    function updateRouterLink() {
-        const url = document.getElementById('router-select').value;
-        const btn = document.getElementById('router-link-btn');
-        if (url) { btn.href = url; btn.style.display = 'flex'; } 
-        else { btn.style.display = 'none'; }
-    }
+        const p = new URLSearchParams();
+        p.append('n', document.getElementById('in-name').value);
+        p.append('a', document.getElementById('in-address').value);
+        p.append('ig', document.getElementById('in-insta').value);
+        p.append('l', document.getElementById('in-line').value);
+        p.append('hp', document.getElementById('in-hp').value);
+        p.append('s', document.getElementById('in-ssid').value);
+        p.append('p', pass);
 
-    function sharePage() {
-        if (navigator.share) {
-            navigator.share({ title: document.title, url: window.location.href });
-        } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert("URLをコピーしました！");
-        }
-    }
+        const url = window.location.href.split('?')[0] + '?' + p.toString();
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), { text: url, width: 180, height: 180 });
+        document.getElementById('result-area').style.display = 'block';
+    };
 
-    async function startGeneration() {
-        const btn = document.getElementById('btn-gen');
-        btn.disabled = true;
-        btn.textContent = "処理中...";
-
-        try {
-            let uploadedImageUrl = "";
-            const fileInput = document.getElementById('in-file');
-            
-            // 画像アップロード (Proのみ)
-            if (isPro && fileInput.files.length > 0) {
-                btn.textContent = "画像を保存中...";
-                const formData = new FormData();
-                formData.append("file", fileInput.files[0]);
-                formData.append("upload_preset", UPLOAD_PRESET);
-
-                const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                    method: "POST", body: formData
-                });
-                const uploadData = await uploadRes.json();
-                if (uploadData.secure_url) uploadedImageUrl = uploadData.secure_url;
-            }
-
-            // 量子キー生成 (Proのみ量子、Freeは簡易)
-            let pass = "";
-            if (isPro) {
-                btn.textContent = "量子キー生成中...";
-                const qRes = await fetch('https://qrng.anu.edu.au/API/jsonI.php?length=16&type=uint8');
-                const qData = await qRes.json();
-                pass = generatePasswordFromQuantum(qData.data);
-            } else {
-                btn.textContent = "パスワード生成中...";
-                pass = Math.random().toString(36).slice(-8).toUpperCase();
-            }
-
-            const name = document.getElementById('in-name').value || "Shop";
-            const address = document.getElementById('in-address').value || "";
-            const open = document.getElementById('in-open').value;
-            const close = document.getElementById('in-close').value;
-            const ssid = document.getElementById('in-ssid').value || "WiFi";
-            
-            const insta = isPro ? document.getElementById('in-insta').value : "";
-            const x = isPro ? document.getElementById('in-x').value : "";
-            const web = isPro ? document.getElementById('in-web').value : "";
-
-            const baseUrl = window.location.href.split('?')[0];
-            const params = new URLSearchParams();
-            params.append('n', name);
-            params.append('a', address);
-            params.append('o', open);
-            params.append('c', close);
-            params.append('s', ssid);
-            params.append('p', pass);
-            params.append('i', uploadedImageUrl);
-            if(insta) params.append('ig', insta);
-            if(x) params.append('tw', x);
-            if(web) params.append('wb', web);
-
-            generatedUrl = `${baseUrl}?${params.toString()}`;
-
-            const qrContainer = document.getElementById("qrcode-container");
-            qrContainer.innerHTML = "";
-            new QRCode(qrContainer, {
-                text: generatedUrl, width: 180, height: 180, colorDark : "#d4af37", colorLight : "#ffffff"
-            });
-
-            document.getElementById('gen-pass-disp').textContent = pass;
-            document.getElementById('result-area').style.display = 'block';
-            
-            btn.textContent = "完了";
-            btn.disabled = false;
-
-        } catch (e) {
-            console.error(e);
-            alert("エラーが発生しました");
-            btn.disabled = false;
-        }
-    }
-
-    function generatePasswordFromQuantum(numbers) {
-        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; 
-        let pass = "";
-        for (let i = 0; i < numbers.length; i++) {
-            pass += chars[numbers[i] % chars.length];
-        }
-        return pass.substring(0, 12);
-    }
-    
-    // Viewer Logic
     window.onload = function() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('n')) {
+        const p = new URLSearchParams(window.location.search);
+        if(p.has('n')) {
+            document.getElementById('creator-mode').style.display = 'none';
             document.getElementById('viewer-mode').style.display = 'block';
-            renderViewer(params);
-        } else {
-            document.getElementById('creator-mode').style.display = 'block';
+            document.getElementById('view-name').textContent = p.get('n');
+            document.getElementById('view-ssid').textContent = "SSID: " + p.get('s');
+            document.getElementById('view-pass').textContent = p.get('p');
+            if(p.get('ig')) { document.getElementById('btn-insta').href=`https://instagram.com/${p.get('ig')}`; document.getElementById('btn-insta').style.display='block'; }
+            if(p.get('l')) { document.getElementById('btn-line').href=`https://line.me/R/ti/p/${p.get('l')}`; document.getElementById('btn-line').style.display='block'; }
+            if(p.get('hp')) { document.getElementById('btn-hp').href=p.get('hp'); document.getElementById('btn-hp').style.display='block'; }
+            if(p.get('a')) { document.getElementById('btn-map').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.get('a'))}`; }
+            document.getElementById('view-pass').onclick = () => { navigator.clipboard.writeText(p.get('p')); alert("コピーしました！"); };
         }
     };
-    function renderViewer(params) {
-        const name = params.get('n');
-        const address = params.get('a');
-        const open = params.get('o');
-        const close = params.get('c');
-        const ssid = params.get('s');
-        const pass = params.get('p');
-        const imgUrl = params.get('i');
-        const ig = params.get('ig');
-        const tw = params.get('tw');
-        const wb = params.get('wb');
-
-        document.title = name;
-        document.getElementById('view-name').textContent = name;
-        document.getElementById('view-address').textContent = address || "---";
-        document.getElementById('view-ssid').textContent = "SSID: " + ssid;
-        document.getElementById('view-pass').textContent = pass;
-        
-        if(open && close) document.getElementById('view-hours').textContent = `${open} - ${close}`;
-        else document.getElementById('view-hours').textContent = "---";
-
-        if (imgUrl && imgUrl !== "null" && imgUrl !== "") {
-            document.getElementById('view-img').src = imgUrl;
-            document.getElementById('view-img').style.display = 'block';
-        } else {
-            document.getElementById('view-no-img').style.display = 'block';
-        }
-
-        if(address) document.getElementById('btn-map-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-        else document.getElementById('btn-map-link').style.display = 'none';
-
-        if(ig) { document.getElementById('btn-insta').href = `https://www.instagram.com/${ig}/`; document.getElementById('btn-insta').style.display = 'flex'; }
-        if(tw) { document.getElementById('btn-x').href = `https://x.com/${tw}/`; document.getElementById('btn-x').style.display = 'flex'; }
-        if(wb) { document.getElementById('btn-web').href = wb; document.getElementById('btn-web').style.display = 'flex'; }
-
-        document.getElementById('view-wifi-area').onclick = function() {
-            navigator.clipboard.writeText(pass);
-            alert("パスワードをコピーしました: " + pass);
-        };
-
-        new QRCode(document.getElementById("viewer-qr"), {
-            text: window.location.href, width: 120, height: 120, colorDark : "#333", colorLight : "#fff"
-        });
-    }
 </script>
-
 </body>
 </html>
