@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>One Page | Shop & Wi-Fi</title>
+    <title>sugusuru | Shop & Wi-Fi</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -101,81 +101,29 @@
         .ssid-chip { border: 1px solid #d4af37; background: #fff; color: #333; border-radius: 999px; padding: 8px 12px; cursor: pointer; font-weight: 900; }
         .ssid-chip:active { transform: scale(0.98); }
 
-        .pro-router-btn { margin-top: 10px; width: 100%; background: #2c3e50; color: #fff; border: none; padding: 12px; font-size: 0.95rem; font-weight: 900; border-radius: 14px; cursor: pointer; display: none; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(44, 62, 80, 0.22); }
-        .pro-router-btn:active { transform: scale(0.98); }
+        .segmented { position: relative; display: flex; background: #f1f3f5; border: 1px solid #e2e6ea; border-radius: 14px; padding: 4px; gap: 4px; user-select: none; }
+        .seg-btn { flex: 1; border: none; background: transparent; padding: 10px 6px; border-radius: 12px; font-weight: 900; cursor: pointer; color: #555; font-size: 0.9rem; outline: none; position: relative; z-index: 2; }
+        .seg-btn:active { transform: scale(0.99); }
+        .seg-btn.active { color: #2c3e50; }
+        .seg-indicator { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); background: #fff; border-radius: 12px; box-shadow: 0 6px 14px rgba(0,0,0,0.08); transition: transform 0.18s ease; z-index: 1; }
 
-        .pro-router-note { display:none; margin-top: 10px; font-size: 0.78rem; color: #666; line-height: 1.45; }
-
-        .sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.42); opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 9999; }
-        .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
-        .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-top-left-radius: 18px; border-top-right-radius: 18px; transform: translateY(110%); transition: transform 0.22s ease; max-height: 78vh; display: flex; flex-direction: column; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); }
-        .sheet-backdrop.open .sheet { transform: translateY(0); }
-        .sheet-handle { width: 48px; height: 5px; border-radius: 999px; background: #d1d5db; margin: 10px auto 8px; }
-        .sheet-header { padding: 6px 16px 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .sheet-title { font-weight: 900; color: #333; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
-        .sheet-close { border: none; background: #f3f4f6; color: #333; border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: 900; }
-        .sheet-body { padding: 12px 16px 16px; overflow: auto; }
-        .sheet-section { margin-bottom: 16px; }
-        .sheet-section-title { font-size: 0.78rem; color: #666; font-weight: 900; letter-spacing: 0.6px; margin: 8px 0 10px; }
-        .sheet-item { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-        .sheet-item-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .sheet-item-name { font-weight: 900; color: #111; font-size: 0.95rem; }
-        .sheet-item-sub { font-size: 0.78rem; color: #6b7280; margin-top: 6px; word-break: break-word; }
-        .sheet-item-actions { display:flex; gap:8px; align-items:center; }
-        .sheet-open { border: none; background: #4285f4; color: #fff; border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: 900; display: inline-flex; align-items:center; gap:6px; }
-        .sheet-copy { border: none; background: #111; color: #fff; border-radius: 10px; padding: 8px 10px; cursor: pointer; font-weight: 900; display: inline-flex; align-items:center; gap:6px; }
+        .sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 9999; }
+        .sheet { width: 100%; max-width: 520px; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.25); overflow: hidden; }
+        .sheet-head { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+        .sheet-handle { width: 52px; height: 6px; background: #ddd; border-radius: 999px; margin: 6px auto 0; }
+        .sheet-title { font-weight: 900; color: #333; font-size: 0.95rem; }
+        .sheet-close { border: none; background: transparent; cursor: pointer; padding: 6px 10px; font-weight: 900; color: #555; }
+        .sheet-body { max-height: 60vh; overflow: auto; padding: 12px 14px 18px; }
+        .sheet-section { margin-top: 12px; }
+        .sheet-section-title { font-size: 0.78rem; color: #888; font-weight: 900; margin: 10px 2px 6px; letter-spacing: 0.6px; }
+        .sheet-item { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid #eee; background: #fafafa; padding: 12px 12px; border-radius: 12px; cursor: pointer; }
+        .sheet-item:active { transform: scale(0.99); }
+        .sheet-item strong { font-size: 0.92rem; color: #333; }
+        .sheet-item small { font-size: 0.78rem; color: #888; }
+        .sheet-badge { background: #d4af37; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; font-weight: 900; }
 
         @media (max-width: 420px) {
             .sns-qr-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* --- 休日: 横3スライド選択（セグメント式） --- */
-        .holiday-slider {
-            position: relative;
-            width: 100%;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 4px;
-            display: flex;
-            gap: 4px;
-            box-sizing: border-box;
-            user-select: none;
-        }
-        .holiday-indicator {
-            position: absolute;
-            top: 4px;
-            bottom: 4px;
-            left: 4px;
-            width: calc((100% - 8px) / 3);
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            transform: translateX(calc(var(--holiday-index, 0) * 100%));
-            transition: transform 0.18s ease, opacity 0.18s ease;
-            opacity: 0;
-        }
-        .holiday-slider.selected .holiday-indicator {
-            opacity: 1;
-        }
-        .holiday-opt {
-            flex: 1;
-            min-width: 0;
-            border: none;
-            background: transparent;
-            padding: 14px 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 900;
-            color: #6b7280;
-            z-index: 1;
-            outline: none;
-        }
-        .holiday-opt.active {
-            color: #2c3e50;
-        }
-        .holiday-selected-row {
-            margin-top: 8px;
         }
     </style>
 </head>
@@ -230,9 +178,9 @@
                 <div class="info-val" id="view-phone">---</div>
             </div>
 
-            <div class="info-row" id="row-holiday">
-                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">event_busy</span> HOLIDAY</span>
-                <div class="info-val" id="view-holiday">---</div>
+            <div class="info-row" id="row-dayinfo">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">event_busy</span> <span id="view-day-label">DAY INFO</span></span>
+                <div class="info-val" id="view-daytext">---</div>
             </div>
 
             <div class="sns-container" id="sns-area">
@@ -274,11 +222,11 @@
             </div>
         </div>
     </div>
-    <div class="footer-link">Powered by One Page</div>
+    <div class="footer-link">Powered by sugusuru</div>
 </div>
 
 <div id="creator-mode" class="container">
-    <h1>One Page <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
+    <h1>sugusuru <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
 
     <div class="pro-auth-area" id="auth-box">
         <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（Googleログイン必須）</div>
@@ -316,7 +264,7 @@
 
     <div class="input-group">
         <label>店舗名</label>
-        <input type="text" id="in-name" placeholder="例：Cafe One Page">
+        <input type="text" id="in-name" placeholder="例：Cafe sugusuru">
     </div>
 
     <div class="input-group">
@@ -352,23 +300,17 @@
         </div>
     </div>
 
-    <!-- 休日: 横3つのスライド選択方式（3択） -->
-    <div class="input-group">
-        <label>休日</label>
-
-        <div class="holiday-slider" id="holiday-slider" role="tablist" aria-label="休日の選択">
-            <div class="holiday-indicator" aria-hidden="true"></div>
-
-            <button type="button" class="holiday-opt" data-holiday="火曜" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">火曜</button>
-            <button type="button" class="holiday-opt" data-holiday="不定休" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">不定休</button>
-            <button type="button" class="holiday-opt" data-holiday="年末年始" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">年末年始</button>
+    <div class="input-group" id="dayinfo-group">
+        <label>営業日 / 休業日</label>
+        <div class="segmented" id="daymode-seg" aria-label="営業日/休業日/不定休">
+            <button class="seg-btn active" type="button" data-mode="open_days">営業日</button>
+            <button class="seg-btn" type="button" data-mode="closed_days">休業日</button>
+            <button class="seg-btn" type="button" data-mode="irregular">不定休</button>
+            <div class="seg-indicator" id="daymode-indicator"></div>
         </div>
-
-        <div class="holiday-selected-row hint">
-            選択中: <span id="holiday-selected" class="pill">未選択</span>
-        </div>
-
-        <input type="hidden" id="in-holiday" value="">
+        <input type="hidden" id="in-daymode" value="open_days">
+        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 / 祝日営業" required>
+        <div class="hint">上で種別を選び、下に詳細を入力してください（例：水曜+隔週 / 第2火曜 / 祝日営業）。</div>
     </div>
 
     <div class="input-group">
@@ -393,7 +335,7 @@
         </div>
         <div class="input-group">
             <label>Webサイト URL（任意）</label>
-            <input type="url" id="in-web" placeholder="例: https://onepage.com">
+            <input type="url" id="in-web" placeholder="例: https://sugusuru.jp">
         </div>
     </div>
 
@@ -411,6 +353,7 @@
             </button>
             <div class="ssid-suggestions" id="ssid-suggestions"></div>
         </div>
+        <div class="hint">英数字と「-」「_」中心で提案します。</div>
     </div>
 
     <button onclick="startGeneration()" class="btn-primary" id="btn-gen">
@@ -431,43 +374,38 @@
 
         <div class="router-setup">
             <h3><span class="material-icons-round" style="vertical-align:middle; color:#f39c12;">build</span> ルーター設定サポート</h3>
-
-            <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:12px; font-size:1.1rem; text-align:center;">
+            <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:20px; font-size:1.1rem; text-align:center;">
                 PASS: <span id="gen-pass-disp" style="font-weight:bold; color:white;">---</span>
+            </div>
+
+            <div class="premium-feature" id="pro-feature-router" style="display:none; margin-bottom:12px;">
+                <div class="premium-badge-ui">PRO</div>
+                <button type="button" class="btn-primary" style="padding:12px; border-radius:14px; font-size:0.95rem;" onclick="openRouterSheet()">
+                    <span class="material-icons-round" style="font-size:20px;">wifi_tethering</span> 主要ルーター / Home 5G を下スライドで選ぶ（PRO）
+                </button>
+                <div class="hint">同じWi-Fiに接続した状態で開いてください。</div>
             </div>
 
             <select id="router-select" onchange="updateRouterLink()" style="margin-bottom:10px;">
                 <option value="">メーカーを選択してください...</option>
                 <option value="http://192.168.11.1">Buffalo (192.168.11.1)</option>
                 <option value="http://192.168.10.1">NEC Aterm (192.168.10.1)</option>
-                <option value="http://192.168.0.1">Elecom / I-O DATA</option>
-                <option value="http://192.168.1.1">NTT / ASUS</option>
-                <option value="http://tplinkwifi.net">TP-Link</option>
+                <option value="http://192.168.0.1">Elecom / I-O DATA (192.168.0.1)</option>
+                <option value="http://192.168.1.1">NTT / ASUS (192.168.1.1)</option>
+                <option value="http://tplinkwifi.net">TP-Link (tplinkwifi.net)</option>
             </select>
-
             <a id="router-link-btn" href="#" target="_blank" class="btn-primary" style="background:#555; display:none;">設定画面を開く</a>
-
-            <button id="pro-router-sheet-btn" class="pro-router-btn" type="button" onclick="openRouterSheet()">
-                <span class="material-icons-round" style="font-size:18px;">settings_ethernet</span> PRO：SSID/パスワード設定リンク集を開く
-            </button>
-
-            <div id="pro-router-note" class="pro-router-note">
-                ※ ルーターやホームルーターのWi-Fiに接続していないと開けない場合があります。
-            </div>
         </div>
     </div>
 </div>
 
 <div id="wifi-qr-tmp" style="position:fixed; left:-99999px; top:-99999px; width:1px; height:1px; overflow:hidden;"></div>
 
-<div id="router-sheet-backdrop" class="sheet-backdrop" onclick="closeRouterSheet()">
-    <div class="sheet" onclick="event.stopPropagation();">
+<div class="sheet-backdrop" id="router-sheet-backdrop" onclick="closeRouterSheet()">
+    <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-handle"></div>
-        <div class="sheet-header">
-            <div class="sheet-title">
-                <span class="material-icons-round" style="font-size:18px;">wifi_tethering</span>
-                SSID/パスワード設定リンク（PRO）
-            </div>
+        <div class="sheet-head">
+            <div class="sheet-title">ルーター / ホームルーター 設定リンク（PRO）</div>
             <button class="sheet-close" type="button" onclick="closeRouterSheet()">閉じる</button>
         </div>
         <div class="sheet-body" id="router-sheet-body"></div>
@@ -607,63 +545,96 @@
         return cleaned.substring(0, 32);
     }
 
-    function makeSsidCandidates() {
+    function makeSsidCandidates(count) {
         const name = document.getElementById("in-name") ? document.getElementById("in-name").value : "";
         const slug = document.getElementById("in-slug") ? document.getElementById("in-slug").value : "";
-        const address = document.getElementById("in-address") ? document.getElementById("in-address").value : "";
-
         const nTok = toAsciiToken(name);
         const sTok = toAsciiToken(slug);
-        const aTok = toAsciiToken(address);
-
-        const suffix1 = randomSlug(4).toUpperCase();
-        const suffix2 = randomSlug(4).toUpperCase();
-        const suffix3 = randomSlug(4).toUpperCase();
 
         const baseA = nTok || sTok || "SUGUSURU";
         const baseB = sTok || nTok || "SHOP";
-        const baseC = aTok || "WIFI";
+        const now = Date.now().toString(36).toUpperCase().slice(-4);
 
-        const c1 = clampSsid(`${baseA}-${suffix1}`);
-        const c2 = clampSsid(`${baseB}-GUEST-${suffix2}`);
-        const c3 = clampSsid(`${baseC}-${baseA}-${suffix3}`);
+        const patterns = [
+            () => `${baseA}-${randomSlug(4).toUpperCase()}`,
+            () => `${baseB}-GUEST-${randomSlug(4).toUpperCase()}`,
+            () => `SUGUSURU-${baseA}-${randomSlug(3).toUpperCase()}`,
+            () => `${baseA}_WIFI_${randomSlug(3).toUpperCase()}`,
+            () => `GUEST-${baseA}-${now}`,
+            () => `WIFI-${baseA}-${randomSlug(3).toUpperCase()}`,
+            () => `${baseB}-${randomSlug(2).toUpperCase()}${Math.floor(10 + Math.random()*89)}`,
+            () => `${baseA}-${Math.floor(1000 + Math.random()*9000)}`,
+            () => `SUGUSURU-GUEST-${randomSlug(5).toUpperCase()}`,
+            () => `${baseA}-${baseB}-${randomSlug(2).toUpperCase()}`,
+            () => `SHOP-WIFI-${randomSlug(5).toUpperCase()}`,
+            () => `GUEST-WIFI-${randomSlug(5).toUpperCase()}`
+        ];
 
+        const want = Math.max(6, Math.min(18, Number(count || 12)));
         const uniq = [];
-        [c1, c2, c3].forEach((x) => {
-            if (!x) return;
-            if (uniq.includes(x)) return;
-            uniq.push(x);
-        });
+        let safety = 0;
 
-        while (uniq.length < 3) {
-            const extra = clampSsid(`SUGUSURU-${randomSlug(6).toUpperCase()}`);
-            if (extra && !uniq.includes(extra)) uniq.push(extra);
+        while (uniq.length < want && safety < 200) {
+            safety++;
+            const p = patterns[Math.floor(Math.random() * patterns.length)];
+            const cand = clampSsid(p());
+            if (!cand) continue;
+            if (uniq.includes(cand)) continue;
+            uniq.push(cand);
         }
 
-        return uniq.slice(0, 3);
+        return uniq.slice(0, want);
     }
 
-    const ROUTER_LINK_CATALOG = [
+    function dayModeLabel(mode) {
+        if (mode === "open_days") return "営業日";
+        if (mode === "closed_days") return "休業日";
+        if (mode === "irregular") return "不定休";
+        return "営業日/休業日";
+    }
+
+    function setDayMode(mode) {
+        const hidden = document.getElementById("in-daymode");
+        const text = document.getElementById("in-daytext");
+        const seg = document.getElementById("daymode-seg");
+        const ind = document.getElementById("daymode-indicator");
+        const btns = seg ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
+
+        hidden.value = mode;
+
+        btns.forEach((b, idx) => {
+            const isOn = b.dataset.mode === mode;
+            b.classList.toggle("active", isOn);
+            if (isOn) {
+                ind.style.transform = `translateX(${idx * 100}%)`;
+            }
+        });
+
+        if (mode === "open_days") text.placeholder = "例：月〜金 / 土日 / 祝日営業";
+        if (mode === "closed_days") text.placeholder = "例：水曜 / 第2火曜 / 水曜+隔週";
+        if (mode === "irregular") text.placeholder = "例：不定休（SNSをご確認ください）";
+    }
+
+    const ROUTER_LINKS = [
         {
-            title: "主要メーカー（Wi-Fiルーター）",
+            title: "主要メーカー（一般ルーター）",
             items: [
-                { name: "Buffalo", urls: ["http://192.168.11.1"] },
-                { name: "NEC Aterm", urls: ["http://aterm.me", "http://192.168.10.1"] },
-                { name: "TP-Link", urls: ["http://tplinkwifi.net", "http://192.168.0.1", "http://192.168.1.1"] },
-                { name: "ELECOM", urls: ["http://192.168.2.1", "http://192.168.0.1"] },
-                { name: "I-O DATA", urls: ["http://192.168.0.1"] },
-                { name: "ASUS", urls: ["http://router.asus.com", "http://192.168.1.1", "http://192.168.50.1"] },
-                { name: "NETGEAR", urls: ["http://www.routerlogin.net", "http://www.routerlogin.com"] }
+                { name: "Buffalo", note: "http://192.168.11.1", url: "http://192.168.11.1" },
+                { name: "NEC Aterm", note: "http://192.168.10.1", url: "http://192.168.10.1" },
+                { name: "Elecom", note: "http://192.168.2.1 / 0.1 など", url: "http://192.168.0.1" },
+                { name: "I-O DATA", note: "http://192.168.0.1 など", url: "http://192.168.0.1" },
+                { name: "ASUS / NTT", note: "http://192.168.1.1 など", url: "http://192.168.1.1" },
+                { name: "TP-Link", note: "http://tplinkwifi.net", url: "http://tplinkwifi.net" }
             ]
         },
         {
-            title: "キャリア系ホームルーター（5G/固定回線代替）",
+            title: "キャリア系（Home 5G / ホームルーター）",
             items: [
-                { name: "NTTドコモ home 5G（HR01/HR02）", urls: ["http://web.setting/", "http://192.168.128.1"] },
-                { name: "au HOME 5G（Speed Wi-Fi HOME）", urls: ["http://speedwifi-home.5g"] },
-                { name: "UQ WiMAX HOME（Speed Wi-Fi HOME）", urls: ["http://speedwifi-next.home", "http://192.168.100.1"] },
-                { name: "SoftBank Air", urls: ["https://air.setup", "http://172.16.255.254"] },
-                { name: "Rakuten Turbo", urls: ["http://192.168.210.1"] }
+                { name: "docomo home 5G（HR02）", note: "http://web.setting/ または 192.168.128.1", url: "http://web.setting/" },
+                { name: "docomo home 5G（HR02 IP）", note: "http://192.168.128.1", url: "http://192.168.128.1" },
+                { name: "SoftBank Air", note: "http://172.16.255.254", url: "http://172.16.255.254" },
+                { name: "au（Speed Wi-Fi HOME）", note: "http://speedwifi.home", url: "http://speedwifi.home" },
+                { name: "Rakuten Turbo", note: "http://192.168.0.1", url: "http://192.168.0.1" }
             ]
         }
     ];
@@ -677,7 +648,9 @@
         zip: "",
         address: "",
         ssid: "",
-        pass: ""
+        pass: "",
+        dayMode: "",
+        dayText: ""
     };
 
     const ui = {
@@ -687,9 +660,7 @@
         licenseInput: () => document.getElementById("license-input"),
         activateBtn: () => document.getElementById("activate-btn"),
         authLog: () => document.getElementById("auth-log"),
-        genUrl: () => document.getElementById("gen-url"),
-        proRouterBtn: () => document.getElementById("pro-router-sheet-btn"),
-        proRouterNote: () => document.getElementById("pro-router-note")
+        genUrl: () => document.getElementById("gen-url")
     };
 
     function setAuthUiLoggedOut() {
@@ -866,15 +837,13 @@
         document.getElementById('pro-feature-sns').style.display = 'block';
         document.getElementById('pro-feature-slug').style.display = 'block';
         document.getElementById('pro-feature-ssid').style.display = 'block';
+        document.getElementById('pro-feature-router').style.display = 'block';
 
         ui.licenseInput().value = "認証済み";
         ui.licenseInput().disabled = true;
         ui.activateBtn().style.display = 'none';
         ui.authLog().textContent = "Pro Active";
         ui.authLog().style.color = "#0f0";
-
-        if (ui.proRouterBtn()) ui.proRouterBtn().style.display = "flex";
-        if (ui.proRouterNote()) ui.proRouterNote().style.display = "block";
     }
 
     window.suggestSsid = function() {
@@ -883,7 +852,7 @@
             return;
         }
 
-        const list = makeSsidCandidates();
+        const list = makeSsidCandidates(12);
         const wrap = document.getElementById("ssid-suggestions");
         wrap.innerHTML = "";
         wrap.style.display = "flex";
@@ -902,28 +871,61 @@
         });
     };
 
-    /* 休日セグメント選択 */
-    window.selectHolidayPreset = function(btn) {
-        const slider = document.getElementById("holiday-slider");
-        const hidden = document.getElementById("in-holiday");
-        const disp = document.getElementById("holiday-selected");
-        if (!slider || !hidden || !disp) return;
+    window.openRouterSheet = function() {
+        if (!isPro) {
+            alert("この機能はPRO専用です");
+            return;
+        }
+        const bd = document.getElementById("router-sheet-backdrop");
+        const body = document.getElementById("router-sheet-body");
+        body.innerHTML = "";
 
-        const opts = Array.from(slider.querySelectorAll(".holiday-opt"));
-        const idx = opts.indexOf(btn);
-        const val = String(btn.getAttribute("data-holiday") || "").trim();
+        ROUTER_LINKS.forEach((sec) => {
+            const secWrap = document.createElement("div");
+            secWrap.className = "sheet-section";
 
-        slider.classList.add("selected");
-        slider.style.setProperty("--holiday-index", String(Math.max(0, idx)));
+            const t = document.createElement("div");
+            t.className = "sheet-section-title";
+            t.textContent = sec.title;
+            secWrap.appendChild(t);
 
-        opts.forEach((o) => {
-            const active = o === btn;
-            o.classList.toggle("active", active);
-            o.setAttribute("aria-selected", active ? "true" : "false");
+            sec.items.forEach((it) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "sheet-item";
+                btn.onclick = function() {
+                    const sel = document.getElementById("router-select");
+                    sel.value = it.url;
+                    updateRouterLink();
+                    closeRouterSheet();
+                };
+
+                const left = document.createElement("div");
+                const nm = document.createElement("strong");
+                nm.textContent = it.name;
+                const nt = document.createElement("small");
+                nt.textContent = it.note;
+                left.appendChild(nm);
+                left.appendChild(document.createElement("br"));
+                left.appendChild(nt);
+
+                const badge = document.createElement("div");
+                badge.className = "sheet-badge";
+                badge.textContent = "SET";
+
+                btn.appendChild(left);
+                btn.appendChild(badge);
+                secWrap.appendChild(btn);
+            });
+
+            body.appendChild(secWrap);
         });
 
-        hidden.value = val;
-        disp.textContent = val || "未選択";
+        bd.style.display = "flex";
+    };
+
+    window.closeRouterSheet = function() {
+        document.getElementById("router-sheet-backdrop").style.display = "none";
     };
 
     window.startGeneration = startGeneration;
@@ -1022,8 +1024,9 @@
             const lo = document.getElementById('in-lo').value;
             const close = document.getElementById('in-close').value;
 
-            const holiday = (document.getElementById('in-holiday').value || "").trim();
-            if (!holiday) throw "休日を選択してください";
+            const dayMode = (document.getElementById("in-daymode").value || "open_days").trim();
+            const dayText = (document.getElementById("in-daytext").value || "").trim();
+            if (!dayText) throw "営業日/休業日（詳細）を入力してください";
 
             const email = (document.getElementById('in-email').value || "").trim();
             const phone = (document.getElementById('in-phone').value || "").trim();
@@ -1045,7 +1048,8 @@
                 open,
                 lo,
                 close,
-                holiday,
+                dayMode,
+                dayText,
                 email,
                 phone,
                 ssid,
@@ -1077,7 +1081,8 @@
                 params.append('o', open);
                 params.append('lo', lo);
                 params.append('c', close);
-                params.append('h', holiday);
+                params.append('dm', dayMode);
+                params.append('dt', dayText);
                 params.append('em', email);
                 params.append('ph', phone);
                 params.append('s', ssid);
@@ -1153,7 +1158,9 @@
         const lo = (data.lo || "").trim();
         const close = (data.close || "").trim();
 
-        const holiday = (data.holiday || "").trim();
+        const dayMode = (data.dayMode || "").trim();
+        const dayText = (data.dayText || "").trim();
+
         const email = (data.email || "").trim();
         const phone = (data.phone || "").trim();
 
@@ -1170,6 +1177,8 @@
         viewerState.address = address;
         viewerState.ssid = ssid;
         viewerState.pass = pass;
+        viewerState.dayMode = dayMode;
+        viewerState.dayText = dayText;
 
         document.title = name;
         setText("view-name", name, "SHOP");
@@ -1206,7 +1215,9 @@
         showIf("row-phone", !!phone);
         setText("view-phone", phone, "---");
 
-        setText("view-holiday", holiday || "---", "---");
+        const label = dayModeLabel(dayMode || "open_days");
+        setText("view-day-label", label, "DAY INFO");
+        setText("view-daytext", dayText || "---", "---");
 
         if (imgUrl && imgUrl !== "null") {
             const img = document.getElementById('view-img');
@@ -1288,7 +1299,8 @@
             open: params.get('o') || "",
             lo: params.get('lo') || "",
             close: params.get('c') || "",
-            holiday: params.get('h') || "",
+            dayMode: params.get('dm') || "open_days",
+            dayText: params.get('dt') || "",
             email: params.get('em') || "",
             phone: params.get('ph') || "",
             ssid: params.get('s') || "WiFi",
@@ -1316,7 +1328,7 @@
 
         const ssid = viewerState.ssid || "";
         const pass = viewerState.pass || "";
-        const name = viewerState.name || "One Page";
+        const name = viewerState.name || "sugusuru";
         if (!ssid || !pass) {
             alert("Wi-Fi情報が不足しています");
             return;
@@ -1392,101 +1404,17 @@
         pdf.save(`wifi-qr_${fileSafeName}.pdf`);
     };
 
-    function escHtml(s) {
-        return String(s || "").replace(/[&<>"']/g, (c) => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "\"": "&quot;",
-            "'": "&#39;"
-        }[c]));
-    }
-
-    function renderRouterSheet() {
-        const body = document.getElementById("router-sheet-body");
-        if (!body) return;
-
-        let html = "";
-        ROUTER_LINK_CATALOG.forEach((sec) => {
-            html += `<div class="sheet-section">`;
-            html += `<div class="sheet-section-title">${escHtml(sec.title)}</div>`;
-
-            sec.items.forEach((it) => {
-                const primary = (it.urls && it.urls[0]) ? it.urls[0] : "";
-                const more = (it.urls && it.urls.length > 1) ? it.urls.slice(1) : [];
-
-                html += `<div class="sheet-item">`;
-                html += `<div class="sheet-item-top">`;
-                html += `<div class="sheet-item-name">${escHtml(it.name)}</div>`;
-                html += `<div class="sheet-item-actions">`;
-                html += `<button class="sheet-open" type="button" onclick="openRouterUrlFromSheet('${escHtml(primary)}')"><span class="material-icons-round" style="font-size:18px;">open_in_new</span>開く</button>`;
-                html += `<button class="sheet-copy" type="button" onclick="copyRouterUrlFromSheet('${escHtml(primary)}')"><span class="material-icons-round" style="font-size:18px;">content_copy</span>コピー</button>`;
-                html += `</div>`;
-                html += `</div>`;
-
-                html += `<div class="sheet-item-sub">入口: ${escHtml(primary)}</div>`;
-                if (more.length > 0) {
-                    html += `<div class="sheet-item-sub" style="margin-top:6px;">他の入口: ${escHtml(more.join(" / "))}</div>`;
-                }
-
-                html += `</div>`;
-            });
-
-            html += `</div>`;
-        });
-
-        body.innerHTML = html;
-    }
-
-    window.openRouterSheet = function() {
-        if (!isPro) {
-            alert("この機能はPRO専用です");
-            return;
-        }
-        renderRouterSheet();
-        const bd = document.getElementById("router-sheet-backdrop");
-        if (!bd) return;
-        bd.classList.add("open");
-        document.body.style.overflow = "hidden";
-    };
-
-    window.closeRouterSheet = function() {
-        const bd = document.getElementById("router-sheet-backdrop");
-        if (!bd) return;
-        bd.classList.remove("open");
-        document.body.style.overflow = "";
-    };
-
-    window.openRouterUrlFromSheet = function(url) {
-        const u = String(url || "").trim();
-        if (!u) return;
-
-        const btn = document.getElementById("router-link-btn");
-        if (btn) {
-            btn.href = u;
-            btn.style.display = "flex";
-        }
-
-        const w = window.open(u, "_blank", "noopener,noreferrer");
-        if (!w) {
-            alert("ポップアップがブロックされました。コピーしてブラウザで開いてください。");
-        }
-    };
-
-    window.copyRouterUrlFromSheet = async function(url) {
-        const u = String(url || "").trim();
-        if (!u) return;
-        try {
-            await navigator.clipboard.writeText(u);
-            alert("リンクをコピーしました: " + u);
-        } catch (e) {
-            alert("コピーに失敗しました: " + u);
-        }
-    };
-
     window.onload = async function() {
         const prettySlug = parsePrettySlugFromHash();
         const legacy = parseLegacyQuery();
+
+        const seg = document.getElementById("daymode-seg");
+        if (seg) {
+            seg.querySelectorAll(".seg-btn").forEach((b) => {
+                b.addEventListener("click", () => setDayMode(b.dataset.mode));
+            });
+            setDayMode("open_days");
+        }
 
         if (prettySlug || legacy) {
             document.getElementById('viewer-mode').style.display = 'block';
