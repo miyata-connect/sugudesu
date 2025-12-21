@@ -128,6 +128,55 @@
         @media (max-width: 420px) {
             .sns-qr-grid { grid-template-columns: 1fr 1fr; }
         }
+
+        /* --- 休日: 横3スライド選択（セグメント式） --- */
+        .holiday-slider {
+            position: relative;
+            width: 100%;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .holiday-indicator {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 4px;
+            width: calc((100% - 8px) / 3);
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transform: translateX(calc(var(--holiday-index, 0) * 100%));
+            transition: transform 0.18s ease, opacity 0.18s ease;
+            opacity: 0;
+        }
+        .holiday-slider.selected .holiday-indicator {
+            opacity: 1;
+        }
+        .holiday-opt {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            padding: 14px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 900;
+            color: #6b7280;
+            z-index: 1;
+            outline: none;
+        }
+        .holiday-opt.active {
+            color: #2c3e50;
+        }
+        .holiday-selected-row {
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -303,9 +352,23 @@
         </div>
     </div>
 
+    <!-- 休日: 横3つのスライド選択方式（3択） -->
     <div class="input-group">
         <label>休日</label>
-        <input type="text" id="in-holiday" placeholder="例：火曜 / 不定休 / 年末年始" required>
+
+        <div class="holiday-slider" id="holiday-slider" role="tablist" aria-label="休日の選択">
+            <div class="holiday-indicator" aria-hidden="true"></div>
+
+            <button type="button" class="holiday-opt" data-holiday="火曜" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">火曜</button>
+            <button type="button" class="holiday-opt" data-holiday="不定休" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">不定休</button>
+            <button type="button" class="holiday-opt" data-holiday="年末年始" onclick="selectHolidayPreset(this)" role="tab" aria-selected="false">年末年始</button>
+        </div>
+
+        <div class="holiday-selected-row hint">
+            選択中: <span id="holiday-selected" class="pill">未選択</span>
+        </div>
+
+        <input type="hidden" id="in-holiday" value="">
     </div>
 
     <div class="input-group">
@@ -389,7 +452,7 @@
             </button>
 
             <div id="pro-router-note" class="pro-router-note">
-                ※ ルーターやホームルーターのWi-Fiに接続していないと開けない場合があります。:contentReference[oaicite:1]{index=1}
+                ※ ルーターやホームルーターのWi-Fiに接続していないと開けない場合があります。
             </div>
         </div>
     </div>
@@ -839,6 +902,30 @@
         });
     };
 
+    /* 休日セグメント選択 */
+    window.selectHolidayPreset = function(btn) {
+        const slider = document.getElementById("holiday-slider");
+        const hidden = document.getElementById("in-holiday");
+        const disp = document.getElementById("holiday-selected");
+        if (!slider || !hidden || !disp) return;
+
+        const opts = Array.from(slider.querySelectorAll(".holiday-opt"));
+        const idx = opts.indexOf(btn);
+        const val = String(btn.getAttribute("data-holiday") || "").trim();
+
+        slider.classList.add("selected");
+        slider.style.setProperty("--holiday-index", String(Math.max(0, idx)));
+
+        opts.forEach((o) => {
+            const active = o === btn;
+            o.classList.toggle("active", active);
+            o.setAttribute("aria-selected", active ? "true" : "false");
+        });
+
+        hidden.value = val;
+        disp.textContent = val || "未選択";
+    };
+
     window.startGeneration = startGeneration;
     window.updateRouterLink = updateRouterLink;
     window.sharePage = sharePage;
@@ -936,7 +1023,7 @@
             const close = document.getElementById('in-close').value;
 
             const holiday = (document.getElementById('in-holiday').value || "").trim();
-            if (!holiday) throw "休日を入力してください";
+            if (!holiday) throw "休日を選択してください";
 
             const email = (document.getElementById('in-email').value || "").trim();
             const phone = (document.getElementById('in-phone').value || "").trim();
@@ -1320,11 +1407,11 @@
         if (!body) return;
 
         let html = "";
-        ROUTER_LINK_CATALOG.forEach((sec, secIdx) => {
+        ROUTER_LINK_CATALOG.forEach((sec) => {
             html += `<div class="sheet-section">`;
             html += `<div class="sheet-section-title">${escHtml(sec.title)}</div>`;
 
-            sec.items.forEach((it, itIdx) => {
+            sec.items.forEach((it) => {
                 const primary = (it.urls && it.urls[0]) ? it.urls[0] : "";
                 const more = (it.urls && it.urls.length > 1) ? it.urls.slice(1) : [];
 
