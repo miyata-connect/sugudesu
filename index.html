@@ -39,7 +39,8 @@
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
         input[type="text"], input[type="time"], input[type="file"], input[type="url"], input[type="email"], input[type="tel"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
         .time-row { display: flex; gap: 10px; }
-        .time-col { flex: 1; }
+        .time-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .time-sub-label { font-size: 0.78rem; font-weight: 900; color: #666; padding-left: 2px; }
 
         #viewer-mode { display: none; width: 100%; max-width: 420px; margin: 20px auto; padding-bottom: 50px; }
         .info-card { background: white; border-radius: 20px; padding: 0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
@@ -156,7 +157,7 @@
                 <div class="info-val" id="view-phone">---</div>
             </div>
 
-            <div class="info-row" id="row-holiday" style="display:none;">
+            <div class="info-row" id="row-holiday">
                 <span class="info-label"><span class="material-icons-round" style="font-size:16px;">event_busy</span> HOLIDAY</span>
                 <div class="info-val" id="view-holiday">---</div>
             </div>
@@ -261,18 +262,26 @@
     </div>
 
     <div class="input-group">
-        <label>営業時間（開始 / L.O. 任意 / 終了）</label>
+        <label>営業時間</label>
         <div class="time-row">
-            <div class="time-col"><input type="time" id="in-open"></div>
-            <div class="time-col"><input type="time" id="in-lo" title="ラストオーダー（任意）"></div>
-            <div class="time-col"><input type="time" id="in-close"></div>
+            <div class="time-col">
+                <div class="time-sub-label">営業開始時間</div>
+                <input type="time" id="in-open">
+            </div>
+            <div class="time-col">
+                <div class="time-sub-label">ラストオーダー（任意）</div>
+                <input type="time" id="in-lo" title="ラストオーダー（任意）">
+            </div>
+            <div class="time-col">
+                <div class="time-sub-label">営業終了時間</div>
+                <input type="time" id="in-close">
+            </div>
         </div>
-        <div class="hint">中央がL.O.（任意）です。不要なら空欄のままでOKです。</div>
     </div>
 
     <div class="input-group">
-        <label>休日（任意）</label>
-        <input type="text" id="in-holiday" placeholder="例：火曜 / 不定休 / 年末年始">
+        <label>休日</label>
+        <input type="text" id="in-holiday" placeholder="例：火曜 / 不定休 / 年末年始" required>
     </div>
 
     <div class="input-group">
@@ -849,6 +858,8 @@
             const close = document.getElementById('in-close').value;
 
             const holiday = (document.getElementById('in-holiday').value || "").trim();
+            if (!holiday) throw "休日を入力してください";
+
             const email = (document.getElementById('in-email').value || "").trim();
             const phone = (document.getElementById('in-phone').value || "").trim();
 
@@ -1030,8 +1041,7 @@
         showIf("row-phone", !!phone);
         setText("view-phone", phone, "---");
 
-        showIf("row-holiday", !!holiday);
-        setText("view-holiday", holiday, "---");
+        setText("view-holiday", holiday || "---", "---");
 
         if (imgUrl && imgUrl !== "null") {
             const img = document.getElementById('view-img');
