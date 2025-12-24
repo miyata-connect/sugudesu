@@ -453,7 +453,7 @@
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
-        signInWithRedirect,
+        signInWithPopup,
         getRedirectResult,
         signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
@@ -720,10 +720,18 @@
         ui.authLog().style.color = "#ff8888";
     }
 
+    // ★★★ 変更点：ポップアップ認証に変更 ★★★
     window.googleLogin = async function() {
-        ui.authLog().textContent = "";
+        ui.authLog().textContent = "認証ウィンドウを開いています...";
         const provider = new GoogleAuthProvider();
-        await signInWithRedirect(auth, provider);
+        try {
+            await signInWithPopup(auth, provider);
+            // ログイン成功時は onAuthStateChanged が自動的に検知します
+        } catch (error) {
+            console.error("Login error:", error);
+            ui.authLog().textContent = "エラー: " + error.message;
+            alert("ログインできませんでした。\n" + error.message);
+        }
     };
 
     window.googleLogout = async function() {
@@ -733,7 +741,7 @@
 
     getRedirectResult(auth).catch((e) => {
         console.error("Redirect result error", e);
-        ui.authLog().textContent = "ログインに失敗しました";
+        // ポップアップ認証メインになったため、ここは重要度は下がりますが残しておきます
     });
 
     onAuthStateChanged(auth, async (user) => {
