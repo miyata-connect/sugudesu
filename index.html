@@ -419,8 +419,11 @@
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithRedirect,
+        signInWithPopup,
         getRedirectResult,
-        signOut
+        signOut,
+        setPersistence,
+        browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import {
         getFirestore,
@@ -682,27 +685,128 @@
         ui.authLog().style.color = "#ff8888";
     }
 
+    function lockProUI() {
+        isPro = false;
+
+        const proIds = [
+            "pro-feature-img",
+            "pro-feature-sns",
+            "pro-feature-slug",
+            "pro-feature-ssid",
+            "pro-feature-router"
+        ];
+
+        proIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+        });
+
+        const key = ui.licenseInput();
+        const btn = ui.activateBtn();
+
+        if (key) {
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+            if (key.value === "認証済み") key.value = "";
+        }
+
+        if (btn) {
+            btn.style.display = "inline-block";
+            btn.textContent = "認証";
+        }
+    }
+
+    function isLikelyMobileOrSafari() {
+        const ua = navigator.userAgent || "";
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Edg|OPR/i.test(ua);
+        return isIOS || isSafari;
+    }
+
+    async function signInGooglePopupThenRedirectFallback() {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+
+        try {
+            await signInWithPopup(auth, provider);
+            return;
+        } catch (e) {
+            const code = e && e.code ? String(e.code) : "";
+            const msg = e && e.message ? String(e.message) : "popup sign-in failed";
+
+            const shouldFallback =
+                isLikelyMobileOrSafari() ||
+                code === "auth/popup-blocked" ||
+                code === "auth/popup-closed-by-user" ||
+                code === "auth/cancelled-popup-request" ||
+                code === "auth/operation-not-supported-in-this-environment";
+
+            if (!shouldFallback) {
+                throw e;
+            }
+
+            ui.authLog().textContent = "ポップアップが使えないため、画面遷移でログインします";
+            ui.authLog().style.color = "#ffcc88";
+
+            await signInWithRedirect(auth, provider);
+        }
+    }
+
     window.googleLogin = async function() {
         ui.authLog().textContent = "";
-        const provider = new GoogleAuthProvider();
-        await signInWithRedirect(auth, provider);
+        ui.authLog().style.color = "#ff8888";
+        await signInGooglePopupThenRedirectFallback();
     };
 
     window.googleLogout = async function() {
         await signOut(auth);
+        lockProUI();
         setAuthUiLoggedOut();
     };
+
+    (async () => {
+        try {
+            auth.useDeviceLanguage();
+            await setPersistence(auth, browserLocalPersistence);
+        } catch (e) {
+            console.error("auth persistence/device language setup failed", e);
+        }
+    })();
 
     getRedirectResult(auth).catch((e) => {
         console.error("Redirect result error", e);
         ui.authLog().textContent = "ログインに失敗しました";
+        ui.authLog().style.color = "#ff8888";
     });
 
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
+            lockProUI();
             setAuthUiLoggedOut();
             return;
         }
+
+        lockProUI();
         setAuthUiLoggedIn(user);
         await checkEntitlement(user.uid);
     });
@@ -714,9 +818,12 @@
             if (snap.exists() && snap.data().plan === "pro") {
                 unlockProUI();
                 await touchDeviceIfPro(uid, snap.data().licenseId);
+            } else {
+                lockProUI();
             }
         } catch (e) {
             console.error("Entitlement check failed", e);
+            lockProUI();
         }
     }
 
@@ -756,6 +863,7 @@
 
         const user = auth.currentUser;
         if (!user) {
+            lockProUI();
             setAuthUiLoggedOut();
             return;
         }
