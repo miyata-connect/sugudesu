@@ -1,553 +1,1628 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
-  <title>Sugudesu AI</title>
-  <meta name="description" content="Sugudesu AI Chat" />
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: rgba(255,255,255,0.08);
-      --panel2: rgba(255,255,255,0.06);
-      --stroke: rgba(255,255,255,0.14);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.68);
-      --accent: #7aa2ff;
-      --danger: #ff6b6b;
-      --ok: #57d38c;
-      --shadow: 0 10px 30px rgba(0,0,0,0.35);
-      --radius: 14px;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-      background:
-        radial-gradient(1200px 800px at 18% 10%, rgba(122,162,255,0.18), transparent 62%),
-        radial-gradient(900px 700px at 84% 20%, rgba(255,122,214,0.10), transparent 58%),
-        var(--bg);
-      color: var(--text);
-    }
-    .app {
-      min-height: 100%;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 12px;
-      padding: 14px;
-      padding-bottom: calc(14px + env(safe-area-inset-bottom));
-      max-width: 980px;
-      margin: 0 auto;
-    }
-    header {
-      background: var(--panel);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      display: grid;
-      gap: 6px;
-    }
-    header .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 16px;
-      letter-spacing: 0.2px;
-    }
-    header .meta {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,0.18);
-      color: var(--muted);
-      user-select: none;
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--muted);
-    }
-    .dot.ok { background: var(--ok); }
-    .dot.bad { background: var(--danger); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>sugusuru | Shop & Wi-Fi</title>
 
-    .chat {
-      background: var(--panel2);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: 1fr;
-      min-height: 420px;
-    }
-    .messages {
-      padding: 14px;
-      overflow: auto;
-      display: grid;
-      gap: 10px;
-      scroll-behavior: smooth;
-    }
-    .msg {
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,0.18);
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: grid;
-      gap: 6px;
-      max-width: 92%;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.45;
-    }
-    .msg.user {
-      margin-left: auto;
-      background: rgba(122,162,255,0.16);
-      border-color: rgba(122,162,255,0.35);
-    }
-    .msg.ai {
-      margin-right: auto;
-    }
-    .msg .role {
-      font-size: 11px;
-      color: var(--muted);
-      user-select: none;
-    }
-    .msg .body {
-      font-size: 14px;
-      color: var(--text);
-    }
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/000000/wifi-router.png">
 
-    footer {
-      background: var(--panel);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 12px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      display: grid;
-      gap: 10px;
-    }
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-    @media (max-width: 720px) {
-      .controls { grid-template-columns: 1fr; }
-    }
-    label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    textarea {
-      width: 100%;
-      min-height: 56px;
-      max-height: 240px;
-      resize: vertical;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,0.20);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      outline: none;
-      line-height: 1.45;
-    }
-    .btns {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    button {
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,0.20);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 14px;
-      cursor: pointer;
-      user-select: none;
-    }
-    button.primary {
-      border-color: rgba(122,162,255,0.5);
-      background: rgba(122,162,255,0.18);
-    }
-    button.danger {
-      border-color: rgba(255,107,107,0.55);
-      background: rgba(255,107,107,0.12);
-    }
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-    .status {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .status .left {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .status .err { color: var(--danger); }
-    .status .ok { color: var(--ok); }
-    .small {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-    a { color: var(--accent); }
-  </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <style>
+        body { font-family: "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
+        .container { width: 100%; max-width: 900px; background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
+
+        h1 { text-align: center; color: #2c3e50; margin: 10px 0 20px; font-size: 2.0rem; letter-spacing: 1px; font-weight: 900; font-family: 'Arial Black', sans-serif; }
+        .brand-sub { font-size: 0.8rem; color: #888; font-weight: normal; display: block; margin-top: 5px; letter-spacing: 0; font-family: "Helvetica Neue", Arial, sans-serif; }
+
+        .btn-primary { width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; outline: none; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+        .btn-map { background: #4285f4; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3); }
+        .btn-share { background: #333; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-nav { background: #1a73e8; box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3); }
+
+        .sns-container { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .btn-sns { flex: 1; min-width: 90px; padding: 12px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: 0.2s; }
+        .btn-sns:active { transform: scale(0.95); }
+        .sns-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .sns-x { background: #000; }
+        .sns-web { background: #28a745; }
+
+        #creator-mode { display: none; padding-bottom: 50px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
+        input[type="text"], input[type="time"], input[type="file"], input[type="url"], input[type="email"], input[type="tel"], select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #f9f9f9; appearance: none; }
+        textarea { resize: vertical; min-height: 90px; }
+        .time-row { display: flex; gap: 10px; }
+        .time-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .time-sub-label { font-size: 0.78rem; font-weight: 900; color: #666; padding-left: 2px; }
+
+        #viewer-mode { display: none; width: 100%; max-width: 420px; margin: 20px auto; padding-bottom: 50px; }
+        .info-card { background: white; border-radius: 20px; padding: 0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 4px solid #d4af37; position: relative; overflow: hidden; }
+
+        .hero-image { width: 100%; height: 220px; object-fit: cover; background: #eee; display: block; }
+        .no-image { height: 60px; background: linear-gradient(to right, #d4af37, #f2d06b); }
+
+        .card-content { padding: 25px 20px; }
+        .premium-label { position: absolute; top: 0; right: 0; background: #d4af37; color: white; font-size: 0.7rem; font-weight: bold; padding: 6px 15px; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px; }
+
+        .shop-name { font-size: 1.8rem; font-weight: bold; margin: 10px 0 16px; color: #333; line-height: 1.2; }
+        .info-row { margin: 12px 0; text-align: left; padding: 12px; background: #f8f9fa; border-radius: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .info-label { font-size: 0.75rem; color: #888; display: flex; align-items: center; gap: 4px; font-weight: bold; text-transform: uppercase; }
+        .info-val { font-size: 1.02rem; font-weight: 500; padding-left: 5px; color: #444; word-break: break-word; }
+        .info-val small { font-size: 0.85rem; color: #666; }
+
+        .wifi-card { background: #2c3e50; color: white; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3); position: relative; }
+        .wifi-ssid { font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .wifi-pass { font-family: monospace; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 8px; font-size: 1.2rem; display: inline-block; margin-top: 5px; border: 1px solid rgba(255,255,255,0.2); }
+
+        .share-qr-area { margin-top: 28px; border-top: 2px dashed #eee; padding-top: 22px; }
+        .share-title { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; font-weight: bold; letter-spacing: 1px; }
+        #viewer-qr { display: inline-block; padding: 10px; background: white; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .sns-qr-area { margin-top: 16px; border-top: 2px dashed #eee; padding-top: 18px; }
+        .sns-qr-title { font-size: 0.8rem; color: #aaa; margin-bottom: 12px; font-weight: bold; letter-spacing: 1px; }
+        .sns-qr-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .sns-qr-item { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .sns-qr-label { font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 8px; text-align: center; }
+        .sns-qr-code { display: flex; justify-content: center; }
+
+        .router-setup { margin-top: 30px; text-align: left; background: #eef2f5; padding: 20px; border-radius: 15px; border: 1px solid #dae1e7; }
+        .router-setup h3 { margin-top: 0; font-size: 1rem; color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
+
+        .footer-link { margin-top: 40px; font-size: 0.7rem; color: #ccc; text-align: center; padding-bottom: 20px; }
+        .footer-link a { color: #888; text-decoration: none; }
+
+        .pro-auth-area { background: #333; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        .pro-auth-area input { width: 60%; padding: 8px; border-radius: 4px; border: none; text-align: center; font-weight: bold; color: #333; }
+        .pro-auth-area button { background: #d4af37; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 5px; transition:0.2s; }
+        .pro-auth-area button:disabled { background:#888; cursor:not-allowed; }
+
+        .premium-feature { display: none; border: 2px solid #d4af37; padding: 15px; border-radius: 12px; margin-bottom: 15px; background: #fffdf5; position: relative; }
+        .premium-badge-ui { position: absolute; top: -10px; right: 10px; background: #d4af37; color: white; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; font-weight: bold; }
+
+        .hint { font-size: 0.75rem; color: #888; margin-top: 6px; line-height: 1.4; }
+        .pill { display: inline-block; background: #eef2f5; border: 1px solid #dde3ea; color: #555; padding: 4px 8px; border-radius: 999px; font-size: 0.75rem; }
+
+        .link-action { display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; color: #4285f4; text-decoration: underline; cursor: pointer; font-weight: 700; padding-left: 5px; }
+        .link-action:active { opacity: 0.8; }
+
+        .pdf-pro-btn { margin-top: 14px; width: 100%; background: #d4af37; color: #fff; border: none; padding: 12px; font-size: 0.95rem; font-weight: 900; border-radius: 14px; cursor: pointer; display: none; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(212, 175, 55, 0.35); }
+        .pdf-pro-btn:active { transform: scale(0.98); }
+
+        .ssid-tools { display: flex; flex-direction: column; gap: 10px; }
+        .ssid-btn { width: 100%; background: #2c3e50; color: #fff; border: none; padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 6px 16px rgba(44, 62, 80, 0.22); }
+        .ssid-btn:active { transform: scale(0.98); }
+        .ssid-suggestions { display: none; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .ssid-chip { border: 1px solid #d4af37; background: #fff; color: #333; border-radius: 999px; padding: 8px 12px; cursor: pointer; font-weight: 900; }
+        .ssid-chip:active { transform: scale(0.98); }
+
+        .segmented { position: relative; display: flex; background: #f1f3f5; border: 1px solid #e2e6ea; border-radius: 14px; padding: 4px; gap: 4px; user-select: none; }
+        .seg-btn { flex: 1; border: none; background: transparent; padding: 10px 6px; border-radius: 12px; font-weight: 900; cursor: pointer; color: #555; font-size: 0.9rem; outline: none; position: relative; z-index: 2; }
+        .seg-btn:active { transform: scale(0.99); }
+        .seg-btn.active { color: #2c3e50; }
+        .seg-indicator { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); background: #fff; border-radius: 12px; box-shadow: 0 6px 14px rgba(0,0,0,0.08); transition: transform 0.18s ease; z-index: 1; }
+        .seg-indicator.seg-2 { width: calc((100% - 8px) / 2); }
+
+        .sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 9999; }
+        .sheet { width: 100%; max-width: 520px; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.25); overflow: hidden; }
+        .sheet-head { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+        .sheet-handle { width: 52px; height: 6px; background: #ddd; border-radius: 999px; margin: 6px auto 0; }
+        .sheet-title { font-weight: 900; color: #333; font-size: 0.95rem; }
+        .sheet-close { border: none; background: transparent; cursor: pointer; padding: 6px 10px; font-weight: 900; color: #555; }
+        .sheet-body { max-height: 60vh; overflow: auto; padding: 12px 14px 18px; }
+        .sheet-section { margin-top: 12px; }
+        .sheet-section-title { font-size: 0.78rem; color: #888; font-weight: 900; margin: 10px 2px 6px; letter-spacing: 0.6px; }
+        .sheet-item { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid #eee; background: #fafafa; padding: 12px 12px; border-radius: 12px; cursor: pointer; }
+        .sheet-item:active { transform: scale(0.99); }
+        .sheet-item strong { font-size: 0.92rem; color: #333; }
+        .sheet-item small { font-size: 0.78rem; color: #888; }
+        .sheet-badge { background: #d4af37; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; font-weight: 900; }
+
+        @media (max-width: 420px) {
+            .sns-qr-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="top">
-        <h1>Sugudesu AI</h1>
-        <div class="meta">
-          <span class="pill" id="originPill"><span class="dot" id="originDot"></span><span id="originText"></span></span>
-          <span class="pill" id="workerPill"><span class="dot" id="workerDot"></span><span id="workerText"></span></span>
-        </div>
-      </div>
-      <div class="small">
-        このページは Cloudflare Workers（gemini-proxy）経由で Gemini を呼びます。フロントにAPIキーは置きません。
-      </div>
-    </header>
 
-    <main class="chat" role="main" aria-label="チャット">
-      <div class="messages" id="messages" aria-live="polite"></div>
-    </main>
+<div id="viewer-mode">
+    <div class="info-card">
+        <div class="premium-label" id="viewer-badge">OFFICIAL INFO</div>
+        <img id="view-img" class="hero-image" style="display:none;">
+        <div id="view-no-img" class="no-image" style="display:none;"></div>
+        <div class="card-content">
+            <div class="shop-name" id="view-name">SHOP NAME</div>
 
-    <footer>
-      <div class="controls">
-        <div>
-          <label for="input">メッセージ</label>
-          <textarea id="input" placeholder="ここに入力して送信します。Shift+Enterで改行。Enterで送信。"></textarea>
-        </div>
-        <div class="btns">
-          <button id="stopBtn" class="danger" disabled>停止</button>
-          <button id="clearBtn">履歴削除</button>
-          <button id="sendBtn" class="primary">送信</button>
-        </div>
-      </div>
-      <div class="status">
-        <div class="left">
-          <span id="statusText">待機中</span>
-        </div>
-        <div class="small" id="hintText"></div>
-      </div>
-    </footer>
-  </div>
+            <div class="info-row" id="row-ai" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">auto_awesome</span> ABOUT</span>
+                <div class="info-val" id="view-ai-text">---</div>
+                <div class="info-val" id="view-ai-highlights" style="display:none;"></div>
+            </div>
 
-  <script>
-    "use strict";
+            <div class="wifi-card" id="view-wifi-area">
+                <div class="material-icons-round" style="font-size:36px; margin-bottom:5px; opacity:0.8;">wifi</div>
+                <div class="wifi-ssid" id="view-ssid">SSID: ---</div>
+                <div class="wifi-pass" id="view-pass">---</div>
+                <div style="margin-top:10px; font-size:0.7rem; opacity:0.7;">Tap to Copy Password</div>
+            </div>
 
-    const CONFIG = {
-      WORKER_BASE: "https://gemini-proxy.miyata-connect-jp.workers.dev",
-      MODEL: "gemini-1.5-flash",
-      TEMPERATURE: 0.7,
-      MAX_OUTPUT_TOKENS: 768,
-      STORAGE_KEY: "sugudesu_ai_chat_v1",
-      REQUEST_TIMEOUT_MS: 45000
+            <button id="btn-wifi-pdf" class="pdf-pro-btn" onclick="downloadWifiPdf()">
+                <span class="material-icons-round" style="font-size:20px;">picture_as_pdf</span> Wi-Fi QRをPDFで保存（PRO）
+            </button>
+
+            <div class="info-row" id="row-hours">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">schedule</span> OPEN HOURS</span>
+                <div class="info-val" id="view-hours">---</div>
+                <div class="info-val" id="view-lo" style="display:none; margin-top:4px;"><span class="pill">LAST ORDER</span> <span id="view-lo-val"></span></div>
+            </div>
+
+            <div class="info-row" id="row-address">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">location_on</span> ADDRESS</span>
+                <div class="info-val" id="view-zip">〒---</div>
+                <div class="info-val" id="view-address">---</div>
+            </div>
+
+            <div class="info-row" id="row-access" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">directions_walk</span> ACCESS</span>
+                <div class="info-val" id="view-access">---</div>
+                <div class="link-action" id="btn-nav-start" style="display:none;" onclick="openGoogleMapsDirections()">
+                    <span class="material-icons-round" style="font-size:18px;">directions</span> GoogleMapsで案内する
+                </div>
+            </div>
+
+            <div class="info-row" id="row-email" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">mail</span> EMAIL</span>
+                <div class="info-val" id="view-email">---</div>
+            </div>
+
+            <div class="info-row" id="row-phone" style="display:none;">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">call</span> PHONE</span>
+                <div class="info-val" id="view-phone">---</div>
+                <a class="link-action" id="view-phone-link" style="display:none;" href="#" rel="noopener noreferrer">
+                    <span class="material-icons-round" style="font-size:18px;">phone_in_talk</span> 発信する（PRO）
+                </a>
+            </div>
+
+            <div class="info-row" id="row-dayinfo">
+                <span class="info-label"><span class="material-icons-round" style="font-size:16px;">event_busy</span> <span id="view-day-label">DAY INFO</span></span>
+                <div class="info-val" id="view-daytext">---</div>
+            </div>
+
+            <div class="sns-container" id="sns-area">
+                <a id="btn-insta" href="#" target="_blank" class="btn-sns sns-insta" style="display:none;">Instagram</a>
+                <a id="btn-x" href="#" target="_blank" class="btn-sns sns-x" style="display:none;">X</a>
+                <a id="btn-web" href="#" target="_blank" class="btn-sns sns-web" style="display:none;">Website</a>
+            </div>
+
+            <div class="sns-qr-area" id="sns-qr-area" style="display:none;">
+                <div class="sns-qr-title">SNS QR（PRO）</div>
+                <div class="sns-qr-grid" id="sns-qr-grid">
+                    <div class="sns-qr-item" id="snsqr-insta" style="display:none;">
+                        <div class="sns-qr-label">Instagram</div>
+                        <div class="sns-qr-code" id="snsqr-insta-code"></div>
+                    </div>
+                    <div class="sns-qr-item" id="snsqr-x" style="display:none;">
+                        <div class="sns-qr-label">X</div>
+                        <div class="sns-qr-code" id="snsqr-x-code"></div>
+                    </div>
+                    <div class="sns-qr-item" id="snsqr-web" style="display:none;">
+                        <div class="sns-qr-label">Website</div>
+                        <div class="sns-qr-code" id="snsqr-web-code"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:22px;">
+                <a id="btn-map-link" href="#" target="_blank" class="btn-primary btn-map">
+                    <span class="material-icons-round">place</span> Googleマップで開く
+                </a>
+                <button id="btn-map-nav" class="btn-primary btn-nav" style="display:none;" onclick="openGoogleMapsDirections()">
+                    <span class="material-icons-round">directions</span> GoogleMapsで案内する（PRO）
+                </button>
+                <button onclick="sharePage()" class="btn-primary btn-share">
+                    <span class="material-icons-round">ios_share</span> 友だちに教える
+                </button>
+            </div>
+
+            <div class="share-qr-area" id="share-qr-area">
+                <div class="share-title">SCAN TO SHARE（PRO）</div>
+                <div id="viewer-qr"></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-link">Powered by sugusuru</div>
+</div>
+
+<div id="creator-mode" class="container">
+    <h1>sugusuru <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
+
+    <div class="pro-auth-area" id="auth-box">
+        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（Googleログイン必須）</div>
+
+        <div style="display:flex; gap:8px; justify-content:center; margin:10px 0;">
+            <button id="google-login-btn" onclick="googleLogin()" style="background:#4285f4; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                Googleでログイン
+            </button>
+            <button id="google-logout-btn" onclick="googleLogout()" style="background:#555; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; display:none;">
+                ログアウト
+            </button>
+        </div>
+
+        <div style="font-size:0.7rem; color:#aaa; margin-bottom:10px;">
+            UID: <span id="my-uid">未ログイン</span>
+        </div>
+
+        <input type="text" id="license-input" placeholder="ライセンスキーを入力" disabled>
+        <button id="activate-btn" onclick="activateLicense()" disabled>認証</button>
+        <p id="auth-log" style="font-size:0.7rem; color:#ff8888; margin-top:5px;"></p>
+
+        <div id="pro-ai-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
+            PROでは入力内容をサーバ側プロキシ経由でAI生成に利用します（未設定時はスキップ）。
+        </div>
+    </div>
+
+    <div class="input-group" id="category-group">
+        <label>企業 / 店舗 カテゴリ</label>
+        <div class="segmented" id="category-seg" aria-label="企業/店舗">
+            <button class="seg-btn active" type="button" data-mode="shop">店舗</button>
+            <button class="seg-btn" type="button" data-mode="company">企業</button>
+            <div class="seg-indicator seg-2" id="category-indicator"></div>
+        </div>
+        <input type="hidden" id="in-category" value="shop">
+        <div class="hint">PROではカテゴリもAI生成に渡します。</div>
+    </div>
+
+    <div class="premium-feature" id="pro-feature-slug">
+        <div class="premium-badge-ui">PRO</div>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">link</span> HPアカウント名（任意）</label>
+        <input type="text" id="in-slug" placeholder="例: onepage_cafe / tokushima123" style="margin-top:5px;">
+        <div class="hint">URLは <span class="pill">.../index.html#/onepage/アカウント名</span> になります。未入力の場合はランダムIDを発行します。</div>
+    </div>
+
+    <div class="premium-feature" id="pro-feature-img">
+        <div class="premium-badge-ui">PRO</div>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">cloud_upload</span> 店舗写真のアップロード</label>
+        <input type="file" id="in-file" accept="image/*" style="margin-top:5px;">
+    </div>
+
+    <div class="input-group">
+        <label>店舗名</label>
+        <input type="text" id="in-name" placeholder="例：Cafe sugusuru">
+    </div>
+
+    <div class="input-group">
+        <label>郵便番号</label>
+        <input type="text" id="in-zip" placeholder="例：770-0000">
+    </div>
+
+    <div class="input-group">
+        <label>住所</label>
+        <input type="text" id="in-address" placeholder="例：徳島県...">
+    </div>
+
+    <div class="input-group">
+        <label>アクセス（任意）</label>
+        <input type="text" id="in-access" placeholder="例：徳島駅から徒歩5分 / 駐車場あり">
+    </div>
+
+    <div class="input-group">
+        <label>営業時間</label>
+        <div class="time-row">
+            <div class="time-col">
+                <div class="time-sub-label">営業開始時間</div>
+                <input type="time" id="in-open">
+            </div>
+            <div class="time-col">
+                <div class="time-sub-label">ラストオーダー（任意）</div>
+                <input type="time" id="in-lo" title="ラストオーダー（任意）">
+            </div>
+            <div class="time-col">
+                <div class="time-sub-label">営業終了時間</div>
+                <input type="time" id="in-close">
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group" id="dayinfo-group">
+        <label>営業日 / 休業日</label>
+        <div class="segmented" id="daymode-seg" aria-label="営業日/休業日/不定休">
+            <button class="seg-btn active" type="button" data-mode="open_days">営業日</button>
+            <button class="seg-btn" type="button" data-mode="closed_days">休業日</button>
+            <button class="seg-btn" type="button" data-mode="irregular">不定休</button>
+            <div class="seg-indicator" id="daymode-indicator"></div>
+        </div>
+        <input type="hidden" id="in-daymode" value="open_days">
+        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 / 祝日営業" required>
+        <div class="hint">上で種別を選び、下に詳細を入力してください（例：水曜+隔週 / 第2火曜 / 祝日営業）。</div>
+    </div>
+
+    <div class="input-group">
+        <label>Eメール（任意）</label>
+        <input type="email" id="in-email" placeholder="例：info@example.com">
+    </div>
+
+    <div class="input-group">
+        <label>電話番号（任意）</label>
+        <input type="tel" id="in-phone" placeholder="例：090-0000-0000">
+    </div>
+
+    <div class="input-group" id="sns-group" style="border-top:2px dashed #eee; padding-top:15px; margin-top:20px;">
+        <label>SNS（無料：リンクのみ / PRO：リンク+QR）</label>
+        <div class="input-group">
+            <label style="margin-top:10px;">Instagram ID（任意）</label>
+            <input type="text" id="in-insta" placeholder="例: onepage_cafe">
+        </div>
+        <div class="input-group">
+            <label>X (Twitter) ID（任意）</label>
+            <input type="text" id="in-x" placeholder="例: onepage_jp">
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+            <label>Webサイト URL（任意）</label>
+            <input type="url" id="in-web" placeholder="例: https://sugusuru.jp">
+        </div>
+    </div>
+
+    <div class="input-group" style="border-top:2px dashed #eee; padding-top:15px; margin-top:20px;">
+        <label>SSID (Wi-Fi名)</label>
+        <input type="text" id="in-ssid" placeholder="My-Shop-WiFi">
+    </div>
+
+    <div class="premium-feature" id="pro-feature-ssid">
+        <div class="premium-badge-ui">PRO</div>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">auto_awesome</span> SSIDおすすめ（AP名提示）</label>
+        <div class="ssid-tools" style="margin-top:8px;">
+            <button class="ssid-btn" type="button" onclick="suggestSsid()">
+                <span class="material-icons-round" style="font-size:18px;">lightbulb</span> おすすめSSIDを生成
+            </button>
+            <div class="ssid-suggestions" id="ssid-suggestions"></div>
+        </div>
+        <div class="hint">英数字と「-」「_」中心で提案します。</div>
+    </div>
+
+    <button onclick="startGeneration()" class="btn-primary" id="btn-gen">
+        <span class="material-icons-round">qr_code_2</span> ページ作成開始
+    </button>
+
+    <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
+        <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+            <h3 style="margin-top:0;">🎉 完成しました！</h3>
+            <div style="font-size:0.85rem; color:#555; margin-bottom:10px; word-break:break-all;">
+                URL: <span id="gen-url" style="font-weight:bold;"></span>
+            </div>
+
+            <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
+            <div id="free-no-qr" style="display:none; font-size:0.8rem; color:#777; margin-top:10px;">
+                無料版はQR表示なし（URL共有のみ）
+            </div>
+
+            <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
+                プレビューを確認する
+            </button>
+        </div>
+
+        <div class="router-setup" id="router-setup-box">
+            <h3><span class="material-icons-round" style="vertical-align:middle; color:#f39c12;">build</span> Wi-Fi AP設定支援</h3>
+
+            <div style="background:#333; color:#0f0; padding:12px; border-radius:8px; font-family:monospace; margin-bottom:12px; font-size:1.1rem; text-align:center;">
+                PASS: <span id="gen-pass-disp" style="font-weight:bold; color:white;">---</span>
+            </div>
+
+            <div id="pro-ap-note" style="display:none; font-size:0.85rem; color:#555; background:#fff; border:1px solid #e5e5e5; padding:10px; border-radius:10px; margin-bottom:12px;">
+                PRO：SSIDおすすめ（AP名提示）とパスワード生成のみ対応します。
+            </div>
+
+            <select id="router-select" onchange="updateRouterLink()" style="margin-bottom:10px;">
+                <option value="">メーカーを選択してください...</option>
+                <option value="http://192.168.11.1">Buffalo (192.168.11.1)</option>
+                <option value="http://192.168.10.1">NEC Aterm (192.168.10.1)</option>
+                <option value="http://192.168.0.1">Elecom / I-O DATA (192.168.0.1)</option>
+                <option value="http://192.168.1.1">NTT / ASUS (192.168.1.1)</option>
+                <option value="http://tplinkwifi.net">TP-Link (tplinkwifi.net)</option>
+            </select>
+            <a id="router-link-btn" href="#" target="_blank" class="btn-primary" style="background:#555; display:none;">設定画面を開く</a>
+        </div>
+    </div>
+</div>
+
+<div id="wifi-qr-tmp" style="position:fixed; left:-99999px; top:-99999px; width:1px; height:1px; overflow:hidden;"></div>
+
+<div class="sheet-backdrop" id="router-sheet-backdrop" onclick="closeRouterSheet()">
+    <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+            <div class="sheet-title">ルーター / ホームルーター 設定リンク（PRO）</div>
+            <button class="sheet-close" type="button" onclick="closeRouterSheet()">閉じる</button>
+        </div>
+        <div class="sheet-body" id="router-sheet-body"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import {
+        getAuth,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithRedirect,
+        getRedirectResult,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import {
+        getFirestore,
+        doc,
+        getDoc,
+        runTransaction,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgZ02MBSzbicGoBi1Eb4tgRWgtEHeUeP0",
+      authDomain: "sugudesu-jp.firebaseapp.com",
+      projectId: "sugudesu-jp",
+      storageBucket: "sugudesu-jp.firebasestorage.app",
+      messagingSenderId: "306434861424",
+      appId: "1:306434861424:web:301c48e2cfd8a5681407b5"
     };
 
-    const $ = (id) => document.getElementById(id);
+    const CLOUD_NAME = "dkda2jqxn";
+    const UPLOAD_PRESET = "ml_default";
 
-    const state = {
-      messages: [],
-      busy: false,
-      abortController: null
-    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    function setStatus(text, kind) {
-      const el = $("statusText");
-      el.textContent = text;
-      el.className = "";
-      if (kind === "error") el.classList.add("err");
-      if (kind === "ok") el.classList.add("ok");
-    }
+    const LICENSES_COL = "licenses";
+    const USERS_COL = "users";
+    const PAGES_COL = "pages";
 
-    function setHint(text) {
-      $("hintText").textContent = text || "";
-    }
+    const INSTALL_ID_KEY = "onepage_install_id";
 
-    function setPills() {
-      const origin = location.origin;
-      $("originText").textContent = "Origin: " + origin;
-      $("workerText").textContent = "Worker: " + CONFIG.WORKER_BASE;
+    const AI_PROXY_URL = "https://gemini-proxy.miyata-connect-jp.workers.dev/v1beta/models/gemini-1.5-flash:generateContent";
+    const AI_TIMEOUT_MS = 20000;
 
-      $("originDot").className = "dot ok";
-      $("workerDot").className = "dot ok";
-    }
+    function getOrCreateInstallId() {
+        let id = localStorage.getItem(INSTALL_ID_KEY);
+        if (id) return id;
 
-    function escapeTextToNode(text) {
-      const div = document.createElement("div");
-      div.className = "body";
-      div.textContent = text;
-      return div;
-    }
-
-    function render() {
-      const box = $("messages");
-      box.innerHTML = "";
-      for (const m of state.messages) {
-        const wrap = document.createElement("div");
-        wrap.className = "msg " + (m.role === "user" ? "user" : "ai");
-
-        const role = document.createElement("div");
-        role.className = "role";
-        role.textContent = m.role === "user" ? "あなた" : "AI";
-
-        wrap.appendChild(role);
-        wrap.appendChild(escapeTextToNode(m.text));
-        box.appendChild(wrap);
-      }
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function save() {
-      try {
-        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.messages));
-      } catch (e) {}
-    }
-
-    function load() {
-      try {
-        const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (!raw) return;
-        const arr = JSON.parse(raw);
-        if (Array.isArray(arr)) {
-          state.messages = arr
-            .filter(x => x && (x.role === "user" || x.role === "model") && typeof x.text === "string")
-            .map(x => ({ role: x.role, text: x.text }));
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            id = window.crypto.randomUUID();
+        } else {
+            id = "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
         }
-      } catch (e) {}
+
+        localStorage.setItem(INSTALL_ID_KEY, id);
+        return id;
     }
 
-    function setBusy(on) {
-      state.busy = on;
-      $("sendBtn").disabled = on;
-      $("stopBtn").disabled = !on;
-      $("clearBtn").disabled = on;
-      $("input").disabled = on;
-    }
-
-    function toGeminiContents(messages) {
-      const contents = [];
-      for (const m of messages) {
-        const role = (m.role === "user") ? "user" : "model";
-        contents.push({
-          role: role,
-          parts: [{ text: m.text }]
-        });
-      }
-      return contents;
-    }
-
-    function extractGeminiText(data) {
-      try {
-        const cands = data && data.candidates ? data.candidates : [];
-        const first = cands[0];
-        const parts = first && first.content && Array.isArray(first.content.parts) ? first.content.parts : [];
-        const texts = parts
-          .map(p => (p && typeof p.text === "string") ? p.text : "")
-          .filter(Boolean);
-        return texts.join("\n").trim();
-      } catch (e) {
-        return "";
-      }
-    }
-
-    async function fetchWithTimeout(url, options, timeoutMs, controller) {
-      const t = setTimeout(() => {
-        try { controller.abort(); } catch (e) {}
-      }, timeoutMs);
-      try {
-        const res = await fetch(url, options);
-        return res;
-      } finally {
-        clearTimeout(t);
-      }
-    }
-
-    function buildEndpoint() {
-      const base = String(CONFIG.WORKER_BASE || "").replace(/\/+$/, "");
-      return base + "/v1beta/models/" + encodeURIComponent(CONFIG.MODEL) + ":generateContent";
-    }
-
-    async function send() {
-      const input = $("input");
-      const text = String(input.value || "").trim();
-      if (!text) return;
-
-      state.messages.push({ role: "user", text: text });
-      input.value = "";
-      render();
-      save();
-
-      setBusy(true);
-      setStatus("送信中", "");
-      setHint("");
-
-      const controller = new AbortController();
-      state.abortController = controller;
-
-      const endpoint = buildEndpoint();
-      const body = {
-        contents: toGeminiContents(state.messages),
-        generationConfig: {
-          temperature: CONFIG.TEMPERATURE,
-          maxOutputTokens: CONFIG.MAX_OUTPUT_TOKENS
-        }
-      };
-
-      let res;
-      let payloadText = "";
-      let data = null;
-
-      try {
-        res = await fetchWithTimeout(
-          endpoint,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-            signal: controller.signal
-          },
-          CONFIG.REQUEST_TIMEOUT_MS,
-          controller
-        );
-
-        payloadText = await res.text();
+    function normalizeHttpUrl(url) {
         try {
-          data = JSON.parse(payloadText);
+            const u = new URL(url);
+            if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+            return u.toString();
+        } catch (_) {
+            return "";
+        }
+    }
+
+    function sanitizeSlug(input) {
+        const raw = (input || "").trim().toLowerCase();
+        if (!raw) return "";
+        const s = raw.replace(/[^a-z0-9_-]/g, "").replace(/_{2,}/g, "_").replace(/-{2,}/g, "-");
+        return s.substring(0, 32);
+    }
+
+    function randomSlug(len) {
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789";
+        let out = "";
+        for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        return out;
+    }
+
+    function getBasePathNoQuery() {
+        return window.location.href.split("?")[0].split("#")[0];
+    }
+
+    function buildPrettyUrl(slug) {
+        const base = getBasePathNoQuery();
+        return `${base}#/onepage/${encodeURIComponent(slug)}`;
+    }
+
+    function parsePrettySlugFromHash() {
+        const h = (window.location.hash || "").trim();
+        const m = h.match(/^#\/onepage\/([^/?#]+)(\?.*)?$/);
+        if (!m) return "";
+        try {
+            return decodeURIComponent(m[1]);
+        } catch (_) {
+            return m[1];
+        }
+    }
+
+    function buildMapsOpenUrl(destText) {
+        const d = encodeURIComponent(destText || "");
+        if (!d) return "";
+        return `https://www.google.com/maps/search/?api=1&query=${d}`;
+    }
+
+    function buildMapsDirectionsUrl(destText) {
+        const d = encodeURIComponent(destText || "");
+        if (!d) return "";
+        return `https://www.google.com/maps/dir/?api=1&destination=${d}`;
+    }
+
+    function buildWifiQrPayload(ssid, pass) {
+        const s = (ssid || "").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/:/g, "\\:");
+        const p = (pass || "").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/:/g, "\\:");
+        return `WIFI:T:WPA;S:${s};P:${p};;`;
+    }
+
+    function toAsciiToken(s) {
+        const raw = (s || "").trim();
+        if (!raw) return "";
+        const only = raw.replace(/[^A-Za-z0-9 _-]/g, "");
+        const squashed = only.replace(/\s+/g, "-").replace(/-{2,}/g, "-").replace(/_{2,}/g, "_");
+        const trimmed = squashed.replace(/^[-_]+|[-_]+$/g, "");
+        return trimmed.substring(0, 24);
+    }
+
+    function clampSsid(s) {
+        const raw = (s || "").trim();
+        if (!raw) return "";
+        const allowed = raw.replace(/[^A-Za-z0-9 _-]/g, "");
+        const cleaned = allowed.replace(/\s+/g, " ").trim();
+        return cleaned.substring(0, 32);
+    }
+
+    function makeSsidCandidates(count) {
+        const name = document.getElementById("in-name") ? document.getElementById("in-name").value : "";
+        const slug = document.getElementById("in-slug") ? document.getElementById("in-slug").value : "";
+        const nTok = toAsciiToken(name);
+        const sTok = toAsciiToken(slug);
+
+        const baseA = nTok || sTok || "SUGUSURU";
+        const baseB = sTok || nTok || "SHOP";
+        const now = Date.now().toString(36).toUpperCase().slice(-4);
+
+        const patterns = [
+            () => `${baseA}-${randomSlug(4).toUpperCase()}`,
+            () => `${baseB}-GUEST-${randomSlug(4).toUpperCase()}`,
+            () => `SUGUSURU-${baseA}-${randomSlug(3).toUpperCase()}`,
+            () => `${baseA}_WIFI_${randomSlug(3).toUpperCase()}`,
+            () => `GUEST-${baseA}-${now}`,
+            () => `WIFI-${baseA}-${randomSlug(3).toUpperCase()}`,
+            () => `${baseB}-${randomSlug(2).toUpperCase()}${Math.floor(10 + Math.random()*89)}`,
+            () => `${baseA}-${Math.floor(1000 + Math.random()*9000)}`,
+            () => `SUGUSURU-GUEST-${randomSlug(5).toUpperCase()}`,
+            () => `${baseA}-${baseB}-${randomSlug(2).toUpperCase()}`,
+            () => `SHOP-WIFI-${randomSlug(5).toUpperCase()}`,
+            () => `GUEST-WIFI-${randomSlug(5).toUpperCase()}`
+        ];
+
+        const want = Math.max(6, Math.min(18, Number(count || 12)));
+        const uniq = [];
+        let safety = 0;
+
+        while (uniq.length < want && safety < 200) {
+            safety++;
+            const p = patterns[Math.floor(Math.random() * patterns.length)];
+            const cand = clampSsid(p());
+            if (!cand) continue;
+            if (uniq.includes(cand)) continue;
+            uniq.push(cand);
+        }
+
+        return uniq.slice(0, want);
+    }
+
+    function dayModeLabel(mode) {
+        if (mode === "open_days") return "営業日";
+        if (mode === "closed_days") return "休業日";
+        if (mode === "irregular") return "不定休";
+        return "営業日/休業日";
+    }
+
+    function setDayMode(mode) {
+        const hidden = document.getElementById("in-daymode");
+        const text = document.getElementById("in-daytext");
+        const seg = document.getElementById("daymode-seg");
+        const ind = document.getElementById("daymode-indicator");
+        const btns = seg ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
+
+        hidden.value = mode;
+
+        btns.forEach((b, idx) => {
+            const isOn = b.dataset.mode === mode;
+            b.classList.toggle("active", isOn);
+            if (isOn) {
+                ind.style.transform = `translateX(${idx * 100}%)`;
+            }
+        });
+
+        if (mode === "open_days") text.placeholder = "例：月〜金 / 土日 / 祝日営業";
+        if (mode === "closed_days") text.placeholder = "例：水曜 / 第2火曜 / 水曜+隔週";
+        if (mode === "irregular") text.placeholder = "例：不定休（SNSをご確認ください）";
+    }
+
+    function categoryLabel(mode) {
+        if (mode === "company") return "企業";
+        return "店舗";
+    }
+
+    function setCategoryMode(mode) {
+        const hidden = document.getElementById("in-category");
+        const seg = document.getElementById("category-seg");
+        const ind = document.getElementById("category-indicator");
+        const btns = seg ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
+
+        hidden.value = mode;
+
+        btns.forEach((b, idx) => {
+            const isOn = b.dataset.mode === mode;
+            b.classList.toggle("active", isOn);
+            if (isOn) {
+                ind.style.transform = `translateX(${idx * 100}%)`;
+            }
+        });
+    }
+
+    let isPro = false;
+    let generatedUrl = "";
+    let viewerProDoc = false;
+
+    let viewerState = {
+        name: "",
+        zip: "",
+        address: "",
+        ssid: "",
+        pass: "",
+        dayMode: "",
+        dayText: ""
+    };
+
+    const ui = {
+        uid: () => document.getElementById("my-uid"),
+        loginBtn: () => document.getElementById("google-login-btn"),
+        logoutBtn: () => document.getElementById("google-logout-btn"),
+        licenseInput: () => document.getElementById("license-input"),
+        activateBtn: () => document.getElementById("activate-btn"),
+        authLog: () => document.getElementById("auth-log"),
+        genUrl: () => document.getElementById("gen-url")
+    };
+
+    function setAuthUiLoggedOut() {
+        ui.uid().textContent = "未ログイン";
+        ui.loginBtn().style.display = "inline-block";
+        ui.logoutBtn().style.display = "none";
+        ui.licenseInput().disabled = true;
+        ui.activateBtn().disabled = true;
+        ui.authLog().textContent = "Pro解除はGoogleログインが必要です";
+        ui.authLog().style.color = "#ffcc88";
+        document.getElementById("pro-ai-note").style.display = "none";
+    }
+
+    function setAuthUiLoggedIn(user) {
+        ui.uid().textContent = user.uid.substring(0, 6) + "...";
+        ui.loginBtn().style.display = "none";
+        ui.logoutBtn().style.display = "inline-block";
+        ui.licenseInput().disabled = false;
+        ui.activateBtn().disabled = false;
+        ui.authLog().textContent = "";
+        ui.authLog().style.color = "#ff8888";
+    }
+
+    window.googleLogin = async function() {
+        ui.authLog().textContent = "";
+        const provider = new GoogleAuthProvider();
+        await signInWithRedirect(auth, provider);
+    };
+
+    window.googleLogout = async function() {
+        await signOut(auth);
+        setAuthUiLoggedOut();
+    };
+
+    getRedirectResult(auth).catch((e) => {
+        console.error("Redirect result error", e);
+        ui.authLog().textContent = "ログインに失敗しました";
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            setAuthUiLoggedOut();
+            return;
+        }
+        setAuthUiLoggedIn(user);
+        await checkEntitlement(user.uid);
+    });
+
+    async function checkEntitlement(uid) {
+        const userRef = doc(db, USERS_COL, uid);
+        try {
+            const snap = await getDoc(userRef);
+            if (snap.exists() && snap.data().plan === "pro") {
+                unlockProUI();
+                await touchDeviceIfPro(uid, snap.data().licenseId);
+            }
         } catch (e) {
-          data = null;
+            console.error("Entitlement check failed", e);
+        }
+    }
+
+    async function touchDeviceIfPro(uid, licenseId) {
+        if (!licenseId) return;
+
+        const installId = getOrCreateInstallId();
+        const licenseRef = doc(db, LICENSES_COL, licenseId);
+
+        try {
+            await runTransaction(db, async (tx) => {
+                const licSnap = await tx.get(licenseRef);
+                if (!licSnap.exists()) return;
+
+                const lic = licSnap.data() || {};
+                if (lic.claimedByUid && lic.claimedByUid !== uid) return;
+
+                const devices = lic.devices || {};
+                if (devices[installId]) {
+                    tx.update(licenseRef, {
+                        [`devices.${installId}.lastSeenAt`]: serverTimestamp()
+                    });
+                }
+            });
+        } catch (e) {
+            console.error("touchDevice failed", e);
+        }
+    }
+
+    window.activateLicense = async function() {
+        const keyInput = ui.licenseInput();
+        const btn = ui.activateBtn();
+        const log = ui.authLog();
+        const key = keyInput.value.trim();
+
+        if (!key) return;
+
+        const user = auth.currentUser;
+        if (!user) {
+            setAuthUiLoggedOut();
+            return;
         }
 
-      } catch (e) {
-        if (controller.signal.aborted) {
-          setStatus("停止しました", "error");
-          setHint("通信が中断されました。");
+        btn.disabled = true;
+        btn.textContent = "確認中...";
+        log.textContent = "";
+
+        try {
+            const installId = getOrCreateInstallId();
+
+            const licenseRef = doc(db, LICENSES_COL, key);
+            const userRef = doc(db, USERS_COL, user.uid);
+
+            await runTransaction(db, async (tx) => {
+                const licSnap = await tx.get(licenseRef);
+                if (!licSnap.exists()) throw "ライセンスキーが存在しません";
+
+                const lic = licSnap.data();
+                if (lic.status !== "active") throw "このキーは無効です";
+
+                const maxDevices = lic.maxDevices || 3;
+
+                const claimedByUid = lic.claimedByUid || null;
+                if (claimedByUid && claimedByUid !== user.uid) {
+                    throw "このキーは他のアカウントで使用中です";
+                }
+
+                const devices = lic.devices || {};
+                const deviceCount = Object.keys(devices).length;
+
+                const already = !!devices[installId];
+                if (!already) {
+                    if (deviceCount >= maxDevices) {
+                        throw `利用台数の上限(${maxDevices}台)に達しています`;
+                    }
+                }
+
+                const updates = {};
+                if (!claimedByUid) updates["claimedByUid"] = user.uid;
+
+                if (!already) {
+                    updates[`devices.${installId}`] = {
+                        addedAt: serverTimestamp(),
+                        lastSeenAt: serverTimestamp(),
+                        ua: (navigator.userAgent || "").slice(0, 140)
+                    };
+                } else {
+                    updates[`devices.${installId}.lastSeenAt`] = serverTimestamp();
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    tx.update(licenseRef, updates);
+                }
+
+                tx.set(userRef, {
+                    plan: "pro",
+                    licenseId: key,
+                    activatedAt: serverTimestamp()
+                }, { merge: true });
+            });
+
+            unlockProUI();
+            alert("認証成功！Pro機能を解放しました。");
+
+        } catch (e) {
+            log.textContent = typeof e === "string" ? e : "エラーが発生しました";
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "認証";
+        }
+    };
+
+    function unlockProUI() {
+        isPro = true;
+        document.getElementById('pro-feature-img').style.display = 'block';
+        document.getElementById('pro-feature-slug').style.display = 'block';
+        document.getElementById('pro-feature-ssid').style.display = 'block';
+
+        ui.licenseInput().value = "認証済み";
+        ui.licenseInput().disabled = true;
+        ui.activateBtn().style.display = 'none';
+        ui.authLog().textContent = "Pro Active";
+        ui.authLog().style.color = "#0f0";
+        document.getElementById("pro-ai-note").style.display = "block";
+    }
+
+    window.suggestSsid = function() {
+        if (!isPro) {
+            alert("この機能はPRO専用です");
+            return;
+        }
+
+        const list = makeSsidCandidates(12);
+        const wrap = document.getElementById("ssid-suggestions");
+        wrap.innerHTML = "";
+        wrap.style.display = "flex";
+
+        list.forEach((cand) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "ssid-chip";
+            b.textContent = cand;
+            b.onclick = function() {
+                const input = document.getElementById("in-ssid");
+                input.value = cand;
+                alert("SSIDにセットしました: " + cand);
+            };
+            wrap.appendChild(b);
+        });
+    };
+
+    window.openRouterSheet = function() {
+        alert("この機能は現在無効です");
+    };
+
+    window.closeRouterSheet = function() {
+        document.getElementById("router-sheet-backdrop").style.display = "none";
+    };
+
+    window.startGeneration = startGeneration;
+    window.updateRouterLink = updateRouterLink;
+    window.sharePage = sharePage;
+    window.openGoogleMapsDirections = openGoogleMapsDirections;
+
+    function updateRouterLink() {
+        const url = document.getElementById('router-select').value;
+        const btn = document.getElementById('router-link-btn');
+        if (url) { btn.href = url; btn.style.display = 'flex'; }
+        else { btn.style.display = 'none'; }
+    }
+
+    function sharePage() {
+        if (navigator.share) {
+            navigator.share({ title: document.title, url: window.location.href });
         } else {
-          setStatus("通信失敗", "error");
-          setHint("Worker URL / CORS / ネットワークを確認してください。");
+            navigator.clipboard.writeText(window.location.href);
+            alert("URLをコピーしました！");
         }
-        setBusy(false);
-        state.abortController = null;
-        return;
-      }
+    }
 
-      if (!res.ok) {
-        const msg = (data && data.error && data.error.message) ? data.error.message : ("HTTP " + res.status);
-        setStatus("エラー", "error");
+    function generatePassword(len) {
+        const chars = "abcdefghijkmnpqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const n = Math.max(8, Math.min(24, Number(len || 12)));
+        let out = "";
 
-        if (res.status === 403) {
-          setHint("CORSの可能性が高いです。Worker側の ALLOWED_ORIGIN と、このページの Origin を一致させてください。");
-        } else if (res.status === 401 || res.status === 403) {
-          setHint("Worker側の GEMINI_API_KEY を確認してください。");
-        } else if (res.status === 429) {
-          setHint("レート制限です。少し待って再送してください。");
+        if (window.crypto && window.crypto.getRandomValues) {
+            const buf = new Uint32Array(n);
+            window.crypto.getRandomValues(buf);
+            for (let i = 0; i < n; i++) out += chars[buf[i] % chars.length];
+            return out;
+        }
+
+        for (let i = 0; i < n; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        return out;
+    }
+
+    async function callAiProxy(input) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
+
+        try {
+            const prompt = `以下の店舗情報を基に、200文字以内で魅力的な紹介文を作成してください。また、5つ以内の重要ポイントをリストアップしてください。
+
+店舗情報:
+- カテゴリ: ${input.category || "店舗"}
+- 名称: ${input.name || ""}
+- 郵便番号: ${input.zip || ""}
+- 住所: ${input.address || ""}
+- アクセス: ${input.access || ""}
+- 営業時間: ${input.open || ""} - ${input.close || ""}
+- ラストオーダー: ${input.lo || "なし"}
+- ${input.dayMode || ""}: ${input.dayText || ""}
+- メール: ${input.email || ""}
+- 電話: ${input.phone || ""}
+- SSID: ${input.ssid || ""}
+- Instagram: ${input.instagram || ""}
+- X: ${input.x || ""}
+- ウェブサイト: ${input.website || ""}
+
+JSON形式で以下のように出力してください:
+{
+  "text": "紹介文（200文字以内）",
+  "highlights": ["ポイント1", "ポイント2", "ポイント3", "ポイント4", "ポイント5"]
+}`;
+
+            const res = await fetch(AI_PROXY_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }]
+                }),
+                signal: ctrl.signal
+            });
+
+            if (!res.ok) return null;
+
+            const data = await res.json().catch(() => null);
+            if (!data || !data.candidates || !data.candidates[0]) return null;
+
+            const candidate = data.candidates[0];
+            if (!candidate.content || !candidate.content.parts || !candidate.content.parts[0]) return null;
+
+            const textContent = candidate.content.parts[0].text || "";
+            const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return null;
+
+            const parsed = JSON.parse(jsonMatch[0]);
+            return parsed;
+
+        } catch (e) {
+            console.warn("AI proxy failed", e);
+            return null;
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
+    function extractAiFields(aiRes) {
+        if (!aiRes) return null;
+
+        if (typeof aiRes.text === "string") {
+            return {
+                text: aiRes.text.trim(),
+                highlights: Array.isArray(aiRes.highlights) ? aiRes.highlights.slice(0, 5) : []
+            };
+        }
+
+        return null;
+    }
+
+    async function savePageDoc(slug, data, ownerUid) {
+        const ref = doc(db, PAGES_COL, slug);
+        await runTransaction(db, async (tx) => {
+            const snap = await tx.get(ref);
+            if (snap.exists()) {
+                const cur = snap.data() || {};
+                if (cur.ownerUid && cur.ownerUid !== ownerUid) {
+                    throw "このアカウント名は既に使用されています";
+                }
+                tx.set(ref, {
+                    ...data,
+                    ownerUid: ownerUid,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+            } else {
+                tx.set(ref, {
+                    ...data,
+                    ownerUid: ownerUid,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                }, { merge: false });
+            }
+        });
+    }
+
+    async function startGeneration() {
+        const btn = document.getElementById('btn-gen');
+        btn.disabled = true;
+        btn.textContent = "処理中...";
+
+        try {
+            let uploadedImageUrl = "";
+            const fileInput = document.getElementById('in-file');
+
+            if (isPro && fileInput && fileInput.files && fileInput.files.length > 0) {
+                btn.textContent = "写真を保存中...";
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+                formData.append("upload_preset", UPLOAD_PRESET);
+
+                const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                    method: "POST", body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (uploadData.secure_url) uploadedImageUrl = uploadData.secure_url;
+            }
+
+            btn.textContent = "パスワード生成中...";
+            const pass = generatePassword(12);
+
+            const category = (document.getElementById("in-category").value || "shop").trim();
+            const name = (document.getElementById('in-name').value || "Shop").trim();
+            const zip = (document.getElementById('in-zip').value || "").trim();
+            const address = (document.getElementById('in-address').value || "").trim();
+            const access = (document.getElementById('in-access').value || "").trim();
+
+            const open = (document.getElementById('in-open').value || "").trim();
+            const lo = (document.getElementById('in-lo').value || "").trim();
+            const close = (document.getElementById('in-close').value || "").trim();
+
+            const dayMode = (document.getElementById("in-daymode").value || "open_days").trim();
+            const dayText = (document.getElementById("in-daytext").value || "").trim();
+            if (!dayText) throw "営業日/休業日（詳細）を入力してください";
+
+            const email = (document.getElementById('in-email').value || "").trim();
+            const phone = (document.getElementById('in-phone').value || "").trim();
+
+            const ssidRaw = (document.getElementById('in-ssid').value || "WiFi").trim();
+            const ssid = clampSsid(ssidRaw) || "WiFi";
+
+            const insta = (document.getElementById('in-insta').value || "").trim();
+            const x = (document.getElementById('in-x').value || "").trim();
+            const web = (document.getElementById('in-web').value || "").trim();
+            const safeWeb = web ? normalizeHttpUrl(web) : "";
+
+            const payload = {
+                category,
+                name,
+                zip,
+                address,
+                access,
+                open,
+                lo,
+                close,
+                dayMode,
+                dayText,
+                email,
+                phone,
+                ssid,
+                pass,
+                imgUrl: uploadedImageUrl,
+                ig: insta,
+                tw: x,
+                wb: safeWeb
+            };
+
+            if (isPro) {
+                const user = auth.currentUser;
+                if (!user) throw "未ログインです。Googleログインしてください。";
+
+                btn.textContent = "AI文章生成中...";
+                const aiInput = {
+                    category: categoryLabel(category),
+                    name,
+                    zip,
+                    address,
+                    access,
+                    open,
+                    lo,
+                    close,
+                    dayMode: dayModeLabel(dayMode),
+                    dayText,
+                    email,
+                    phone,
+                    ssid,
+                    instagram: insta,
+                    x: x,
+                    website: safeWeb
+                };
+
+                const aiRes = await callAiProxy(aiInput);
+                const aiFields = extractAiFields(aiRes);
+                if (aiFields && (aiFields.text || (aiFields.highlights && aiFields.highlights.length))) {
+                    payload.ai = aiFields;
+                }
+
+                btn.textContent = "HPを作成中...";
+                let slug = sanitizeSlug(document.getElementById('in-slug').value);
+                if (!slug) slug = randomSlug(10);
+
+                await savePageDoc(slug, payload, user.uid);
+
+                generatedUrl = buildPrettyUrl(slug);
+
+            } else {
+                const baseUrl = getBasePathNoQuery();
+                const params = new URLSearchParams();
+                params.append('cat', category);
+                params.append('n', name);
+                params.append('z', zip);
+                params.append('a', address);
+                params.append('ac', access);
+                params.append('o', open);
+                params.append('lo', lo);
+                params.append('c', close);
+                params.append('dm', dayMode);
+                params.append('dt', dayText);
+                params.append('em', email);
+                params.append('ph', phone);
+                params.append('s', ssid);
+                params.append('p', pass);
+                params.append('i', uploadedImageUrl);
+                if (insta) params.append('ig', insta);
+                if (x) params.append('tw', x);
+                if (safeWeb) params.append('wb', safeWeb);
+
+                generatedUrl = `${baseUrl}?${params.toString()}`;
+            }
+
+            ui.genUrl().textContent = generatedUrl;
+
+            const qrContainer = document.getElementById("qrcode-container");
+            const freeNoQr = document.getElementById("free-no-qr");
+            qrContainer.innerHTML = "";
+
+            if (isPro) {
+                qrContainer.style.display = "inline-block";
+                freeNoQr.style.display = "none";
+                new QRCode(qrContainer, {
+                    text: generatedUrl, width: 180, height: 180, colorDark : "#d4af37", colorLight : "#ffffff"
+                });
+            } else {
+                qrContainer.style.display = "none";
+                freeNoQr.style.display = "block";
+            }
+
+            document.getElementById('gen-pass-disp').textContent = pass;
+
+            const proApNote = document.getElementById("pro-ap-note");
+            const routerSelect = document.getElementById("router-select");
+            const routerLinkBtn = document.getElementById("router-link-btn");
+
+            if (isPro) {
+                proApNote.style.display = "block";
+                routerSelect.style.display = "none";
+                routerLinkBtn.style.display = "none";
+            } else {
+                proApNote.style.display = "none";
+                routerSelect.style.display = "block";
+                updateRouterLink();
+            }
+
+            document.getElementById('result-area').style.display = 'block';
+
+            btn.textContent = "完了";
+            btn.disabled = false;
+
+        } catch (e) {
+            console.error(e);
+            alert(typeof e === "string" ? e : "エラーが発生しました");
+            btn.disabled = false;
+            btn.textContent = "ページ作成開始";
+        }
+    }
+
+    function setText(id, value, fallback) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value ? value : (fallback || "");
+    }
+
+    function showIf(id, cond) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = cond ? "block" : "none";
+    }
+
+    function setFlexIf(id, cond) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = cond ? "flex" : "none";
+    }
+
+    function clearQr(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = "";
+    }
+
+    function makeQr(targetId, text, size) {
+        const el = document.getElementById(targetId);
+        if (!el) return;
+        el.innerHTML = "";
+        new QRCode(el, { text, width: size, height: size, colorDark: "#333", colorLight: "#fff" });
+    }
+
+    function sanitizePhoneForTel(phone) {
+        const p = (phone || "").trim();
+        if (!p) return "";
+        const cleaned = p.replace(/[^\d+]/g, "");
+        if (!cleaned) return "";
+        return cleaned;
+    }
+
+    function renderViewerFromData(data) {
+        const category = (data.category || "shop").trim();
+        const name = (data.name || "Shop").trim();
+        const zip = (data.zip || "").trim();
+        const address = (data.address || "").trim();
+        const access = (data.access || "").trim();
+
+        const open = (data.open || "").trim();
+        const lo = (data.lo || "").trim();
+        const close = (data.close || "").trim();
+
+        const dayMode = (data.dayMode || "").trim();
+        const dayText = (data.dayText || "").trim();
+
+        const email = (data.email || "").trim();
+        const phone = (data.phone || "").trim();
+
+        const ssid = (data.ssid || "WiFi").trim();
+        const pass = (data.pass || "").trim();
+        const imgUrl = (data.imgUrl || "").trim();
+
+        const ig = (data.ig || "").trim();
+        const tw = (data.tw || "").trim();
+        const wb = (data.wb || "").trim();
+
+        const ai = (data.ai && typeof data.ai === "object") ? data.ai : null;
+
+        viewerState.name = name;
+        viewerState.zip = zip;
+        viewerState.address = address;
+        viewerState.ssid = ssid;
+        viewerState.pass = pass;
+        viewerState.dayMode = dayMode;
+        viewerState.dayText = dayText;
+
+        document.title = name;
+        setText("view-name", name, "SHOP");
+        setText("view-ssid", "SSID: " + ssid, "SSID: ---");
+        setText("view-pass", pass, "---");
+
+        const badge = document.getElementById("viewer-badge");
+        badge.textContent = viewerProDoc ? "OFFICIAL PRO" : "OFFICIAL INFO";
+
+        if (open || close) {
+            const hours = `${open || "--:--"} - ${close || "--:--"}`;
+            setText("view-hours", hours, "---");
         } else {
-          setHint(msg);
+            setText("view-hours", "---", "---");
         }
 
-        setBusy(false);
-        state.abortController = null;
-        return;
-      }
+        if (lo) {
+            document.getElementById("view-lo").style.display = "block";
+            setText("view-lo-val", lo, "");
+        } else {
+            document.getElementById("view-lo").style.display = "none";
+        }
 
-      const out = extractGeminiText(data);
-      if (!out) {
-        setStatus("受信しましたが本文が空です", "error");
-        setHint("Worker側のレスポンス形式を確認してください。");
-        setBusy(false);
-        state.abortController = null;
-        return;
-      }
+        setText("view-zip", zip ? `〒${zip}` : "〒---", "〒---");
+        setText("view-address", address || "---", "---");
 
-      state.messages.push({ role: "model", text: out });
-      render();
-      save();
+        showIf("row-access", !!access || !!address || !!zip);
+        setText("view-access", access || "---", "---");
 
-      setStatus("完了", "ok");
-      setHint("");
-      setBusy(false);
-      state.abortController = null;
+        const destText = [zip, address].filter(Boolean).join(" ");
+        const canNav = !!destText;
+
+        document.getElementById("btn-nav-start").style.display = (viewerProDoc && canNav) ? "inline-flex" : "none";
+        document.getElementById("btn-map-nav").style.display = (viewerProDoc && canNav) ? "flex" : "none";
+
+        showIf("row-email", !!email);
+        setText("view-email", email, "---");
+
+        showIf("row-phone", !!phone);
+        setText("view-phone", phone, "---");
+
+        const phoneLink = document.getElementById("view-phone-link");
+        const tel = sanitizePhoneForTel(phone);
+        if (viewerProDoc && tel) {
+            phoneLink.href = `tel:${tel}`;
+            phoneLink.style.display = "inline-flex";
+        } else {
+            phoneLink.href = "#";
+            phoneLink.style.display = "none";
+        }
+
+        const label = dayModeLabel(dayMode || "open_days");
+        setText("view-day-label", label, "DAY INFO");
+        setText("view-daytext", dayText || "---", "---");
+
+        if (imgUrl && imgUrl !== "null") {
+            const img = document.getElementById('view-img');
+            img.src = imgUrl;
+            img.style.display = 'block';
+            showIf("view-no-img", false);
+        } else {
+            showIf("view-no-img", true);
+            showIf("view-img", false);
+        }
+
+        if (destText) {
+            document.getElementById('btn-map-link').href = buildMapsOpenUrl(destText);
+            document.getElementById('btn-map-link').style.display = 'flex';
+        } else {
+            document.getElementById('btn-map-link').style.display = 'none';
+        }
+
+        const instaUrl = ig ? `https://www.instagram.com/${ig.replace(/^@/, "")}/` : "";
+        const xUrl = tw ? `https://x.com/${tw.replace(/^@/, "")}/` : "";
+        const webUrl = wb ? normalizeHttpUrl(wb) : "";
+
+        if (instaUrl) { document.getElementById('btn-insta').href = instaUrl; setFlexIf('btn-insta', true); } else { setFlexIf('btn-insta', false); }
+        if (xUrl) { document.getElementById('btn-x').href = xUrl; setFlexIf('btn-x', true); } else { setFlexIf('btn-x', false); }
+        if (webUrl) { document.getElementById('btn-web').href = webUrl; setFlexIf('btn-web', true); } else { setFlexIf('btn-web', false); }
+
+        const anySns = !!(instaUrl || xUrl || webUrl);
+
+        clearQr("snsqr-insta-code");
+        clearQr("snsqr-x-code");
+        clearQr("snsqr-web-code");
+
+        if (viewerProDoc && anySns) {
+            showIf("sns-qr-area", true);
+            showIf("snsqr-insta", !!instaUrl);
+            showIf("snsqr-x", !!xUrl);
+            showIf("snsqr-web", !!webUrl);
+
+            if (instaUrl) makeQr("snsqr-insta-code", instaUrl, 110);
+            if (xUrl) makeQr("snsqr-x-code", xUrl, 110);
+            if (webUrl) makeQr("snsqr-web-code", webUrl, 110);
+        } else {
+            showIf("sns-qr-area", false);
+            showIf("snsqr-insta", false);
+            showIf("snsqr-x", false);
+            showIf("snsqr-web", false);
+        }
+
+        const aiRow = document.getElementById("row-ai");
+        const aiText = document.getElementById("view-ai-text");
+        const aiHl = document.getElementById("view-ai-highlights");
+
+        if (viewerProDoc && ai && (ai.text || (ai.highlights && ai.highlights.length))) {
+            aiRow.style.display = "block";
+            aiText.textContent = (ai.text || "").trim() || "—";
+            if (Array.isArray(ai.highlights) && ai.highlights.length) {
+                aiHl.style.display = "block";
+                const lines = ai.highlights.slice(0, 5).map(s => `• ${String(s).trim()}`).filter(Boolean);
+                aiHl.innerHTML = `<small>${lines.join("<br>")}</small>`;
+            } else {
+                aiHl.style.display = "none";
+                aiHl.textContent = "";
+            }
+        } else {
+            aiRow.style.display = "none";
+            aiText.textContent = "";
+            aiHl.style.display = "none";
+            aiHl.textContent = "";
+        }
+
+        document.getElementById('view-wifi-area').onclick = function() {
+            navigator.clipboard.writeText(pass);
+            alert("パスワードをコピーしました: " + pass);
+        };
+
+        const shareArea = document.getElementById("share-qr-area");
+        const qrHost = document.getElementById("viewer-qr");
+        qrHost.innerHTML = "";
+
+        if (viewerProDoc) {
+            shareArea.style.display = "block";
+            new QRCode(qrHost, {
+                text: window.location.href, width: 120, height: 120, colorDark : "#333", colorLight : "#fff"
+            });
+        } else {
+            shareArea.style.display = "none";
+        }
+
+        const pdfBtn = document.getElementById("btn-wifi-pdf");
+        if (viewerProDoc) {
+            pdfBtn.style.display = "flex";
+        } else {
+            pdfBtn.style.display = "none";
+        }
     }
 
-    function stop() {
-      if (state.abortController) {
-        try { state.abortController.abort(); } catch (e) {}
-      }
+    async function loadPrettyPage(slug) {
+        const ref = doc(db, PAGES_COL, slug);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+            throw "ページが見つかりません";
+        }
+        return snap.data();
     }
 
-    function clearHistory() {
-      state.messages = [];
-      save();
-      render();
-      setStatus("履歴を削除しました", "ok");
-      setHint("");
+    function parseLegacyQuery() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('n')) return null;
+
+        const legacy = {
+            category: params.get('cat') || "shop",
+            name: params.get('n') || "Shop",
+            zip: params.get('z') || "",
+            address: params.get('a') || "",
+            access: params.get('ac') || "",
+            open: params.get('o') || "",
+            lo: params.get('lo') || "",
+            close: params.get('c') || "",
+            dayMode: params.get('dm') || "open_days",
+            dayText: params.get('dt') || "",
+            email: params.get('em') || "",
+            phone: params.get('ph') || "",
+            ssid: params.get('s') || "WiFi",
+            pass: params.get('p') || "",
+            imgUrl: params.get('i') || "",
+            ig: params.get('ig') || "",
+            tw: params.get('tw') || "",
+            wb: params.get('wb') || ""
+        };
+        return legacy;
     }
 
-    function onKeydown(e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        if (!state.busy) send();
-      }
+    function openGoogleMapsDirections() {
+        const destText = [viewerState.zip, viewerState.address].filter(Boolean).join(" ");
+        const url = buildMapsDirectionsUrl(destText);
+        if (!url) return;
+        window.open(url, "_blank", "noopener,noreferrer");
     }
 
-    function init() {
-      setPills();
-      load();
+    window.downloadWifiPdf = function() {
+        if (!viewerProDoc) {
+            alert("このPDF機能はPROページのみです");
+            return;
+        }
 
-      if (state.messages.length === 0) {
-        state.messages.push({ role: "model", text: "ご用件を入力してください。" });
-      }
+        const ssid = viewerState.ssid || "";
+        const pass = viewerState.pass || "";
+        const name = viewerState.name || "sugusuru";
+        if (!ssid || !pass) {
+            alert("Wi-Fi情報が不足しています");
+            return;
+        }
 
-      render();
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("PDFライブラリの読み込みに失敗しました");
+            return;
+        }
 
-      $("sendBtn").addEventListener("click", () => { if (!state.busy) send(); });
-      $("stopBtn").addEventListener("click", stop);
-      $("clearBtn").addEventListener("click", clearHistory);
-      $("input").addEventListener("keydown", onKeydown);
+        const qrPayload = buildWifiQrPayload(ssid, pass);
 
-      setStatus("待機中", "");
-      setHint("Enterで送信。Shift+Enterで改行。");
-    }
+        const tmp = document.getElementById("wifi-qr-tmp");
+        tmp.innerHTML = "";
+        const holder = document.createElement("div");
+        holder.style.width = "240px";
+        holder.style.height = "240px";
+        tmp.appendChild(holder);
 
-    init();
-  </script>
+        new QRCode(holder, {
+            text: qrPayload,
+            width: 220,
+            height: 220,
+            colorDark: "#000000",
+            colorLight: "#ffffff"
+        });
+
+        const canvas = holder.querySelector("canvas");
+        let dataUrl = "";
+        if (canvas && typeof canvas.toDataURL === "function") {
+            dataUrl = canvas.toDataURL("image/png");
+        } else {
+            const img = holder.querySelector("img");
+            if (img && img.src) dataUrl = img.src;
+        }
+
+        if (!dataUrl) {
+            alert("QR生成に失敗しました");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+        const margin = 18;
+        let y = 20;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.text("Wi-Fi Access QR", margin, y);
+
+        y += 10;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(12);
+        pdf.text(`Shop: ${name}`, margin, y);
+
+        y += 8;
+        pdf.text(`SSID: ${ssid}`, margin, y);
+
+        y += 8;
+        pdf.text(`PASS: ${pass}`, margin, y);
+
+        y += 10;
+        const qrSizeMm = 80;
+        const x = margin;
+        pdf.addImage(dataUrl, "PNG", x, y, qrSizeMm, qrSizeMm);
+
+        y += qrSizeMm + 10;
+        pdf.setFontSize(10);
+        pdf.text("Scan this QR to join Wi-Fi. Print and place near the router or counter.", margin, y);
+
+        const fileSafeName = (name || "wifi").replace(/[\\\/:*?"<>|]/g, "_").substring(0, 40);
+        pdf.save(`wifi-qr_${fileSafeName}.pdf`);
+    };
+
+    window.onload = async function() {
+        const prettySlug = parsePrettySlugFromHash();
+        const legacy = parseLegacyQuery();
+
+        const daySeg = document.getElementById("daymode-seg");
+        if (daySeg) {
+            daySeg.querySelectorAll(".seg-btn").forEach((b) => {
+                b.addEventListener("click", () => setDayMode(b.dataset.mode));
+            });
+            setDayMode("open_days");
+        }
+
+        const catSeg = document.getElementById("category-seg");
+        if (catSeg) {
+            catSeg.querySelectorAll(".seg-btn").forEach((b) => {
+                b.addEventListener("click", () => setCategoryMode(b.dataset.mode));
+            });
+            setCategoryMode("shop");
+        }
+
+        if (prettySlug || legacy) {
+            document.getElementById('viewer-mode').style.display = 'block';
+
+            try {
+                if (prettySlug) {
+                    viewerProDoc = true;
+                    const data = await loadPrettyPage(prettySlug);
+                    renderViewerFromData(data);
+                } else {
+                    viewerProDoc = false;
+                    renderViewerFromData(legacy);
+                }
+            } catch (e) {
+                console.error(e);
+                alert(typeof e === "string" ? e : "表示エラーが発生しました");
+            }
+
+        } else {
+            document.getElementById('creator-mode').style.display = 'block';
+        }
+    };
+</script>
+
 </body>
 </html>
