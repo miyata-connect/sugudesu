@@ -1,1 +1,553 @@
 
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+  <title>Sugudesu AI</title>
+  <meta name="description" content="Sugudesu AI Chat" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.08);
+      --panel2: rgba(255,255,255,0.06);
+      --stroke: rgba(255,255,255,0.14);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --accent: #7aa2ff;
+      --danger: #ff6b6b;
+      --ok: #57d38c;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(1200px 800px at 18% 10%, rgba(122,162,255,0.18), transparent 62%),
+        radial-gradient(900px 700px at 84% 20%, rgba(255,122,214,0.10), transparent 58%),
+        var(--bg);
+      color: var(--text);
+    }
+    .app {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      padding: 14px;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom));
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      display: grid;
+      gap: 6px;
+    }
+    header .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+    header .meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      user-select: none;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .dot.ok { background: var(--ok); }
+    .dot.bad { background: var(--danger); }
+
+    .chat {
+      background: var(--panel2);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 1fr;
+      min-height: 420px;
+    }
+    .messages {
+      padding: 14px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+    .msg {
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: grid;
+      gap: 6px;
+      max-width: 92%;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.45;
+    }
+    .msg.user {
+      margin-left: auto;
+      background: rgba(122,162,255,0.16);
+      border-color: rgba(122,162,255,0.35);
+    }
+    .msg.ai {
+      margin-right: auto;
+    }
+    .msg .role {
+      font-size: 11px;
+      color: var(--muted);
+      user-select: none;
+    }
+    .msg .body {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    footer {
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      display: grid;
+      gap: 10px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+    @media (max-width: 720px) {
+      .controls { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 56px;
+      max-height: 240px;
+      resize: vertical;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.20);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      line-height: 1.45;
+    }
+    .btns {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.20);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    button.primary {
+      border-color: rgba(122,162,255,0.5);
+      background: rgba(122,162,255,0.18);
+    }
+    button.danger {
+      border-color: rgba(255,107,107,0.55);
+      background: rgba(255,107,107,0.12);
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .status .left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .status .err { color: var(--danger); }
+    .status .ok { color: var(--ok); }
+    .small {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="top">
+        <h1>Sugudesu AI</h1>
+        <div class="meta">
+          <span class="pill" id="originPill"><span class="dot" id="originDot"></span><span id="originText"></span></span>
+          <span class="pill" id="workerPill"><span class="dot" id="workerDot"></span><span id="workerText"></span></span>
+        </div>
+      </div>
+      <div class="small">
+        このページは Cloudflare Workers（gemini-proxy）経由で Gemini を呼びます。フロントにAPIキーは置きません。
+      </div>
+    </header>
+
+    <main class="chat" role="main" aria-label="チャット">
+      <div class="messages" id="messages" aria-live="polite"></div>
+    </main>
+
+    <footer>
+      <div class="controls">
+        <div>
+          <label for="input">メッセージ</label>
+          <textarea id="input" placeholder="ここに入力して送信します。Shift+Enterで改行。Enterで送信。"></textarea>
+        </div>
+        <div class="btns">
+          <button id="stopBtn" class="danger" disabled>停止</button>
+          <button id="clearBtn">履歴削除</button>
+          <button id="sendBtn" class="primary">送信</button>
+        </div>
+      </div>
+      <div class="status">
+        <div class="left">
+          <span id="statusText">待機中</span>
+        </div>
+        <div class="small" id="hintText"></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    "use strict";
+
+    const CONFIG = {
+      WORKER_BASE: "https://gemini-proxy.miyata-connect-jp.workers.dev",
+      MODEL: "gemini-1.5-flash",
+      TEMPERATURE: 0.7,
+      MAX_OUTPUT_TOKENS: 768,
+      STORAGE_KEY: "sugudesu_ai_chat_v1",
+      REQUEST_TIMEOUT_MS: 45000
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      messages: [],
+      busy: false,
+      abortController: null
+    };
+
+    function setStatus(text, kind) {
+      const el = $("statusText");
+      el.textContent = text;
+      el.className = "";
+      if (kind === "error") el.classList.add("err");
+      if (kind === "ok") el.classList.add("ok");
+    }
+
+    function setHint(text) {
+      $("hintText").textContent = text || "";
+    }
+
+    function setPills() {
+      const origin = location.origin;
+      $("originText").textContent = "Origin: " + origin;
+      $("workerText").textContent = "Worker: " + CONFIG.WORKER_BASE;
+
+      $("originDot").className = "dot ok";
+      $("workerDot").className = "dot ok";
+    }
+
+    function escapeTextToNode(text) {
+      const div = document.createElement("div");
+      div.className = "body";
+      div.textContent = text;
+      return div;
+    }
+
+    function render() {
+      const box = $("messages");
+      box.innerHTML = "";
+      for (const m of state.messages) {
+        const wrap = document.createElement("div");
+        wrap.className = "msg " + (m.role === "user" ? "user" : "ai");
+
+        const role = document.createElement("div");
+        role.className = "role";
+        role.textContent = m.role === "user" ? "あなた" : "AI";
+
+        wrap.appendChild(role);
+        wrap.appendChild(escapeTextToNode(m.text));
+        box.appendChild(wrap);
+      }
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.messages));
+      } catch (e) {}
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+        if (!raw) return;
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          state.messages = arr
+            .filter(x => x && (x.role === "user" || x.role === "model") && typeof x.text === "string")
+            .map(x => ({ role: x.role, text: x.text }));
+        }
+      } catch (e) {}
+    }
+
+    function setBusy(on) {
+      state.busy = on;
+      $("sendBtn").disabled = on;
+      $("stopBtn").disabled = !on;
+      $("clearBtn").disabled = on;
+      $("input").disabled = on;
+    }
+
+    function toGeminiContents(messages) {
+      const contents = [];
+      for (const m of messages) {
+        const role = (m.role === "user") ? "user" : "model";
+        contents.push({
+          role: role,
+          parts: [{ text: m.text }]
+        });
+      }
+      return contents;
+    }
+
+    function extractGeminiText(data) {
+      try {
+        const cands = data && data.candidates ? data.candidates : [];
+        const first = cands[0];
+        const parts = first && first.content && Array.isArray(first.content.parts) ? first.content.parts : [];
+        const texts = parts
+          .map(p => (p && typeof p.text === "string") ? p.text : "")
+          .filter(Boolean);
+        return texts.join("\n").trim();
+      } catch (e) {
+        return "";
+      }
+    }
+
+    async function fetchWithTimeout(url, options, timeoutMs, controller) {
+      const t = setTimeout(() => {
+        try { controller.abort(); } catch (e) {}
+      }, timeoutMs);
+      try {
+        const res = await fetch(url, options);
+        return res;
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    function buildEndpoint() {
+      const base = String(CONFIG.WORKER_BASE || "").replace(/\/+$/, "");
+      return base + "/v1beta/models/" + encodeURIComponent(CONFIG.MODEL) + ":generateContent";
+    }
+
+    async function send() {
+      const input = $("input");
+      const text = String(input.value || "").trim();
+      if (!text) return;
+
+      state.messages.push({ role: "user", text: text });
+      input.value = "";
+      render();
+      save();
+
+      setBusy(true);
+      setStatus("送信中", "");
+      setHint("");
+
+      const controller = new AbortController();
+      state.abortController = controller;
+
+      const endpoint = buildEndpoint();
+      const body = {
+        contents: toGeminiContents(state.messages),
+        generationConfig: {
+          temperature: CONFIG.TEMPERATURE,
+          maxOutputTokens: CONFIG.MAX_OUTPUT_TOKENS
+        }
+      };
+
+      let res;
+      let payloadText = "";
+      let data = null;
+
+      try {
+        res = await fetchWithTimeout(
+          endpoint,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal
+          },
+          CONFIG.REQUEST_TIMEOUT_MS,
+          controller
+        );
+
+        payloadText = await res.text();
+        try {
+          data = JSON.parse(payloadText);
+        } catch (e) {
+          data = null;
+        }
+
+      } catch (e) {
+        if (controller.signal.aborted) {
+          setStatus("停止しました", "error");
+          setHint("通信が中断されました。");
+        } else {
+          setStatus("通信失敗", "error");
+          setHint("Worker URL / CORS / ネットワークを確認してください。");
+        }
+        setBusy(false);
+        state.abortController = null;
+        return;
+      }
+
+      if (!res.ok) {
+        const msg = (data && data.error && data.error.message) ? data.error.message : ("HTTP " + res.status);
+        setStatus("エラー", "error");
+
+        if (res.status === 403) {
+          setHint("CORSの可能性が高いです。Worker側の ALLOWED_ORIGIN と、このページの Origin を一致させてください。");
+        } else if (res.status === 401 || res.status === 403) {
+          setHint("Worker側の GEMINI_API_KEY を確認してください。");
+        } else if (res.status === 429) {
+          setHint("レート制限です。少し待って再送してください。");
+        } else {
+          setHint(msg);
+        }
+
+        setBusy(false);
+        state.abortController = null;
+        return;
+      }
+
+      const out = extractGeminiText(data);
+      if (!out) {
+        setStatus("受信しましたが本文が空です", "error");
+        setHint("Worker側のレスポンス形式を確認してください。");
+        setBusy(false);
+        state.abortController = null;
+        return;
+      }
+
+      state.messages.push({ role: "model", text: out });
+      render();
+      save();
+
+      setStatus("完了", "ok");
+      setHint("");
+      setBusy(false);
+      state.abortController = null;
+    }
+
+    function stop() {
+      if (state.abortController) {
+        try { state.abortController.abort(); } catch (e) {}
+      }
+    }
+
+    function clearHistory() {
+      state.messages = [];
+      save();
+      render();
+      setStatus("履歴を削除しました", "ok");
+      setHint("");
+    }
+
+    function onKeydown(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (!state.busy) send();
+      }
+    }
+
+    function init() {
+      setPills();
+      load();
+
+      if (state.messages.length === 0) {
+        state.messages.push({ role: "model", text: "ご用件を入力してください。" });
+      }
+
+      render();
+
+      $("sendBtn").addEventListener("click", () => { if (!state.busy) send(); });
+      $("stopBtn").addEventListener("click", stop);
+      $("clearBtn").addEventListener("click", clearHistory);
+      $("input").addEventListener("keydown", onKeydown);
+
+      setStatus("待機中", "");
+      setHint("Enterで送信。Shift+Enterで改行。");
+    }
+
+    init();
+  </script>
+</body>
+</html>
