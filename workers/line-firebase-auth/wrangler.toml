@@ -1,0 +1,9 @@
+[name]
+name = "sugudesu-line-firebase-auth"
+main = "worker.mjs"
+compatibility_date = "2025-12-25"
+
+[vars]
+# 例: "https://your-site.example.com,https://www.your-site.example.com"
+APP_ORIGIN_ALLOWLIST = ""
+
