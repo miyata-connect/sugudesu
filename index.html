@@ -512,7 +512,9 @@
     // LINEはフロント単体で安全に完結できません（シークレットが必要）。
     // Worker等で OAuth -> Firebase Custom Token を発行する前提の入口URLです。
     // 未用意ならボタンは表示だけして警告します。
-    const LINE_AUTH_START_URL = ""; // 例: "https://your-worker.example.com/line/start"
+    // 例: "https://your-worker.example.com/line/start"
+    // 参考実装: リポジトリ内 `workers/line-firebase-auth/worker.mjs`
+    const LINE_AUTH_START_URL = "";
 
     function getOrCreateInstallId() {
         let id = localStorage.getItem(INSTALL_ID_KEY);
@@ -724,6 +726,25 @@
         authLog: () => document.getElementById("auth-log"),
         genUrl: () => document.getElementById("gen-url")
     };
+
+    function setAuthUiLoading() {
+        // 初期描画のチラつき防止（ログイン状態が確定するまで一旦すべて隠す）
+        ui.uid().textContent = "確認中...";
+
+        ui.loginGoogleBtn().style.display = "none";
+        ui.loginAppleBtn().style.display = "none";
+        ui.loginLineBtn().style.display = "none";
+        ui.logoutBtn().style.display = "none";
+
+        ui.licenseInput().disabled = true;
+        ui.activateBtn().disabled = true;
+
+        ui.authLog().textContent = "認証状態を確認しています...";
+        ui.authLog().style.color = "#9bdcff";
+
+        document.getElementById("pro-ai-note").style.display = "none";
+        document.getElementById("line-note").style.display = "none";
+    }
 
     function setAuthUiLoggedOut() {
         ui.uid().textContent = "未ログイン";
@@ -1665,6 +1686,7 @@ JSON形式で以下のように出力してください:
     };
 
     window.onload = async function() {
+        setAuthUiLoading();
         await trySignInWithCustomTokenFromUrl();
 
         const prettySlug = parsePrettySlugFromHash();
