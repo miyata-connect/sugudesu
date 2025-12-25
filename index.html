@@ -1665,6 +1665,9 @@ JSON形式で以下のように出力してください:
     };
 
     window.onload = async function() {
+        // 初期状態で認証UIをログアウト状態で表示
+        setAuthUiLoggedOut();
+
         await trySignInWithCustomTokenFromUrl();
 
         const prettySlug = parsePrettySlugFromHash();
