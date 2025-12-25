@@ -748,9 +748,10 @@
     function setAuthUiLoggedIn(user) {
         ui.uid().textContent = user.uid.substring(0, 6) + "...";
 
-        ui.loginGoogleBtn().style.display = "none";
-        ui.loginAppleBtn().style.display = "none";
-        ui.loginLineBtn().style.display = "none";
+        // ログイン中でも、他の認証手段を見せたい（UI上の「未表示」を防ぐ）
+        ui.loginGoogleBtn().style.display = "inline-block";
+        ui.loginAppleBtn().style.display = "inline-block";
+        ui.loginLineBtn().style.display = "inline-block";
         ui.logoutBtn().style.display = "inline-block";
 
         ui.licenseInput().disabled = false;
