@@ -359,7 +359,7 @@
             <div class="seg-indicator" id="daymode-indicator"></div>
         </div>
         <input type="hidden" id="in-daymode" value="open_days">
-        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 /祝日営業" required>
+        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 / 祝日営業" required>
         <div class="hint">上で種別を選び、下に詳細を入力してください（例：水曜+隔週 / 第2火曜 / 祝日営業）。</div>
     </div>
 
@@ -494,10 +494,10 @@
     };
 
     /**
-     * Cloudinary 設定
+     * Cloudinary & Worker 設定
      * (Signed Upload対応済み)
      */
-    const CLOUD_NAME = "dkda2jqxn";
+    const CLOUD_NAME = "dkda2jqxn"; 
     const UPLOAD_PRESET = "sugudesu_img_only";
     const WORKER_SIGNER_URL = "https://cloudinary-sign.miyata-connect-jp.workers.dev/";
 
