@@ -84,7 +84,7 @@
 
         .pro-auth-area { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: white; padding: 20px; border-radius: 16px; margin-bottom: 24px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
         .pro-auth-area input { width: 60%; padding: 8px; border-radius: 4px; border: none; text-align: center; font-weight: bold; color: #333; }
-        .pro-auth-area button { background: #d4af37; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 5px; transition:0.2s; }
+        .pro-auth-area button { border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition:0.2s; }
         .pro-auth-area button:disabled { background:#888; cursor:not-allowed; }
 
         .premium-feature { display: none; border: 2px solid #f6ad55; padding: 20px; border-radius: 16px; margin-bottom: 20px; background: linear-gradient(135deg, #fffaf0 0%, #fef5e7 100%); position: relative; box-shadow: 0 4px 12px rgba(246, 173, 85, 0.15); }
@@ -127,6 +127,13 @@
         .sheet-item strong { font-size: 0.92rem; color: #333; }
         .sheet-item small { font-size: 0.78rem; color: #888; }
         .sheet-badge { background: #d4af37; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; font-weight: 900; }
+
+        .login-btns { display:flex; gap:8px; justify-content:center; margin:10px 0; flex-wrap:wrap; }
+        .login-btn { color:#fff; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; }
+        .login-google { background:#4285f4; }
+        .login-apple { background:#000; }
+        .login-line { background:#06C755; }
+        .login-logout { background:#555; display:none; }
 
         @media (max-width: 420px) {
             .sns-qr-grid { grid-template-columns: 1fr 1fr; }
@@ -247,13 +254,19 @@
     <h1>sugudesu <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
 
     <div class="pro-auth-area" id="auth-box">
-        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（Googleログイン必須）</div>
+        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（ログイン必須）</div>
 
-        <div style="display:flex; gap:8px; justify-content:center; margin:10px 0;">
-            <button id="google-login-btn" onclick="googleLogin()" style="background:#4285f4; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer;">
+        <div class="login-btns">
+            <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">
                 Googleでログイン
             </button>
-            <button id="google-logout-btn" onclick="googleLogout()" style="background:#555; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; display:none;">
+            <button id="apple-login-btn" class="login-btn login-apple" onclick="appleLogin()">
+                Appleでログイン
+            </button>
+            <button id="line-login-btn" class="login-btn login-line" onclick="lineLogin()">
+                LINEでログイン
+            </button>
+            <button id="google-logout-btn" class="login-btn login-logout" onclick="googleLogout()">
                 ログアウト
             </button>
         </div>
@@ -268,6 +281,10 @@
 
         <div id="pro-ai-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
             PROでは入力内容をサーバ側プロキシ経由でAI生成に利用します（未設定時はスキップ）。
+        </div>
+
+        <div id="line-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
+            LINEログインはサーバ側（Worker等）が必要です。未設定ならログインは成立しません。
         </div>
     </div>
 
@@ -453,9 +470,11 @@
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
+        OAuthProvider,
         signInWithRedirect,
         getRedirectResult,
-        signOut
+        signOut,
+        signInWithCustomToken
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import {
         getFirestore,
@@ -489,6 +508,11 @@
 
     const AI_PROXY_URL = "https://gemini-proxy.miyata-connect-jp.workers.dev/v1beta/models/gemini-1.5-flash:generateContent";
     const AI_TIMEOUT_MS = 20000;
+
+    // LINEはフロント単体で安全に完結できません（シークレットが必要）。
+    // Worker等で OAuth -> Firebase Custom Token を発行する前提の入口URLです。
+    // 未用意ならボタンは表示だけして警告します。
+    const LINE_AUTH_START_URL = ""; // 例: "https://your-worker.example.com/line/start"
 
     function getOrCreateInstallId() {
         let id = localStorage.getItem(INSTALL_ID_KEY);
@@ -691,7 +715,9 @@
 
     const ui = {
         uid: () => document.getElementById("my-uid"),
-        loginBtn: () => document.getElementById("google-login-btn"),
+        loginGoogleBtn: () => document.getElementById("google-login-btn"),
+        loginAppleBtn: () => document.getElementById("apple-login-btn"),
+        loginLineBtn: () => document.getElementById("line-login-btn"),
         logoutBtn: () => document.getElementById("google-logout-btn"),
         licenseInput: () => document.getElementById("license-input"),
         activateBtn: () => document.getElementById("activate-btn"),
@@ -701,23 +727,39 @@
 
     function setAuthUiLoggedOut() {
         ui.uid().textContent = "未ログイン";
-        ui.loginBtn().style.display = "inline-block";
+
+        ui.loginGoogleBtn().style.display = "inline-block";
+        ui.loginAppleBtn().style.display = "inline-block";
+        ui.loginLineBtn().style.display = "inline-block";
         ui.logoutBtn().style.display = "none";
+
         ui.licenseInput().disabled = true;
         ui.activateBtn().disabled = true;
-        ui.authLog().textContent = "Pro解除はGoogleログインが必要です";
+
+        ui.authLog().textContent = "Pro解除はログインが必要です";
         ui.authLog().style.color = "#ffcc88";
+
         document.getElementById("pro-ai-note").style.display = "none";
+
+        const lineNote = document.getElementById("line-note");
+        lineNote.style.display = LINE_AUTH_START_URL ? "none" : "block";
     }
 
     function setAuthUiLoggedIn(user) {
         ui.uid().textContent = user.uid.substring(0, 6) + "...";
-        ui.loginBtn().style.display = "none";
+
+        ui.loginGoogleBtn().style.display = "none";
+        ui.loginAppleBtn().style.display = "none";
+        ui.loginLineBtn().style.display = "none";
         ui.logoutBtn().style.display = "inline-block";
+
         ui.licenseInput().disabled = false;
         ui.activateBtn().disabled = false;
+
         ui.authLog().textContent = "";
         ui.authLog().style.color = "#ff8888";
+
+        document.getElementById("line-note").style.display = "none";
     }
 
     window.googleLogin = async function() {
@@ -726,10 +768,50 @@
         await signInWithRedirect(auth, provider);
     };
 
+    window.appleLogin = async function() {
+        ui.authLog().textContent = "";
+        const provider = new OAuthProvider("apple.com");
+        provider.addScope("email");
+        provider.addScope("name");
+        await signInWithRedirect(auth, provider);
+    };
+
+    window.lineLogin = async function() {
+        ui.authLog().textContent = "";
+        if (!LINE_AUTH_START_URL) {
+            document.getElementById("line-note").style.display = "block";
+            alert("LINEログインはサーバ側（Worker等）が未設定です。先にLINE用の認証入口を用意してください。");
+            return;
+        }
+        const returnTo = window.location.href;
+        const url = new URL(LINE_AUTH_START_URL);
+        url.searchParams.set("returnTo", returnTo);
+        window.location.href = url.toString();
+    };
+
     window.googleLogout = async function() {
         await signOut(auth);
         setAuthUiLoggedOut();
     };
+
+    async function trySignInWithCustomTokenFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("firebaseCustomToken");
+        if (!token) return false;
+
+        try {
+            await signInWithCustomToken(auth, token);
+        } catch (e) {
+            console.error("Custom token sign-in failed", e);
+            alert("外部ログインの受け取りに失敗しました");
+            return false;
+        }
+
+        params.delete("firebaseCustomToken");
+        const clean = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}${window.location.hash || ""}`;
+        window.history.replaceState({}, "", clean);
+        return true;
+    }
 
     getRedirectResult(auth).catch((e) => {
         console.error("Redirect result error", e);
@@ -1126,7 +1208,7 @@ JSON形式で以下のように出力してください:
 
             if (isPro) {
                 const user = auth.currentUser;
-                if (!user) throw "未ログインです。Googleログインしてください。";
+                if (!user) throw "未ログインです。ログインしてください。";
 
                 btn.textContent = "AI文章生成中...";
                 const aiInput = {
@@ -1159,7 +1241,6 @@ JSON形式で以下のように出力してください:
                 if (!slug) slug = randomSlug(10);
 
                 await savePageDoc(slug, payload, user.uid);
-
                 generatedUrl = buildPrettyUrl(slug);
 
             } else {
@@ -1584,6 +1665,8 @@ JSON形式で以下のように出力してください:
     };
 
     window.onload = async function() {
+        await trySignInWithCustomTokenFromUrl();
+
         const prettySlug = parsePrettySlugFromHash();
         const legacy = parseLegacyQuery();
 
