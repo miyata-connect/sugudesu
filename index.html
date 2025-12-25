@@ -359,7 +359,7 @@
             <div class="seg-indicator" id="daymode-indicator"></div>
         </div>
         <input type="hidden" id="in-daymode" value="open_days">
-        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 / 祝日営業" required>
+        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 /祝日営業" required>
         <div class="hint">上で種別を選び、下に詳細を入力してください（例：水曜+隔週 / 第2火曜 / 祝日営業）。</div>
     </div>
 
@@ -493,8 +493,13 @@
       appId: "1:306434861424:web:301c48e2cfd8a5681407b5"
     };
 
+    /**
+     * Cloudinary 設定
+     * (Signed Upload対応済み)
+     */
     const CLOUD_NAME = "dkda2jqxn";
-    const UPLOAD_PRESET = "ml_default";
+    const UPLOAD_PRESET = "sugudesu_img_only";
+    const WORKER_SIGNER_URL = "https://cloudinary-sign.miyata-connect-jp.workers.dev/";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -509,10 +514,7 @@
     const AI_PROXY_URL = "https://gemini-proxy.miyata-connect-jp.workers.dev/v1beta/models/gemini-1.5-flash:generateContent";
     const AI_TIMEOUT_MS = 20000;
 
-    // LINEはフロント単体で安全に完結できません（シークレットが必要）。
-    // Worker等で OAuth -> Firebase Custom Token を発行する前提の入口URLです。
-    // 未用意ならボタンは表示だけして警告します。
-    const LINE_AUTH_START_URL = ""; // 例: "https://your-worker.example.com/line/start"
+    const LINE_AUTH_START_URL = ""; 
 
     function getOrCreateInstallId() {
         let id = localStorage.getItem(INSTALL_ID_KEY);
@@ -780,7 +782,7 @@
         ui.authLog().textContent = "";
         if (!LINE_AUTH_START_URL) {
             document.getElementById("line-note").style.display = "block";
-            alert("LINEログインはサーバ側（Worker等）が未設定です。先にLINE用の認証入口を用意してください。");
+            alert("LINEログインは現在未設定です。");
             return;
         }
         const returnTo = window.location.href;
@@ -813,7 +815,11 @@
         return true;
     }
 
-    getRedirectResult(auth).catch((e) => {
+    getRedirectResult(auth).then((result) => {
+        if (result && result.user) {
+            setAuthUiLoggedIn(result.user);
+        }
+    }).catch((e) => {
         console.error("Redirect result error", e);
         ui.authLog().textContent = "ログインに失敗しました";
     });
@@ -1144,14 +1150,32 @@ JSON形式で以下のように出力してください:
             let uploadedImageUrl = "";
             const fileInput = document.getElementById('in-file');
 
+            // --- Cloudinary Signed Upload 処理 ---
             if (isPro && fileInput && fileInput.files && fileInput.files.length > 0) {
+                btn.textContent = "署名を取得中...";
+                
+                // 1. Worker から署名、api_key、timestamp を取得
+                const signRes = await fetch(WORKER_SIGNER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ upload_preset: UPLOAD_PRESET })
+                });
+                const signData = await signRes.json();
+                
+                if (!signData.signature) throw "署名の取得に失敗しました。";
+
+                // 2. 署名を使って Cloudinary へアップロード
                 btn.textContent = "写真を保存中...";
                 const formData = new FormData();
                 formData.append("file", fileInput.files[0]);
                 formData.append("upload_preset", UPLOAD_PRESET);
+                formData.append("api_key", signData.api_key);
+                formData.append("timestamp", signData.timestamp);
+                formData.append("signature", signData.signature);
 
                 const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                    method: "POST", body: formData
+                    method: "POST",
+                    body: formData
                 });
                 const uploadData = await uploadRes.json();
                 if (uploadData.secure_url) uploadedImageUrl = uploadData.secure_url;
@@ -1213,21 +1237,11 @@ JSON形式で以下のように出力してください:
                 btn.textContent = "AI文章生成中...";
                 const aiInput = {
                     category: categoryLabel(category),
-                    name,
-                    zip,
-                    address,
-                    access,
-                    open,
-                    lo,
-                    close,
-                    dayMode: dayModeLabel(dayMode),
-                    dayText,
-                    email,
-                    phone,
-                    ssid,
-                    instagram: insta,
-                    x: x,
-                    website: safeWeb
+                    name, zip, address, access,
+                    open, lo, close,
+                    dayMode: dayModeLabel(dayMode), dayText,
+                    email, phone, ssid,
+                    instagram: insta, x: x, website: safeWeb
                 };
 
                 const aiRes = await callAiProxy(aiInput);
@@ -1589,6 +1603,7 @@ JSON形式で以下のように出力してください:
         const ssid = viewerState.ssid || "";
         const pass = viewerState.pass || "";
         const name = viewerState.name || "sugudesu";
+
         if (!ssid || !pass) {
             alert("Wi-Fi情報が不足しています");
             return;
