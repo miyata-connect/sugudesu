@@ -662,18 +662,19 @@
         const text = document.getElementById("in-daytext");
         const seg = document.getElementById("daymode-seg");
         const ind = document.getElementById("daymode-indicator");
-        const btns = seg ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
+        const btns = (seg && seg.querySelectorAll) ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
 
         hidden.value = mode;
-
-        btns.forEach((b, idx) => {
-            const isOn = b.dataset.mode === mode;
-            b.classList.toggle("active", isOn);
-            if (isOn) {
-                ind.style.transform = `translateX(${idx * 100}%)`;
-            }
-        });
-
+if (btns && btns.length > 0) {
+    btns.forEach((b, idx) => {
+        const isOn = b.dataset.mode === mode;
+        b.classList.toggle("active", isOn);
+        if (isOn) {
+            ind.style.transform = `translateX(${idx * 100}%)`;
+        }
+    });
+}
+        
         if (mode === "open_days") text.placeholder = "例：月〜金 / 土日 / 祝日営業";
         if (mode === "closed_days") text.placeholder = "例：水曜 / 第2火曜 / 水曜+隔週";
         if (mode === "irregular") text.placeholder = "例：不定休（SNSをご確認ください）";
