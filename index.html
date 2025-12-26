@@ -1679,7 +1679,15 @@ JSON形式で以下のように出力してください:
         const fileSafeName = (name || "wifi").replace(/[\\\/:*?"<>|]/g, "_").substring(0, 40);
         pdf.save(`wifi-qr_${fileSafeName}.pdf`);
     };
-
+// getRedirectResultを即座に実行
+getRedirectResult(auth).then((result) => {
+    if (result && result.user) {
+        setAuthUiLoggedIn(result.user);
+        checkEntitlement(result.user.uid);
+    }
+}).catch((e) => {
+    console.error("Redirect result error", e);
+});
     window.onload = async function() {
         await trySignInWithCustomTokenFromUrl();
 
