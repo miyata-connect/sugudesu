@@ -83,9 +83,6 @@
         .footer-link a { color: #888; text-decoration: none; }
 
         .pro-auth-area { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: white; padding: 20px; border-radius: 16px; margin-bottom: 24px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .pro-auth-area input { width: 60%; padding: 8px; border-radius: 4px; border: none; text-align: center; font-weight: bold; color: #333; }
-        .pro-auth-area button { border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition:0.2s; }
-        .pro-auth-area button:disabled { background:#888; cursor:not-allowed; }
 
         .premium-feature { display: none; border: 2px solid #f6ad55; padding: 20px; border-radius: 16px; margin-bottom: 20px; background: linear-gradient(135deg, #fffaf0 0%, #fef5e7 100%); position: relative; box-shadow: 0 4px 12px rgba(246, 173, 85, 0.15); }
         .premium-badge-ui { position: absolute; top: -12px; right: 12px; background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%); color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3); }
@@ -164,7 +161,7 @@
             </div>
 
             <button id="btn-wifi-pdf" class="pdf-pro-btn" onclick="downloadWifiPdf()">
-                <span class="material-icons-round" style="font-size:20px;">picture_as_pdf</span> Wi-Fi QRをPDFで保存（PRO）
+                <span class="material-icons-round" style="font-size:20px;">picture_as_pdf</span> Wi-Fi QRをPDFで保存(PRO)
             </button>
 
             <div class="info-row" id="row-hours">
@@ -196,7 +193,7 @@
                 <span class="info-label"><span class="material-icons-round" style="font-size:16px;">call</span> PHONE</span>
                 <div class="info-val" id="view-phone">---</div>
                 <a class="link-action" id="view-phone-link" style="display:none;" href="#" rel="noopener noreferrer">
-                    <span class="material-icons-round" style="font-size:18px;">phone_in_talk</span> 発信する（PRO）
+                    <span class="material-icons-round" style="font-size:18px;">phone_in_talk</span> 発信する(PRO)
                 </a>
             </div>
 
@@ -212,7 +209,7 @@
             </div>
 
             <div class="sns-qr-area" id="sns-qr-area" style="display:none;">
-                <div class="sns-qr-title">SNS QR（PRO）</div>
+                <div class="sns-qr-title">SNS QR(PRO)</div>
                 <div class="sns-qr-grid" id="sns-qr-grid">
                     <div class="sns-qr-item" id="snsqr-insta" style="display:none;">
                         <div class="sns-qr-label">Instagram</div>
@@ -234,7 +231,7 @@
                     <span class="material-icons-round">place</span> Googleマップで開く
                 </a>
                 <button id="btn-map-nav" class="btn-primary btn-nav" style="display:none;" onclick="openGoogleMapsDirections()">
-                    <span class="material-icons-round">directions</span> GoogleMapsで案内する（PRO）
+                    <span class="material-icons-round">directions</span> GoogleMapsで案内する(PRO)
                 </button>
                 <button onclick="sharePage()" class="btn-primary btn-share">
                     <span class="material-icons-round">ios_share</span> 友だちに教える
@@ -242,7 +239,7 @@
             </div>
 
             <div class="share-qr-area" id="share-qr-area">
-                <div class="share-title">SCAN TO SHARE（PRO）</div>
+                <div class="share-title">SCAN TO SHARE(PRO)</div>
                 <div id="viewer-qr"></div>
             </div>
         </div>
@@ -254,7 +251,7 @@
     <h1>sugudesu <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
 
     <div class="pro-auth-area" id="auth-box">
-        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（ログイン必須）</div>
+        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除(ログイン必須)</div>
 
         <div class="login-btns">
             <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">
@@ -275,16 +272,14 @@
             UID: <span id="my-uid">未ログイン</span>
         </div>
 
-        <input type="text" id="license-input" placeholder="ライセンスキーを入力" disabled>
-        <button id="activate-btn" onclick="activateLicense()" disabled>認証</button>
         <p id="auth-log" style="font-size:0.7rem; color:#ff8888; margin-top:5px;"></p>
 
         <div id="pro-ai-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
-            PROでは入力内容をサーバ側プロキシ経由でAI生成に利用します（未設定時はスキップ）。
+            PROでは入力内容をサーバ側プロキシ経由でAI生成に利用します(未設定時はスキップ)。
         </div>
 
         <div id="line-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
-            LINEログインはサーバ側（Worker等）が必要です。未設定ならログインは成立しません。
+            LINEログインはサーバ側(Worker等)が必要です。未設定ならログインは成立しません。
         </div>
     </div>
 
@@ -301,7 +296,7 @@
 
     <div class="premium-feature" id="pro-feature-slug">
         <div class="premium-badge-ui">PRO</div>
-        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">link</span> HPアカウント名（任意）</label>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">link</span> HPアカウント名(任意)</label>
         <input type="text" id="in-slug" placeholder="例: onepage_cafe / tokushima123" style="margin-top:5px;">
         <div class="hint">URLは <span class="pill">.../index.html#/onepage/アカウント名</span> になります。未入力の場合はランダムIDを発行します。</div>
     </div>
@@ -314,22 +309,22 @@
 
     <div class="input-group">
         <label>店舗名</label>
-        <input type="text" id="in-name" placeholder="例：Cafe sugudesu">
+        <input type="text" id="in-name" placeholder="例:Cafe sugudesu">
     </div>
 
     <div class="input-group">
         <label>郵便番号</label>
-        <input type="text" id="in-zip" placeholder="例：770-0000">
+        <input type="text" id="in-zip" placeholder="例:770-0000">
     </div>
 
     <div class="input-group">
         <label>住所</label>
-        <input type="text" id="in-address" placeholder="例：徳島県...">
+        <input type="text" id="in-address" placeholder="例:徳島県...">
     </div>
 
     <div class="input-group">
-        <label>アクセス（任意）</label>
-        <input type="text" id="in-access" placeholder="例：徳島駅から徒歩5分 / 駐車場あり">
+        <label>アクセス(任意)</label>
+        <input type="text" id="in-access" placeholder="例:徳島駅から徒歩5分 / 駐車場あり">
     </div>
 
     <div class="input-group">
@@ -340,8 +335,8 @@
                 <input type="time" id="in-open">
             </div>
             <div class="time-col">
-                <div class="time-sub-label">ラストオーダー（任意）</div>
-                <input type="time" id="in-lo" title="ラストオーダー（任意）">
+                <div class="time-sub-label">ラストオーダー(任意)</div>
+                <input type="time" id="in-lo" title="ラストオーダー(任意)">
             </div>
             <div class="time-col">
                 <div class="time-sub-label">営業終了時間</div>
@@ -359,32 +354,32 @@
             <div class="seg-indicator" id="daymode-indicator"></div>
         </div>
         <input type="hidden" id="in-daymode" value="open_days">
-        <input type="text" id="in-daytext" placeholder="例：月〜金 / 土日 / 祝日営業" required>
-        <div class="hint">上で種別を選び、下に詳細を入力してください（例：水曜+隔週 / 第2火曜 / 祝日営業）。</div>
+        <input type="text" id="in-daytext" placeholder="例:月〜金 / 土日 / 祝日営業" required>
+        <div class="hint">上で種別を選び、下に詳細を入力してください(例:水曜+隔週 / 第2火曜 / 祝日営業)。</div>
     </div>
 
     <div class="input-group">
-        <label>Eメール（任意）</label>
-        <input type="email" id="in-email" placeholder="例：info@example.com">
+        <label>Eメール(任意)</label>
+        <input type="email" id="in-email" placeholder="例:info@example.com">
     </div>
 
     <div class="input-group">
-        <label>電話番号（任意）</label>
-        <input type="tel" id="in-phone" placeholder="例：090-0000-0000">
+        <label>電話番号(任意)</label>
+        <input type="tel" id="in-phone" placeholder="例:090-0000-0000">
     </div>
 
     <div class="input-group" id="sns-group" style="border-top:2px dashed #eee; padding-top:15px; margin-top:20px;">
-        <label>SNS（無料：リンクのみ / PRO：リンク+QR）</label>
+        <label>SNS(無料:リンクのみ / PRO:リンク+QR)</label>
         <div class="input-group">
-            <label style="margin-top:10px;">Instagram ID（任意）</label>
+            <label style="margin-top:10px;">Instagram ID(任意)</label>
             <input type="text" id="in-insta" placeholder="例: onepage_cafe">
         </div>
         <div class="input-group">
-            <label>X (Twitter) ID（任意）</label>
+            <label>X (Twitter) ID(任意)</label>
             <input type="text" id="in-x" placeholder="例: onepage_jp">
         </div>
         <div class="input-group" style="margin-bottom:0;">
-            <label>Webサイト URL（任意）</label>
+            <label>Webサイト URL(任意)</label>
             <input type="url" id="in-web" placeholder="例: https://sugudesu.jp">
         </div>
     </div>
@@ -396,7 +391,7 @@
 
     <div class="premium-feature" id="pro-feature-ssid">
         <div class="premium-badge-ui">PRO</div>
-        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">auto_awesome</span> SSIDおすすめ（AP名提示）</label>
+        <label style="color:#d4af37;"><span class="material-icons-round" style="vertical-align:middle;">auto_awesome</span> SSIDおすすめ(AP名提示)</label>
         <div class="ssid-tools" style="margin-top:8px;">
             <button class="ssid-btn" type="button" onclick="suggestSsid()">
                 <span class="material-icons-round" style="font-size:18px;">lightbulb</span> おすすめSSIDを生成
@@ -412,14 +407,14 @@
 
     <div id="result-area" style="display:none; margin-top:30px; text-align:center;">
         <div style="background:#f9f9f9; padding:25px 20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
-            <h3 style="margin-top:0;">🎉 完成しました！</h3>
+            <h3 style="margin-top:0;">🎉 完成しました!</h3>
             <div style="font-size:0.85rem; color:#555; margin-bottom:10px; word-break:break-all;">
                 URL: <span id="gen-url" style="font-weight:bold;"></span>
             </div>
 
             <div id="qrcode-container" style="background:white; padding:15px; display:inline-block; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);"></div>
             <div id="free-no-qr" style="display:none; font-size:0.8rem; color:#777; margin-top:10px;">
-                無料版はQR表示なし（URL共有のみ）
+                無料版はQR表示なし(URL共有のみ)
             </div>
 
             <button onclick="window.open(generatedUrl, '_blank')" style="margin-top:20px; border:none; background:none; color:#667eea; text-decoration:underline; cursor:pointer; font-weight:bold;">
@@ -435,7 +430,7 @@
             </div>
 
             <div id="pro-ap-note" style="display:none; font-size:0.85rem; color:#555; background:#fff; border:1px solid #e5e5e5; padding:10px; border-radius:10px; margin-bottom:12px;">
-                PRO：SSIDおすすめ（AP名提示）とパスワード生成のみ対応します。
+                PRO:SSIDおすすめ(AP名提示)とパスワード生成のみ対応します。
             </div>
 
             <select id="router-select" onchange="updateRouterLink()" style="margin-bottom:10px;">
@@ -457,7 +452,7 @@
     <div class="sheet" onclick="event.stopPropagation()">
         <div class="sheet-handle"></div>
         <div class="sheet-head">
-            <div class="sheet-title">ルーター / ホームルーター 設定リンク（PRO）</div>
+            <div class="sheet-title">ルーター / ホームルーター 設定リンク(PRO)</div>
             <button class="sheet-close" type="button" onclick="closeRouterSheet()">閉じる</button>
         </div>
         <div class="sheet-body" id="router-sheet-body"></div>
@@ -493,10 +488,6 @@
       appId: "1:306434861424:web:301c48e2cfd8a5681407b5"
     };
 
-    /**
-     * Cloudinary & Worker 設定
-     * (Signed Upload対応済み)
-     */
     const CLOUD_NAME = "dkda2jqxn"; 
     const UPLOAD_PRESET = "sugudesu_img_only";
     const WORKER_SIGNER_URL = "https://cloudinary-sign.miyata-connect-jp.workers.dev/";
@@ -665,19 +656,20 @@
         const btns = (seg && seg.querySelectorAll) ? Array.from(seg.querySelectorAll(".seg-btn")) : [];
 
         hidden.value = mode;
-if (btns && btns.length > 0) {
-    btns.forEach((b, idx) => {
-        const isOn = b.dataset.mode === mode;
-        b.classList.toggle("active", isOn);
-        if (isOn) {
-            ind.style.transform = `translateX(${idx * 100}%)`;
-        }
-    });
-}
         
-        if (mode === "open_days") text.placeholder = "例：月〜金 / 土日 / 祝日営業";
-        if (mode === "closed_days") text.placeholder = "例：水曜 / 第2火曜 / 水曜+隔週";
-        if (mode === "irregular") text.placeholder = "例：不定休（SNSをご確認ください）";
+        if (btns && btns.length > 0) {
+            btns.forEach((b, idx) => {
+                const isOn = b.dataset.mode === mode;
+                b.classList.toggle("active", isOn);
+                if (isOn) {
+                    ind.style.transform = `translateX(${idx * 100}%)`;
+                }
+            });
+        }
+        
+        if (mode === "open_days") text.placeholder = "例:月〜金 / 土日 / 祝日営業";
+        if (mode === "closed_days") text.placeholder = "例:水曜 / 第2火曜 / 水曜+隔週";
+        if (mode === "irregular") text.placeholder = "例:不定休(SNSをご確認ください)";
     }
 
     function categoryLabel(mode) {
@@ -722,8 +714,6 @@ if (btns && btns.length > 0) {
         loginAppleBtn: () => document.getElementById("apple-login-btn"),
         loginLineBtn: () => document.getElementById("line-login-btn"),
         logoutBtn: () => document.getElementById("google-logout-btn"),
-        licenseInput: () => document.getElementById("license-input"),
-        activateBtn: () => document.getElementById("activate-btn"),
         authLog: () => document.getElementById("auth-log"),
         genUrl: () => document.getElementById("gen-url")
     };
@@ -736,10 +726,7 @@ if (btns && btns.length > 0) {
         ui.loginLineBtn().style.display = "inline-block";
         ui.logoutBtn().style.display = "none";
 
-        ui.licenseInput().disabled = true;
-        ui.activateBtn().disabled = true;
-
-        ui.authLog().textContent = "Pro解除はログインが必要です";
+        ui.authLog().textContent = "ログインするとPro機能の自動判定が行われます";
         ui.authLog().style.color = "#ffcc88";
 
         document.getElementById("pro-ai-note").style.display = "none";
@@ -756,11 +743,8 @@ if (btns && btns.length > 0) {
         ui.loginLineBtn().style.display = "none";
         ui.logoutBtn().style.display = "inline-block";
 
-        ui.licenseInput().disabled = false;
-        ui.activateBtn().disabled = false;
-
-        ui.authLog().textContent = "";
-        ui.authLog().style.color = "#ff8888";
+        ui.authLog().textContent = "ログインしました";
+        ui.authLog().style.color = "#90EE90";
 
         document.getElementById("line-note").style.display = "none";
     }
@@ -873,101 +857,14 @@ if (btns && btns.length > 0) {
         }
     }
 
-    window.activateLicense = async function() {
-        const keyInput = ui.licenseInput();
-        const btn = ui.activateBtn();
-        const log = ui.authLog();
-        const key = keyInput.value.trim();
-
-        if (!key) return;
-
-        const user = auth.currentUser;
-        if (!user) {
-            setAuthUiLoggedOut();
-            return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = "確認中...";
-        log.textContent = "";
-
-        try {
-            const installId = getOrCreateInstallId();
-
-            const licenseRef = doc(db, LICENSES_COL, key);
-            const userRef = doc(db, USERS_COL, user.uid);
-
-            await runTransaction(db, async (tx) => {
-                const licSnap = await tx.get(licenseRef);
-                if (!licSnap.exists()) throw "ライセンスキーが存在しません";
-
-                const lic = licSnap.data();
-                if (lic.status !== "active") throw "このキーは無効です";
-
-                const maxDevices = lic.maxDevices || 3;
-
-                const claimedByUid = lic.claimedByUid || null;
-                if (claimedByUid && claimedByUid !== user.uid) {
-                    throw "このキーは他のアカウントで使用中です";
-                }
-
-                const devices = lic.devices || {};
-                const deviceCount = Object.keys(devices).length;
-
-                const already = !!devices[installId];
-                if (!already) {
-                    if (deviceCount >= maxDevices) {
-                        throw `利用台数の上限(${maxDevices}台)に達しています`;
-                    }
-                }
-
-                const updates = {};
-                if (!claimedByUid) updates["claimedByUid"] = user.uid;
-
-                if (!already) {
-                    updates[`devices.${installId}`] = {
-                        addedAt: serverTimestamp(),
-                        lastSeenAt: serverTimestamp(),
-                        ua: (navigator.userAgent || "").slice(0, 140)
-                    };
-                } else {
-                    updates[`devices.${installId}.lastSeenAt`] = serverTimestamp();
-                }
-
-                if (Object.keys(updates).length > 0) {
-                    tx.update(licenseRef, updates);
-                }
-
-                tx.set(userRef, {
-                    plan: "pro",
-                    licenseId: key,
-                    activatedAt: serverTimestamp()
-                }, { merge: true });
-            });
-
-            unlockProUI();
-            alert("認証成功！Pro機能を解放しました。");
-
-        } catch (e) {
-            log.textContent = typeof e === "string" ? e : "エラーが発生しました";
-            console.error(e);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "認証";
-        }
-    };
-
     function unlockProUI() {
         isPro = true;
         document.getElementById('pro-feature-img').style.display = 'block';
         document.getElementById('pro-feature-slug').style.display = 'block';
         document.getElementById('pro-feature-ssid').style.display = 'block';
 
-        ui.licenseInput().value = "認証済み";
-        ui.licenseInput().disabled = true;
-        ui.activateBtn().style.display = 'none';
-        ui.authLog().textContent = "Pro Active";
-        ui.authLog().style.color = "#0f0";
+        ui.authLog().textContent = "Pro機能が有効です";
+        ui.authLog().style.color = "#FFD700";
         document.getElementById("pro-ai-note").style.display = "block";
     }
 
@@ -1021,7 +918,7 @@ if (btns && btns.length > 0) {
             navigator.share({ title: document.title, url: window.location.href });
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert("URLをコピーしました！");
+            alert("URLをコピーしました!");
         }
     }
 
@@ -1066,7 +963,7 @@ if (btns && btns.length > 0) {
 
 JSON形式で以下のように出力してください:
 {
-  "text": "紹介文（200文字以内）",
+  "text": "紹介文(200文字以内)",
   "highlights": ["ポイント1", "ポイント2", "ポイント3", "ポイント4", "ポイント5"]
 }`;
 
@@ -1151,11 +1048,9 @@ JSON形式で以下のように出力してください:
             let uploadedImageUrl = "";
             const fileInput = document.getElementById('in-file');
 
-            // --- Cloudinary Signed Upload 処理 ---
             if (isPro && fileInput && fileInput.files && fileInput.files.length > 0) {
                 btn.textContent = "署名を取得中...";
                 
-                // 1. Worker から署名、api_key、timestamp を取得
                 const signRes = await fetch(WORKER_SIGNER_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -1165,7 +1060,6 @@ JSON形式で以下のように出力してください:
                 
                 if (!signData.signature) throw "署名の取得に失敗しました。";
 
-                // 2. 署名を使って Cloudinary へアップロード
                 btn.textContent = "写真を保存中...";
                 const formData = new FormData();
                 formData.append("file", fileInput.files[0]);
@@ -1197,7 +1091,7 @@ JSON形式で以下のように出力してください:
 
             const dayMode = (document.getElementById("in-daymode").value || "open_days").trim();
             const dayText = (document.getElementById("in-daytext").value || "").trim();
-            if (!dayText) throw "営業日/休業日（詳細）を入力してください";
+            if (!dayText) throw "営業日/休業日(詳細)を入力してください";
 
             const email = (document.getElementById('in-email').value || "").trim();
             const phone = (document.getElementById('in-phone').value || "").trim();
