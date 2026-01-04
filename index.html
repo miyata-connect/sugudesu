@@ -129,11 +129,40 @@
         .sheet-badge { background: #d4af37; color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; font-weight: 900; }
 
         .login-btns { display:flex; gap:8px; justify-content:center; margin:10px 0; flex-wrap:wrap; }
-        .login-btn { color:#fff; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; }
+        .login-btn { color:#fff; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; border:none; font-size:0.85rem; }
         .login-google { background:#4285f4; }
         .login-apple { background:#000; }
         .login-line { background:#06C755; }
+        .login-email { background:#e67e22; }
+        .login-phone { background:#9b59b6; }
         .login-logout { background:#555; display:none; }
+
+        /* Sticky Header */
+        .sticky-header { position:sticky; top:0; left:0; right:0; z-index:1000; background:linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color:#fff; padding:12px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+        .sticky-header-inner { max-width:900px; margin:0 auto; }
+        .sticky-header-title { font-size:0.85rem; text-align:center; margin-bottom:8px; opacity:0.9; }
+        .sticky-header .login-btns { margin:8px 0; }
+        .sticky-header-uid { font-size:0.7rem; color:#aaa; text-align:center; margin:6px 0; }
+        .sticky-header-log { font-size:0.7rem; color:#ff8888; text-align:center; margin-top:6px; min-height:16px; }
+
+        /* Modal Base */
+        .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:10000; }
+        .modal-backdrop.show { display:flex; }
+        .modal-content { background:#fff; border-radius:16px; padding:24px; max-width:360px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; }
+        .modal-title { font-size:1.2rem; font-weight:bold; color:#333; margin-bottom:16px; text-align:center; }
+        .modal-close { position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#999; }
+        .modal-input { width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:1rem; margin-bottom:12px; box-sizing:border-box; }
+        .modal-btn { width:100%; padding:12px; border:none; border-radius:8px; font-size:1rem; font-weight:bold; cursor:pointer; margin-bottom:8px; }
+        .modal-btn-primary { background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; }
+        .modal-btn-secondary { background:#eee; color:#333; }
+        .modal-toggle { text-align:center; font-size:0.85rem; color:#666; margin-top:12px; }
+        .modal-toggle a { color:#667eea; cursor:pointer; text-decoration:underline; }
+        .modal-error { color:#e74c3c; font-size:0.85rem; text-align:center; margin-bottom:12px; min-height:20px; }
+        .modal-step { display:none; }
+        .modal-step.active { display:block; }
+
+        /* Phone Modal Recaptcha */
+        #recaptcha-container { display:flex; justify-content:center; margin:12px 0; }
 
         @media (max-width: 420px) {
             .sns-qr-grid { grid-template-columns: 1fr 1fr; }
@@ -141,6 +170,63 @@
     </style>
 </head>
 <body>
+
+<!-- Sticky Header -->
+<div class="sticky-header" id="sticky-header">
+    <div class="sticky-header-inner">
+        <div class="sticky-header-title" id="sticky-header-title">ログインしてください</div>
+        <div class="login-btns">
+            <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">Google</button>
+            <button id="apple-login-btn" class="login-btn login-apple" onclick="appleLogin()">Apple</button>
+            <button id="line-login-btn" class="login-btn login-line" onclick="lineLogin()">LINE</button>
+            <button id="email-login-btn" class="login-btn login-email" onclick="openEmailModal()">メール</button>
+            <button id="phone-login-btn" class="login-btn login-phone" onclick="openPhoneModal()">電話番号</button>
+            <button id="logout-btn" class="login-btn login-logout" onclick="doLogout()">ログアウト</button>
+        </div>
+        <div class="sticky-header-uid" id="sticky-header-uid" style="display:none;">UID: <span id="my-uid"></span></div>
+        <div class="sticky-header-log" id="auth-log"></div>
+    </div>
+</div>
+
+<!-- Email Auth Modal -->
+<div class="modal-backdrop" id="email-modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeEmailModal()">&times;</button>
+        <div class="modal-title" id="email-modal-title">メールでログイン</div>
+        <div class="modal-error" id="email-error"></div>
+        <input type="email" class="modal-input" id="email-input" placeholder="メールアドレス">
+        <input type="password" class="modal-input" id="password-input" placeholder="パスワード">
+        <button class="modal-btn modal-btn-primary" id="email-submit-btn" onclick="submitEmail()">ログイン</button>
+        <div class="modal-toggle">
+            <span id="email-toggle-text">アカウントをお持ちでない方は</span>
+            <a id="email-toggle-link" onclick="toggleEmailMode()">新規登録</a>
+        </div>
+    </div>
+</div>
+
+<!-- Phone Auth Modal -->
+<div class="modal-backdrop" id="phone-modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closePhoneModal()">&times;</button>
+        <div class="modal-title">電話番号でログイン</div>
+        <div class="modal-error" id="phone-error"></div>
+
+        <!-- Step 1: Phone Number Input -->
+        <div class="modal-step active" id="phone-step1">
+            <input type="tel" class="modal-input" id="phone-number-input" placeholder="電話番号 (例: 09012345678)">
+            <div id="recaptcha-container"></div>
+            <button class="modal-btn modal-btn-primary" id="phone-send-btn" onclick="sendSmsCode()">認証コードを送信</button>
+        </div>
+
+        <!-- Step 2: SMS Code Input -->
+        <div class="modal-step" id="phone-step2">
+            <p style="text-align:center; color:#666; margin-bottom:12px;">SMSで届いた6桁のコードを入力してください</p>
+            <input type="text" class="modal-input" id="sms-code-input" placeholder="認証コード (6桁)" maxlength="6">
+            <button class="modal-btn modal-btn-primary" onclick="verifySmsCode()">認証</button>
+            <button class="modal-btn modal-btn-secondary" onclick="resetPhoneModal()">戻る</button>
+        </div>
+    </div>
+</div>
 
 <div id="viewer-mode">
     <div class="info-card">
@@ -254,41 +340,6 @@
     <div style="text-align: center; margin-bottom: 40px;">
         <img src="/logo.png" alt="スグデス" style="max-width: 500px; width: 100%; height: auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <h1 style="display: none;">sugudesu <span class="brand-sub">Shop & Wi-Fi Connector</span></h1>
-    </div>
-
-    <div class="pro-auth-area" id="auth-box">
-        <div style="font-size:0.8rem; margin-bottom:5px;">🔐 PRO機能のロック解除（ログイン必須）</div>
-
-        <div class="login-btns">
-            <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">
-                Googleでログイン
-            </button>
-            <button id="apple-login-btn" class="login-btn login-apple" onclick="appleLogin()">
-                Appleでログイン
-            </button>
-            <button id="line-login-btn" class="login-btn login-line" onclick="lineLogin()">
-                LINEでログイン
-            </button>
-            <button id="google-logout-btn" class="login-btn login-logout" onclick="googleLogout()">
-                ログアウト
-            </button>
-        </div>
-
-        <div style="font-size:0.7rem; color:#aaa; margin-bottom:10px;">
-            UID: <span id="my-uid">未ログイン</span>
-        </div>
-
-        <input type="text" id="license-input" placeholder="ライセンスキーを入力" disabled>
-        <button id="activate-btn" onclick="activateLicense()" disabled>認証</button>
-        <p id="auth-log" style="font-size:0.7rem; color:#ff8888; margin-top:5px;"></p>
-
-        <div id="pro-ai-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
-            PROでは入力内容をサーバ側プロキシ経由でAI生成に利用します（未設定時はスキップ）。
-        </div>
-
-        <div id="line-note" style="display:none; margin-top:10px; font-size:0.75rem; color:#cde3ff;">
-            LINEログインはサーバ側（Worker等）が必要です。未設定ならログインは成立しません。
-        </div>
     </div>
 
     <div class="input-group" id="category-group">
@@ -477,7 +528,11 @@
         signInWithRedirect,
         getRedirectResult,
         signOut,
-        signInWithCustomToken
+        signInWithCustomToken,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        RecaptchaVerifier,
+        signInWithPhoneNumber
     } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
     import {
         getFirestore,
@@ -496,7 +551,7 @@
         appId: "1:306434861424:web:301c48e2cfd8a5681407b5"
     };
 
-    const CLOUD_NAME = "dkda2jqxn"; 
+    const CLOUD_NAME = "dkda2jqxn";
     const UPLOAD_PRESET = "sugudesu_img_only";
     const WORKER_SIGNER_URL = "https://cloudinary-sign.miyata-connect-jp.workers.dev/";
 
@@ -513,7 +568,10 @@
     const AI_PROXY_URL = "https://gemini-proxy.miyata-connect-jp.workers.dev/v1beta/models/gemini-1.5-flash:generateContent";
     const AI_TIMEOUT_MS = 20000;
 
-    const LINE_AUTH_START_URL = ""; 
+    // Phone auth state
+    let phoneConfirmationResult = null;
+    let recaptchaVerifier = null;
+    let emailIsSignUp = false;
 
     console.log("Firebase initialized, domain:", window.location.hostname);
 
@@ -720,64 +778,54 @@
         loginGoogleBtn: () => document.getElementById("google-login-btn"),
         loginAppleBtn: () => document.getElementById("apple-login-btn"),
         loginLineBtn: () => document.getElementById("line-login-btn"),
-        logoutBtn: () => document.getElementById("google-logout-btn"),
-        licenseInput: () => document.getElementById("license-input"),
-        activateBtn: () => document.getElementById("activate-btn"),
+        loginEmailBtn: () => document.getElementById("email-login-btn"),
+        loginPhoneBtn: () => document.getElementById("phone-login-btn"),
+        logoutBtn: () => document.getElementById("logout-btn"),
         authLog: () => document.getElementById("auth-log"),
         genUrl: () => document.getElementById("gen-url")
     };
 
     function setAuthUiLoggedOut() {
-        ui.uid().textContent = "未ログイン";
+        document.getElementById("sticky-header-title").textContent = "ログインしてください";
+        document.getElementById("sticky-header-uid").style.display = "none";
 
         ui.loginGoogleBtn().style.display = "inline-block";
         ui.loginAppleBtn().style.display = "inline-block";
         ui.loginLineBtn().style.display = "inline-block";
+        ui.loginEmailBtn().style.display = "inline-block";
+        ui.loginPhoneBtn().style.display = "inline-block";
         ui.logoutBtn().style.display = "none";
 
-        ui.licenseInput().disabled = true;
-        ui.activateBtn().disabled = true;
-
-        ui.authLog().textContent = "Pro解除はログインが必要です";
-        ui.authLog().style.color = "#ffcc88";
-
-        document.getElementById("pro-ai-note").style.display = "none";
-
-        const lineNote = document.getElementById("line-note");
-        lineNote.style.display = LINE_AUTH_START_URL ? "none" : "block";
+        ui.authLog().textContent = "";
     }
 
     function setAuthUiLoggedIn(user) {
         console.log("User logged in:", user.uid);
+        document.getElementById("sticky-header-title").textContent = "ログイン中";
+        document.getElementById("sticky-header-uid").style.display = "block";
         ui.uid().textContent = user.uid.substring(0, 6) + "...";
 
         ui.loginGoogleBtn().style.display = "none";
         ui.loginAppleBtn().style.display = "none";
         ui.loginLineBtn().style.display = "none";
+        ui.loginEmailBtn().style.display = "none";
+        ui.loginPhoneBtn().style.display = "none";
         ui.logoutBtn().style.display = "inline-block";
 
-        ui.licenseInput().disabled = false;
-        ui.activateBtn().disabled = false;
-
-        ui.authLog().textContent = "ログイン成功";
-        ui.authLog().style.color = "#88ff88";
-
-        document.getElementById("line-note").style.display = "none";
+        ui.authLog().textContent = "";
     }
 
-    // ログイン関数（デバッグログ付き）
+    // ===== ログイン関数 =====
+
+    // Google Login
     window.googleLogin = async function() {
         console.log("=== Google Login Started ===");
-        console.log("Current URL:", window.location.href);
-        console.log("Current domain:", window.location.hostname);
         ui.authLog().textContent = "Googleへ移動中...";
         ui.authLog().style.color = "#88ccff";
-        
+
         try {
             const provider = new GoogleAuthProvider();
-            console.log("GoogleAuthProvider created");
             await signInWithRedirect(auth, provider);
-            console.log("signInWithRedirect called");
         } catch (error) {
             console.error("Google login error:", error);
             ui.authLog().textContent = "エラー: " + error.code;
@@ -785,20 +833,17 @@
         }
     };
 
+    // Apple Login
     window.appleLogin = async function() {
         console.log("=== Apple Login Started ===");
-        console.log("Current URL:", window.location.href);
-        console.log("Current domain:", window.location.hostname);
         ui.authLog().textContent = "Appleへ移動中...";
         ui.authLog().style.color = "#88ccff";
-        
+
         try {
             const provider = new OAuthProvider("apple.com");
             provider.addScope("email");
             provider.addScope("name");
-            console.log("OAuthProvider (Apple) created");
             await signInWithRedirect(auth, provider);
-            console.log("signInWithRedirect called");
         } catch (error) {
             console.error("Apple login error:", error);
             ui.authLog().textContent = "エラー: " + error.code;
@@ -806,33 +851,228 @@
         }
     };
 
+    // LINE Login (OIDC)
     window.lineLogin = async function() {
-        console.log("=== LINE Login Started ===");
-        ui.authLog().textContent = "";
-        if (!LINE_AUTH_START_URL) {
-            document.getElementById("line-note").style.display = "block";
-            alert("LINEログインは現在未設定です。");
-            return;
+        console.log("=== LINE Login Started (OIDC) ===");
+        ui.authLog().textContent = "LINEへ移動中...";
+        ui.authLog().style.color = "#88ccff";
+
+        try {
+            const provider = new OAuthProvider("oidc.line");
+            await signInWithRedirect(auth, provider);
+        } catch (error) {
+            console.error("LINE login error:", error);
+            ui.authLog().textContent = "エラー: " + error.code;
+            ui.authLog().style.color = "#ff8888";
         }
-        const returnTo = window.location.href;
-        const url = new URL(LINE_AUTH_START_URL);
-        url.searchParams.set("returnTo", returnTo);
-        window.location.href = url.toString();
     };
 
-    window.googleLogout = async function() {
+    // ===== Email Auth Modal =====
+    window.openEmailModal = function() {
+        document.getElementById("email-modal").classList.add("show");
+        document.getElementById("email-error").textContent = "";
+        document.getElementById("email-input").value = "";
+        document.getElementById("password-input").value = "";
+        emailIsSignUp = false;
+        updateEmailModalMode();
+    };
+
+    window.closeEmailModal = function() {
+        document.getElementById("email-modal").classList.remove("show");
+    };
+
+    window.toggleEmailMode = function() {
+        emailIsSignUp = !emailIsSignUp;
+        updateEmailModalMode();
+    };
+
+    function updateEmailModalMode() {
+        const title = document.getElementById("email-modal-title");
+        const btn = document.getElementById("email-submit-btn");
+        const toggleText = document.getElementById("email-toggle-text");
+        const toggleLink = document.getElementById("email-toggle-link");
+
+        if (emailIsSignUp) {
+            title.textContent = "新規登録";
+            btn.textContent = "登録";
+            toggleText.textContent = "既にアカウントをお持ちの方は";
+            toggleLink.textContent = "ログイン";
+        } else {
+            title.textContent = "メールでログイン";
+            btn.textContent = "ログイン";
+            toggleText.textContent = "アカウントをお持ちでない方は";
+            toggleLink.textContent = "新規登録";
+        }
+    }
+
+    window.submitEmail = async function() {
+        const email = document.getElementById("email-input").value.trim();
+        const password = document.getElementById("password-input").value;
+        const errorEl = document.getElementById("email-error");
+
+        if (!email || !password) {
+            errorEl.textContent = "メールアドレスとパスワードを入力してください";
+            return;
+        }
+
+        if (password.length < 6) {
+            errorEl.textContent = "パスワードは6文字以上で入力してください";
+            return;
+        }
+
+        errorEl.textContent = "";
+
+        try {
+            if (emailIsSignUp) {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+            closeEmailModal();
+        } catch (error) {
+            console.error("Email auth error:", error);
+            let msg = "エラーが発生しました";
+            if (error.code === "auth/email-already-in-use") msg = "このメールアドレスは既に使用されています";
+            else if (error.code === "auth/invalid-email") msg = "メールアドレスの形式が正しくありません";
+            else if (error.code === "auth/weak-password") msg = "パスワードが弱すぎます";
+            else if (error.code === "auth/user-not-found") msg = "ユーザーが見つかりません";
+            else if (error.code === "auth/wrong-password") msg = "パスワードが間違っています";
+            else if (error.code === "auth/invalid-credential") msg = "メールアドレスまたはパスワードが間違っています";
+            errorEl.textContent = msg;
+        }
+    };
+
+    // ===== Phone Auth Modal =====
+    window.openPhoneModal = function() {
+        document.getElementById("phone-modal").classList.add("show");
+        document.getElementById("phone-error").textContent = "";
+        document.getElementById("phone-number-input").value = "";
+        document.getElementById("sms-code-input").value = "";
+        resetPhoneModal();
+        setupRecaptcha();
+    };
+
+    window.closePhoneModal = function() {
+        document.getElementById("phone-modal").classList.remove("show");
+        if (recaptchaVerifier) {
+            recaptchaVerifier.clear();
+            recaptchaVerifier = null;
+        }
+    };
+
+    window.resetPhoneModal = function() {
+        document.getElementById("phone-step1").classList.add("active");
+        document.getElementById("phone-step2").classList.remove("active");
+        document.getElementById("phone-error").textContent = "";
+        phoneConfirmationResult = null;
+    };
+
+    function setupRecaptcha() {
+        if (recaptchaVerifier) {
+            recaptchaVerifier.clear();
+        }
+        const container = document.getElementById("recaptcha-container");
+        container.innerHTML = "";
+
+        recaptchaVerifier = new RecaptchaVerifier(auth, container, {
+            size: "normal",
+            callback: () => {
+                console.log("reCAPTCHA solved");
+            },
+            "expired-callback": () => {
+                console.log("reCAPTCHA expired");
+                document.getElementById("phone-error").textContent = "reCAPTCHAが期限切れです。再試行してください。";
+            }
+        });
+
+        recaptchaVerifier.render().catch(err => {
+            console.error("reCAPTCHA render error:", err);
+            document.getElementById("phone-error").textContent = "reCAPTCHAの読み込みに失敗しました";
+        });
+    }
+
+    window.sendSmsCode = async function() {
+        const phoneInput = document.getElementById("phone-number-input").value.trim();
+        const errorEl = document.getElementById("phone-error");
+
+        if (!phoneInput) {
+            errorEl.textContent = "電話番号を入力してください";
+            return;
+        }
+
+        // Format phone number for Japan
+        let phoneNumber = phoneInput.replace(/[-\s]/g, "");
+        if (phoneNumber.startsWith("0")) {
+            phoneNumber = "+81" + phoneNumber.substring(1);
+        } else if (!phoneNumber.startsWith("+")) {
+            phoneNumber = "+81" + phoneNumber;
+        }
+
+        errorEl.textContent = "";
+        document.getElementById("phone-send-btn").disabled = true;
+        document.getElementById("phone-send-btn").textContent = "送信中...";
+
+        try {
+            phoneConfirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+            console.log("SMS sent successfully");
+
+            // Show step 2
+            document.getElementById("phone-step1").classList.remove("active");
+            document.getElementById("phone-step2").classList.add("active");
+        } catch (error) {
+            console.error("SMS send error:", error);
+            let msg = "SMSの送信に失敗しました";
+            if (error.code === "auth/invalid-phone-number") msg = "電話番号の形式が正しくありません";
+            else if (error.code === "auth/too-many-requests") msg = "リクエストが多すぎます。しばらくしてから再試行してください";
+            errorEl.textContent = msg;
+            setupRecaptcha();
+        } finally {
+            document.getElementById("phone-send-btn").disabled = false;
+            document.getElementById("phone-send-btn").textContent = "認証コードを送信";
+        }
+    };
+
+    window.verifySmsCode = async function() {
+        const code = document.getElementById("sms-code-input").value.trim();
+        const errorEl = document.getElementById("phone-error");
+
+        if (!code) {
+            errorEl.textContent = "認証コードを入力してください";
+            return;
+        }
+
+        if (!phoneConfirmationResult) {
+            errorEl.textContent = "認証プロセスに問題が発生しました。最初からやり直してください。";
+            return;
+        }
+
+        errorEl.textContent = "";
+
+        try {
+            await phoneConfirmationResult.confirm(code);
+            console.log("Phone auth successful");
+            closePhoneModal();
+        } catch (error) {
+            console.error("Code verification error:", error);
+            let msg = "認証コードが正しくありません";
+            if (error.code === "auth/code-expired") msg = "認証コードの有効期限が切れました";
+            errorEl.textContent = msg;
+        }
+    };
+
+    // Logout
+    window.doLogout = async function() {
         console.log("=== Logout Started ===");
         try {
             await signOut(auth);
             console.log("Sign out successful");
             setAuthUiLoggedOut();
-            window.location.reload();
         } catch (error) {
             console.error("Logout error:", error);
             alert("ログアウトに失敗しました: " + error.message);
         }
     };
-        
+
     async function trySignInWithCustomTokenFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("firebaseCustomToken");
