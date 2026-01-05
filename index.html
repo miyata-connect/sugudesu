@@ -82,6 +82,11 @@
         .footer-link { margin-top: 40px; font-size: 0.7rem; color: #ccc; text-align: center; padding-bottom: 20px; }
         .footer-link a { color: #888; text-decoration: none; }
 
+        .pro-auth-area { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: white; padding: 20px; border-radius: 16px; margin-bottom: 24px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .pro-auth-area input { width: 60%; padding: 8px; border-radius: 4px; border: none; text-align: center; font-weight: bold; color: #333; }
+        .pro-auth-area button { border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition:0.2s; }
+        .pro-auth-area button:disabled { background:#888; cursor:not-allowed; }
+
         .premium-feature { display: none; border: 2px solid #f6ad55; padding: 20px; border-radius: 16px; margin-bottom: 20px; background: linear-gradient(135deg, #fffaf0 0%, #fef5e7 100%); position: relative; box-shadow: 0 4px 12px rgba(246, 173, 85, 0.15); }
         .premium-badge-ui { position: absolute; top: -12px; right: 12px; background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%); color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3); }
 
@@ -554,6 +559,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const LICENSES_COL = "licenses";
     const USERS_COL = "users";
     const PAGES_COL = "pages";
 
@@ -567,7 +573,9 @@
     let recaptchaVerifier = null;
     let emailIsSignUp = false;
 
-    console.log("Firebase initialized, domain:", window.location.hostname);
+    console.log("=== Firebase Initialized ===");
+    console.log("Domain:", window.location.hostname);
+    console.log("Auth Domain:", firebaseConfig.authDomain);
 
     function getOrCreateInstallId() {
         let id = localStorage.getItem(INSTALL_ID_KEY);
@@ -725,7 +733,7 @@
                 }
             });
         }
-
+        
         if (mode === "open_days") text.placeholder = "例：月〜金 / 土日 / 祝日営業";
         if (mode === "closed_days") text.placeholder = "例：水曜 / 第2火曜 / 水曜+隔週";
         if (mode === "irregular") text.placeholder = "例：不定休（SNSをご確認ください）";
@@ -791,13 +799,10 @@
         ui.logoutBtn().style.display = "none";
 
         ui.authLog().textContent = "";
-        ui.authLog().style.color = "#ff8888";
-
-        lockProUI();
     }
 
     function setAuthUiLoggedIn(user) {
-        console.log("User logged in:", user.uid);
+        console.log("✅ User logged in:", user.uid);
         document.getElementById("sticky-header-title").textContent = "ログイン中";
         document.getElementById("sticky-header-uid").style.display = "block";
         ui.uid().textContent = user.uid.substring(0, 6) + "...";
@@ -809,24 +814,8 @@
         ui.loginPhoneBtn().style.display = "none";
         ui.logoutBtn().style.display = "inline-block";
 
-        ui.authLog().textContent = "";
-    }
-
-    function lockProUI() {
-        isPro = false;
-        document.getElementById('pro-feature-img').style.display = 'none';
-        document.getElementById('pro-feature-slug').style.display = 'none';
-        document.getElementById('pro-feature-ssid').style.display = 'none';
-    }
-
-    function unlockProUI() {
-        isPro = true;
-        document.getElementById('pro-feature-img').style.display = 'block';
-        document.getElementById('pro-feature-slug').style.display = 'block';
-        document.getElementById('pro-feature-ssid').style.display = 'block';
-
-        ui.authLog().textContent = "PRO Active";
-        ui.authLog().style.color = "#0f0";
+        ui.authLog().textContent = "ログイン成功";
+        ui.authLog().style.color = "#88ff88";
     }
 
     // ===== ログイン関数 =====
@@ -841,7 +830,7 @@
             const provider = new GoogleAuthProvider();
             await signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error("Google login error:", error);
+            console.error("❌ Google login error:", error);
             ui.authLog().textContent = "エラー: " + error.code;
             ui.authLog().style.color = "#ff8888";
         }
@@ -859,23 +848,29 @@
             provider.addScope("name");
             await signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error("Apple login error:", error);
+            console.error("❌ Apple login error:", error);
             ui.authLog().textContent = "エラー: " + error.code;
             ui.authLog().style.color = "#ff8888";
         }
     };
 
-    // LINE Login (OIDC)
+    // LINE Login (OIDC) - 修正版
     window.lineLogin = async function() {
         console.log("=== LINE Login Started (OIDC) ===");
         ui.authLog().textContent = "LINEへ移動中...";
         ui.authLog().style.color = "#88ccff";
 
         try {
+            // LINEのプロバイダーID（Firebase Consoleで設定したものに変更してください）
             const provider = new OAuthProvider("oidc.line");
+            provider.addScope("profile");
+            provider.addScope("openid");
+            provider.addScope("email");
+            
+            console.log("LINE provider configured:", provider.providerId);
             await signInWithRedirect(auth, provider);
         } catch (error) {
-            console.error("LINE login error:", error);
+            console.error("❌ LINE login error:", error);
             ui.authLog().textContent = "エラー: " + error.code;
             ui.authLog().style.color = "#ff8888";
         }
@@ -939,12 +934,14 @@
         try {
             if (emailIsSignUp) {
                 await createUserWithEmailAndPassword(auth, email, password);
+                console.log("✅ Email signup successful");
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
+                console.log("✅ Email login successful");
             }
             closeEmailModal();
         } catch (error) {
-            console.error("Email auth error:", error);
+            console.error("❌ Email auth error:", error);
             let msg = "エラーが発生しました";
             if (error.code === "auth/email-already-in-use") msg = "このメールアドレスは既に使用されています";
             else if (error.code === "auth/invalid-email") msg = "メールアドレスの形式が正しくありません";
@@ -991,16 +988,16 @@
         recaptchaVerifier = new RecaptchaVerifier(auth, container, {
             size: "normal",
             callback: () => {
-                console.log("reCAPTCHA solved");
+                console.log("✅ reCAPTCHA solved");
             },
             "expired-callback": () => {
-                console.log("reCAPTCHA expired");
+                console.log("⚠️ reCAPTCHA expired");
                 document.getElementById("phone-error").textContent = "reCAPTCHAが期限切れです。再試行してください。";
             }
         });
 
         recaptchaVerifier.render().catch(err => {
-            console.error("reCAPTCHA render error:", err);
+            console.error("❌ reCAPTCHA render error:", err);
             document.getElementById("phone-error").textContent = "reCAPTCHAの読み込みに失敗しました";
         });
     }
@@ -1022,18 +1019,21 @@
             phoneNumber = "+81" + phoneNumber;
         }
 
+        console.log("📱 Sending SMS to:", phoneNumber);
+
         errorEl.textContent = "";
         document.getElementById("phone-send-btn").disabled = true;
         document.getElementById("phone-send-btn").textContent = "送信中...";
 
         try {
             phoneConfirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-            console.log("SMS sent successfully");
+            console.log("✅ SMS sent successfully");
 
+            // Show step 2
             document.getElementById("phone-step1").classList.remove("active");
             document.getElementById("phone-step2").classList.add("active");
         } catch (error) {
-            console.error("SMS send error:", error);
+            console.error("❌ SMS send error:", error);
             let msg = "SMSの送信に失敗しました";
             if (error.code === "auth/invalid-phone-number") msg = "電話番号の形式が正しくありません";
             else if (error.code === "auth/too-many-requests") msg = "リクエストが多すぎます。しばらくしてから再試行してください";
@@ -1063,10 +1063,10 @@
 
         try {
             await phoneConfirmationResult.confirm(code);
-            console.log("Phone auth successful");
+            console.log("✅ Phone auth successful");
             closePhoneModal();
         } catch (error) {
-            console.error("Code verification error:", error);
+            console.error("❌ Code verification error:", error);
             let msg = "認証コードが正しくありません";
             if (error.code === "auth/code-expired") msg = "認証コードの有効期限が切れました";
             errorEl.textContent = msg;
@@ -1078,36 +1078,46 @@
         console.log("=== Logout Started ===");
         try {
             await signOut(auth);
-            console.log("Sign out successful");
+            console.log("✅ Sign out successful");
             setAuthUiLoggedOut();
         } catch (error) {
-            console.error("Logout error:", error);
+            console.error("❌ Logout error:", error);
             alert("ログアウトに失敗しました: " + error.message);
         }
     };
 
+    // カスタムトークン処理 - 修正版
     async function trySignInWithCustomTokenFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("firebaseCustomToken");
-        if (!token) return false;
-
-        try {
-            await signInWithCustomToken(auth, token);
-        } catch (e) {
-            console.error("Custom token sign-in failed", e);
-            alert("外部ログインの受け取りに失敗しました");
+        if (!token) {
+            console.log("ℹ️ No custom token in URL");
             return false;
         }
 
-        params.delete("firebaseCustomToken");
-        const clean = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}${window.location.hash || ""}`;
-        window.history.replaceState({}, "", clean);
-        return true;
+        console.log("🔑 Custom token found in URL");
+
+        try {
+            await signInWithCustomToken(auth, token);
+            console.log("✅ Custom token sign-in successful");
+            
+            // URLをクリーンアップ
+            params.delete("firebaseCustomToken");
+            const clean = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}${window.location.hash || ""}`;
+            window.history.replaceState({}, "", clean);
+            
+            return true;
+        } catch (e) {
+            console.error("❌ Custom token sign-in failed", e);
+            ui.authLog().textContent = "外部ログイン失敗: " + e.code;
+            ui.authLog().style.color = "#ff8888";
+            return false;
+        }
     }
 
     // onAuthStateChanged - ユーザー状態監視
     onAuthStateChanged(auth, async (user) => {
-        console.log("=== onAuthStateChanged ===", user ? user.uid : "null");
+        console.log("=== onAuthStateChanged ===", user ? `UID: ${user.uid}` : "Not logged in");
         if (!user) {
             setAuthUiLoggedOut();
             return;
@@ -1121,14 +1131,51 @@
         try {
             const snap = await getDoc(userRef);
             if (snap.exists() && snap.data().plan === "pro") {
+                console.log("✅ Pro user detected");
                 unlockProUI();
+                await touchDeviceIfPro(uid, snap.data().licenseId);
             } else {
-                lockProUI();
+                console.log("ℹ️ Free user");
             }
         } catch (e) {
-            console.error("Entitlement check failed", e);
-            lockProUI();
+            console.error("❌ Entitlement check failed", e);
         }
+    }
+
+    async function touchDeviceIfPro(uid, licenseId) {
+        if (!licenseId) return;
+
+        const installId = getOrCreateInstallId();
+        const licenseRef = doc(db, LICENSES_COL, licenseId);
+
+        try {
+            await runTransaction(db, async (tx) => {
+                const licSnap = await tx.get(licenseRef);
+                if (!licSnap.exists()) return;
+
+                const lic = licSnap.data() || {};
+                if (lic.claimedByUid && lic.claimedByUid !== uid) return;
+
+                const devices = lic.devices || {};
+                if (devices[installId]) {
+                    tx.update(licenseRef, {
+                        [`devices.${installId}.lastSeenAt`]: serverTimestamp()
+                    });
+                }
+            });
+        } catch (e) {
+            console.error("❌ touchDevice failed", e);
+        }
+    }
+
+    function unlockProUI() {
+        isPro = true;
+        document.getElementById('pro-feature-img').style.display = 'block';
+        document.getElementById('pro-feature-slug').style.display = 'block';
+        document.getElementById('pro-feature-ssid').style.display = 'block';
+
+        ui.authLog().textContent = "Pro Active ✨";
+        ui.authLog().style.color = "#ffd700";
     }
 
     window.suggestSsid = function() {
@@ -1181,7 +1228,7 @@
             navigator.share({ title: document.title, url: window.location.href });
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert("URLをコピーしました！");
+            alert("URLをコピーしました!");
         }
     }
 
@@ -1257,7 +1304,7 @@ JSON形式で以下のように出力してください:
             return parsed;
 
         } catch (e) {
-            console.warn("AI proxy failed", e);
+            console.warn("⚠️ AI proxy failed", e);
             return null;
         } finally {
             clearTimeout(timer);
@@ -1313,14 +1360,14 @@ JSON形式で以下のように出力してください:
 
             if (isPro && fileInput && fileInput.files && fileInput.files.length > 0) {
                 btn.textContent = "署名を取得中...";
-
+                
                 const signRes = await fetch(WORKER_SIGNER_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ upload_preset: UPLOAD_PRESET })
                 });
                 const signData = await signRes.json();
-
+                
                 if (!signData.signature) throw "署名の取得に失敗しました。";
 
                 btn.textContent = "写真を保存中...";
@@ -1479,7 +1526,7 @@ JSON形式で以下のように出力してください:
             btn.disabled = false;
 
         } catch (e) {
-            console.error(e);
+            console.error("❌ Generation error:", e);
             alert(typeof e === "string" ? e : "エラーが発生しました");
             btn.disabled = false;
             btn.textContent = "ページ作成開始";
@@ -1837,34 +1884,41 @@ JSON形式で以下のように出力してください:
         pdf.save(`wifi-qr_${fileSafeName}.pdf`);
     };
 
-    // ページ読み込み時の処理
+    // ページ読み込み時の処理 - 修正版
     window.onload = async function() {
         console.log("=== Page Loaded ===");
         console.log("URL:", window.location.href);
         console.log("Hash:", window.location.hash);
-
-        try {
-            console.log("Checking redirect result...");
-            const result = await getRedirectResult(auth);
-            if (result && result.user) {
-                console.log("Redirect login successful:", result.user.uid);
-                setAuthUiLoggedIn(result.user);
-                await checkEntitlement(result.user.uid);
-            } else {
-                console.log("No redirect result");
-            }
-        } catch (error) {
-            console.error("Redirect result error:", error.code, error.message);
-            if (error.code === 'auth/unauthorized-domain') {
-                ui.authLog().textContent = "ドメインが未承認です";
-                ui.authLog().style.color = "#ff8888";
-            } else if (error.code) {
+        
+        // 1. カスタムトークン処理を最優先
+        const hasCustomToken = await trySignInWithCustomTokenFromUrl();
+        
+        // 2. カスタムトークンがない場合のみリダイレクト結果を確認
+        if (!hasCustomToken) {
+            try {
+                console.log("⏳ Checking redirect result...");
+                const result = await getRedirectResult(auth);
+                if (result && result.user) {
+                    console.log("✅ Redirect login successful:", result.user.uid);
+                    setAuthUiLoggedIn(result.user);
+                    await checkEntitlement(result.user.uid);
+                    
+                    // URLをクリーンアップ
+                    const cleanUrl = window.location.pathname + window.location.hash;
+                    window.history.replaceState({}, "", cleanUrl);
+                } else {
+                    console.log("ℹ️ No redirect result");
+                }
+            } catch (error) {
+                console.error("❌ Redirect result error:", error.code, error.message);
                 ui.authLog().textContent = "ログインエラー: " + error.code;
                 ui.authLog().style.color = "#ff8888";
+                
+                // エラー時もURLをクリーンアップ
+                const cleanUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, "", cleanUrl);
             }
         }
-
-        await trySignInWithCustomTokenFromUrl();
 
         const prettySlug = parsePrettySlugFromHash();
         const legacy = parseLegacyQuery();
@@ -1898,15 +1952,13 @@ JSON形式で以下のように出力してください:
                     renderViewerFromData(legacy);
                 }
             } catch (e) {
-                console.error(e);
+                console.error("❌ Viewer error:", e);
                 alert(typeof e === "string" ? e : "表示エラーが発生しました");
             }
 
         } else {
             document.getElementById('creator-mode').style.display = 'block';
         }
-
-        getOrCreateInstallId();
     };
 </script>
 
