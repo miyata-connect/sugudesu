@@ -1,3 +1,6 @@
+Index fixed · HTML
+コピー
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -137,6 +140,14 @@
         .login-phone { background:#9b59b6; }
         .login-logout { background:#555; display:none; }
 
+        /* Login Welcome Screen */
+        #login-welcome-screen { display:none; min-height:100vh; align-items:center; justify-content:center; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-welcome-card { background:#fff; border-radius:24px; padding:50px 40px; max-width:500px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:center; }
+        .login-welcome-card h1 { font-size:2.5rem; margin-bottom:15px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .login-welcome-card .subtitle { font-size:1.1rem; color:#666; margin-bottom:35px; }
+        .login-welcome-card .login-btns { display:flex; flex-direction:column; gap:12px; }
+        .login-welcome-card .login-btn { width:100%; padding:14px; font-size:0.95rem; }
+
         /* Sticky Header */
         .sticky-header { position:sticky; top:0; left:0; right:0; z-index:1000; background:linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color:#fff; padding:12px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
         .sticky-header-inner { max-width:900px; margin:0 auto; }
@@ -171,16 +182,34 @@
 </head>
 <body>
 
+<!-- Login Welcome Screen (ログイン前専用画面) -->
+<div id="login-welcome-screen">
+    <div class="login-welcome-card">
+        <h1>sugudesu</h1>
+        <p class="subtitle">Shop & Wi-Fi Connector</p>
+        <div class="login-btns">
+            <button class="login-btn login-google" onclick="googleLogin()">Googleアカウントでログインする</button>
+            <button class="login-btn login-apple" onclick="appleLogin()">Appleアカウントでログインする</button>
+            <button class="login-btn login-line" onclick="lineLogin()">LINEアカウントでログインする</button>
+            <button class="login-btn login-email" onclick="openEmailModal()">メールアドレスでログインする</button>
+            <button class="login-btn login-phone" onclick="openPhoneModal()">電話番号でログインする</button>
+        </div>
+        <div style="margin-top:20px; font-size:0.85rem; color:#888;">
+            ログインすることで、店舗情報の作成・管理ができます
+        </div>
+    </div>
+</div>
+
 <!-- Sticky Header -->
 <div class="sticky-header" id="sticky-header">
     <div class="sticky-header-inner">
         <div class="sticky-header-title" id="sticky-header-title">ログインしてください</div>
         <div class="login-btns">
-            <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">Google</button>
-            <button id="apple-login-btn" class="login-btn login-apple" onclick="appleLogin()">Apple</button>
-            <button id="line-login-btn" class="login-btn login-line" onclick="lineLogin()">LINE</button>
-            <button id="email-login-btn" class="login-btn login-email" onclick="openEmailModal()">メール</button>
-            <button id="phone-login-btn" class="login-btn login-phone" onclick="openPhoneModal()">電話番号</button>
+            <button id="google-login-btn" class="login-btn login-google" onclick="googleLogin()">Googleアカウントでログインする</button>
+            <button id="apple-login-btn" class="login-btn login-apple" onclick="appleLogin()">Appleアカウントでログインする</button>
+            <button id="line-login-btn" class="login-btn login-line" onclick="lineLogin()">LINEアカウントでログインする</button>
+            <button id="email-login-btn" class="login-btn login-email" onclick="openEmailModal()">メールアドレスでログインする</button>
+            <button id="phone-login-btn" class="login-btn login-phone" onclick="openPhoneModal()">電話番号でログインする</button>
             <button id="logout-btn" class="login-btn login-logout" onclick="doLogout()">ログアウト</button>
         </div>
         <div class="sticky-header-uid" id="sticky-header-uid" style="display:none;">UID: <span id="my-uid"></span></div>
@@ -799,6 +828,12 @@
         ui.logoutBtn().style.display = "none";
 
         ui.authLog().textContent = "";
+        
+        // ログイン前画面を表示
+        document.getElementById("login-welcome-screen").style.display = "flex";
+        document.getElementById("sticky-header").style.display = "none";
+        document.getElementById("creator-mode").style.display = "none";
+        document.getElementById("viewer-mode").style.display = "none";
     }
 
     function setAuthUiLoggedIn(user) {
@@ -816,6 +851,11 @@
 
         ui.authLog().textContent = "ログイン成功";
         ui.authLog().style.color = "#88ff88";
+        
+        // ログイン後画面を表示
+        document.getElementById("login-welcome-screen").style.display = "none";
+        document.getElementById("sticky-header").style.display = "block";
+        document.getElementById("creator-mode").style.display = "block";
     }
 
     // ===== ログイン関数 =====
@@ -1941,6 +1981,7 @@ JSON形式で以下のように出力してください:
 
         if (prettySlug || legacy) {
             document.getElementById('viewer-mode').style.display = 'block';
+            document.getElementById('login-welcome-screen').style.display = 'none';
 
             try {
                 if (prettySlug) {
@@ -1957,7 +1998,20 @@ JSON形式で以下のように出力してください:
             }
 
         } else {
-            document.getElementById('creator-mode').style.display = 'block';
+            // creator-mode or login-welcome-screen
+            // onAuthStateChangedで自動的に切り替わる
+            const user = auth.currentUser;
+            if (!user) {
+                // ログインしていない場合はログイン画面を表示
+                document.getElementById('login-welcome-screen').style.display = 'flex';
+                document.getElementById('sticky-header').style.display = 'none';
+                document.getElementById('creator-mode').style.display = 'none';
+            } else {
+                // ログインしている場合はcreator-modeを表示
+                document.getElementById('login-welcome-screen').style.display = 'none';
+                document.getElementById('sticky-header').style.display = 'block';
+                document.getElementById('creator-mode').style.display = 'block';
+            }
         }
     };
 </script>
