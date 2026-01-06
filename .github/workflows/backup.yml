@@ -1,5 +1,8 @@
 name: Auto Backup
 
+permissions:
+  contents: write
+
 # Run on every push to main and daily at midnight JST
 on:
   push:
