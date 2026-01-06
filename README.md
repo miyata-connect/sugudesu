@@ -17,7 +17,8 @@
 │   ├── ai.js              # AI機能（Gemini）
 │   ├── qr.js              # QR生成・PDF出力
 │   ├── generator.js       # ページ生成ロジック
-│   └── viewer.js          # ビューワー表示
+│   ├── viewer.js          # ビューワー表示
+│   └── receipt.js         # レシート自動保存（PRO版）
 ├── backup/
 │   └── auto-backup.js     # 自動バックアップスクリプト
 ├── .github/
@@ -139,7 +140,7 @@ import { newUtilityFunction } from './utils.js';
 - ✅ Wi-Fi QR表示
 - ✅ ブラウザから印刷
 
-### PRO版
+### PRO版（¥980/月）
 - ✨ AI搭載HP作成
 - ✨ QRコード自動生成
 - ✨ PDFダウンロード
@@ -147,6 +148,11 @@ import { newUtilityFunction } from './utils.js';
 - ✨ 電話・メール直接発信
 - ✨ Wi-Fi自動設定
 - ✨ SSIDおすすめ生成
+- ✨ 📊 レシート自動保存（NEW！）
+  - カメラでレシート撮影
+  - Gemini Flash APIで自動解析
+  - Googleスプレッドシートに保存
+  - 経費管理を自動化
 
 ## 🔐 環境変数（不要）
 
