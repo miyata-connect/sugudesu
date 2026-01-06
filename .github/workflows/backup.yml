@@ -1,0 +1,76 @@
+name: Auto Backup
+
+# Run on every push to main and daily at midnight JST
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Daily at 00:00 JST (15:00 UTC)
+    - cron: '0 15 * * *'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Full history for proper backup
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Create timestamped backup
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          BACKUP_DIR="backups/backup-$TIMESTAMP"
+          
+          echo "📦 Creating backup: $BACKUP_DIR"
+          mkdir -p "$BACKUP_DIR"
+          
+          # Copy files
+          cp index.html "$BACKUP_DIR/"
+          cp -r css "$BACKUP_DIR/"
+          cp -r js "$BACKUP_DIR/"
+          cp README.md "$BACKUP_DIR/" 2>/dev/null || echo "README.md not found"
+          
+          echo "✅ Backup created successfully"
+          ls -lah "$BACKUP_DIR"
+      
+      - name: Commit backup
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add backups/
+          
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🔄 Auto backup: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            git push
+            echo "✅ Backup committed and pushed"
+          fi
+      
+      - name: Clean old backups (keep last 30)
+        run: |
+          cd backups
+          # Keep only the 30 most recent backups
+          ls -t | tail -n +31 | xargs -r rm -rf
+          
+          if [ -n "$(git status --porcelain)" ]; then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "🧹 Clean old backups"
+            git push
+            echo "✅ Old backups cleaned"
+          else
+            echo "No old backups to clean"
+          fi
