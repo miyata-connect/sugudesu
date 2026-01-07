@@ -909,8 +909,6 @@ textarea {
 .lp-feature-icon {
     font-size: 2.5rem;
     margin-bottom: 12px;
-    opacity: 1;
-    filter: brightness(1.5) contrast(1.3);
 }
 
 .lp-feature-title {
@@ -939,31 +937,6 @@ textarea {
     border-radius: 20px;
     padding: 28px 24px;
     position: relative;
-    overflow: hidden;
-}
-
-/* プランカード内のイラスト画像の配置 */
-.lp-plan-card img,
-.lp-plan-card svg,
-.lp-plan-card .plan-illustration {
-    position: absolute !important;
-    right: 10px !important;
-    bottom: 10px !important;
-    max-width: 160px !important;
-    max-height: 160px !important;
-    opacity: 0.6 !important;
-    z-index: 1 !important;
-    pointer-events: none !important;
-}
-
-/* テキストコンテンツを前面に */
-.lp-plan-card .lp-plan-badge,
-.lp-plan-card .lp-plan-name,
-.lp-plan-card .lp-plan-price,
-.lp-plan-card .lp-plan-features,
-.lp-plan-card .lp-plan-feature {
-    position: relative !important;
-    z-index: 10 !important;
 }
 
 .lp-plan-card.pro {
@@ -973,7 +946,7 @@ textarea {
 
 .lp-plan-badge {
     position: absolute;
-    top: -20px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
@@ -1210,14 +1183,6 @@ textarea {
     .lp-plans {
         grid-template-columns: 1fr;
     }
-    
-    /* タブレットサイズでのイラスト調整 */
-    .lp-plan-card img,
-    .lp-plan-card svg,
-    .lp-plan-card .plan-illustration {
-        max-width: 120px !important;
-        max-height: 120px !important;
-    }
 }
 
 @media (max-width: 420px) {
@@ -1227,13 +1192,5 @@ textarea {
     
     .lp-hero-text {
         font-size: 1.4rem;
-    }
-    
-    /* スマホサイズでのイラスト調整 */
-    .lp-plan-card img,
-    .lp-plan-card svg,
-    .lp-plan-card .plan-illustration {
-        max-width: 100px !important;
-        max-height: 100px !important;
     }
 }
