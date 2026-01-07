@@ -133,7 +133,7 @@ import { newUtilityFunction } from './utils.js';
 
 ## 🎯 料金プラン
 
-### Normal（無料）
+### Basic（無料）
 **ターゲット**: 個人の趣味サイト、まずは試したい人、サブドメインで十分な人
 
 - ✅ 簡易HP作成
