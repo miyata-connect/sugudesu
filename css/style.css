@@ -946,7 +946,7 @@ textarea {
 
 .lp-plan-badge {
     position: absolute;
-    top: -15px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
