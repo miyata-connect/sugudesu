@@ -2,30 +2,103 @@
 
 お店のホームページとWi-Fi設定を、すぐに、簡単に。
 
+## 📌 Version
+Current Version: **v1.0.0**
+
+---
+
 ## 📁 プロジェクト構成
 
 ```
 プロジェクト/
-├── index.html              # メインHTML（UI構造）
+├── index.html              # メインHTML（エントリーポイント v1.0.0）
+├── html/                   # HTMLパーツ（モジュール化）
+│   ├── login.html         # v1.0.0 - ログイン画面・認証モーダル
+│   ├── pricing.html       # v1.0.0 - 料金プラン4種
+│   ├── viewer.html        # v1.0.0 - ビューワーモード
+│   └── creator.html       # v1.0.0 - クリエイターモード
 ├── css/
-│   └── style.css          # 全スタイルシート
+│   └── style.v4.css       # 全スタイルシート（バージョン管理）
 ├── js/
 │   ├── config.js          # Firebase設定・定数
 │   ├── utils.js           # 共通ユーティリティ関数
 │   ├── auth.js            # 認証機能（Google/Apple/LINE/Email/Phone）
-│   ├── cloudinary.js      # 画像アップロード
-│   ├── ai.js              # AI機能（Gemini）
+│   ├── cloudinary.js      # 画像アップロード（Cloudinary + Workers）
+│   ├── ai.js              # AI機能（Gemini Flash API）
 │   ├── qr.js              # QR生成・PDF出力
 │   ├── generator.js       # ページ生成ロジック
-│   ├── viewer.js          # ビューワー表示
-│   └── receipt.js         # レシート自動保存（PRO版）
+│   ├── viewer.js          # ビューワー表示・共有機能
+│   └── receipt.js         # レシート自動保存（PRO版・Gemini Flash）
 ├── backup/
 │   └── auto-backup.js     # 自動バックアップスクリプト
 ├── .github/
 │   └── workflows/
-│       └── backup.yml     # GitHub Actions設定
+│       └── backup.yml     # GitHub Actions設定（毎日自動実行）
 └── README.md              # このファイル
 ```
+
+---
+
+## 🎨 HTMLモジュール詳細
+
+### login.html (v1.0.0)
+**内容:**
+- ログインウェルカムスクリーン
+- 機能紹介セクション
+- スティッキーヘッダー（ログインボタン群）
+- メール認証モーダル
+- 電話番号認証モーダル（SMS）
+- レシートスキャナーセクション（PRO版）
+
+**主要機能:**
+- Google/Apple/LINE/Email/Phone 認証対応
+- レシート撮影→Gemini解析→スプレッドシート保存
+
+### pricing.html (v1.0.0)
+**内容:**
+- 4つの料金プラン（Normal / Plus / Business / Premium）
+- 各プランの機能詳細
+- ターゲット顧客の説明
+
+**プラン概要:**
+- **Normal（無料）**: 個人趣味、サブドメイン
+- **Plus（¥980/月）**: 個人事業主、独自ドメイン、AI搭載
+- **Business（¥2,980/月）**: 小規模店舗、POS機能
+- **Premium（¥3,980/月）**: 複数店舗、Gmail連携
+
+### viewer.html (v1.0.0)
+**内容:**
+- 店舗情報カード表示
+- Wi-Fi QRコード
+- Googleマップリンク・ナビゲーション
+- SNSリンク（Instagram/X/Web）
+- SNS QRコード（PRO版）
+- ページ共有QR（PRO版）
+
+**主要機能:**
+- タップでパスワードコピー
+- Googleマップ案内（PRO）
+- 電話発信（PRO）
+- ページシェア機能
+
+### creator.html (v1.0.0)
+**内容:**
+- 店舗情報入力フォーム
+- カテゴリ選択（店舗/企業）
+- 画像アップロード（PRO）
+- 営業時間・休業日設定
+- SNS情報入力
+- SSID設定・おすすめ生成（PRO）
+- ページ生成結果表示
+- ルーター設定支援
+
+**主要機能:**
+- AIによるSSID提案（PRO）
+- QRコード自動生成
+- PDFダウンロード（PRO）
+- ルーター設定ガイド
+
+---
 
 ## 🚀 セットアップ手順
 
@@ -35,7 +108,7 @@
 # プロジェクトディレクトリで実行
 git init
 git add .
-git commit -m "Initial commit: Modular structure"
+git commit -m "Initial commit: Modular structure v1.0.0"
 ```
 
 ### 2. GitHubリポジトリの作成
@@ -71,6 +144,8 @@ node backup/auto-backup.js
 0 0 * * * cd /path/to/project && node backup/auto-backup.js
 ```
 
+---
+
 ## 📦 デプロイ方法
 
 ### Firebase Hosting（推奨）
@@ -103,24 +178,30 @@ firebase deploy
 4. Build settings: なし（静的HTML）
 5. Deploy
 
-## 🔧 開発
+---
 
-### ファイル編集時の注意
+## 🔧 開発ガイド
 
-各モジュールは独立しているため、以下のルールを守ってください：
+### HTMLパーツの編集方法
 
-1. **config.js** - 設定変更時のみ編集
-2. **utils.js** - 共通関数追加時のみ編集
-3. **auth.js** - 認証ロジック変更時のみ編集
-4. 他のファイルも同様に、該当機能のみ編集
+各HTMLパーツにはバージョンコメントがあります：
+```html
+<!-- filename.html vX.X.X -->
+```
 
-### 新機能追加
+**変更手順:**
+1. 該当するHTMLファイルを編集
+2. 必要に応じてバージョン番号を更新
+3. ローカルでテスト
+4. コミット・プッシュ
 
-1. 該当するモジュールに関数を追加
+### 新機能の追加
+
+1. 該当するモジュール（`js/*.js`）に関数を追加
 2. 必要に応じて `export` で公開
 3. 他のモジュールから `import` して使用
 
-例：
+**例:**
 ```javascript
 // utils.js に新機能追加
 export function newUtilityFunction() {
@@ -131,9 +212,24 @@ export function newUtilityFunction() {
 import { newUtilityFunction } from './utils.js';
 ```
 
-## 🎯 料金プラン
+### HTMLパーツの動的読み込み
 
-### Basic（無料）
+`index.html` では各HTMLパーツを `fetch()` で読み込みます：
+
+```javascript
+async function loadHTMLParts() {
+    const loginResponse = await fetch('html/login.html');
+    const loginHTML = await loginResponse.text();
+    document.getElementById('login-container').innerHTML = loginHTML;
+    // ...
+}
+```
+
+---
+
+## 🎯 料金プラン詳細
+
+### Normal（無料）
 **ターゲット**: 個人の趣味サイト、まずは試したい人、サブドメインで十分な人
 
 - ✅ 簡易HP作成
@@ -192,23 +288,28 @@ import { newUtilityFunction } from './utils.js';
 - 🎨 カスタムブランディング
 - ⚡ 優先処理
 
+---
+
 ## 🔐 環境変数（不要）
 
 このプロジェクトは **完全にクライアントサイド** で動作します。
 APIキーは `js/config.js` に直接記述されています。
 
-セキュリティ上問題ないことを確認済み：
-- Firebase: 公開APIキー（制限設定済み）
-- Cloudinary: アップロード署名でWorker経由
-- Gemini: プロキシWorker経由
+**セキュリティ上問題ない理由:**
+- **Firebase**: 公開APIキー（ドメイン制限設定済み）
+- **Cloudinary**: アップロード署名でWorker経由
+- **Gemini**: プロキシWorker経由（APIキー非公開）
+
+---
 
 ## 📊 バックアップ管理
 
 ### 自動バックアップ
 
-- **頻度**: 毎日 00:00 JST
+- **頻度**: 毎日 00:00 JST（15:00 UTC）
 - **保存先**: `backups/backup-YYYY-MM-DD_HH-MM-SS/`
 - **保持期間**: 最新30個（約1ヶ月分）
+- **対象ファイル**: `index.html`, `css/`, `js/`, `html/`
 
 ### 手動バックアップ
 
@@ -224,43 +325,112 @@ node backup/auto-backup.js
 
 ```bash
 # 特定のバックアップを確認
-cd backups/backup-2025-01-06_12-00-00
+cd backups/backup-2025-01-08_12-00-00
 
 # ファイルをルートにコピー
 cp -r * ../../
+
+# または個別ファイルを復元
+cp index.html ../../
+cp -r js/ ../../js/
 ```
+
+---
 
 ## 🐛 トラブルシューティング
 
 ### ログインできない
 
-1. Firebase Console で認証メソッドが有効か確認
-2. `authDomain` が正しいか確認（`js/config.js`）
-3. ブラウザのCookieが有効か確認
+**原因:**
+- Firebase Consoleで認証メソッドが無効
+- `authDomain` の設定ミス
+- ブラウザのCookie無効
+
+**解決方法:**
+1. Firebase Console > Authentication > Sign-in method で各プロバイダーを有効化
+2. `js/config.js` の `authDomain` を確認
+   - Firebase Hosting使用: `プロジェクトID.web.app`
+   - カスタムドメイン: `sugudesu.jp`
+3. ブラウザのCookie設定を確認
 
 ### 画像アップロードが失敗
 
-1. Cloudinary設定を確認
-2. Workers URL が正しいか確認（`js/config.js`）
-3. ファイルサイズ制限（10MB以下推奨）
+**原因:**
+- Cloudinary設定エラー
+- Workers URLが間違っている
+- ファイルサイズ超過
+
+**解決方法:**
+1. Cloudinary Dashboard で設定を確認
+2. `js/config.js` の `CLOUDINARY_UPLOAD_URL` を確認
+3. ファイルサイズを10MB以下に制限
 
 ### AI生成が動作しない
 
-1. Gemini Proxy Workers が稼働しているか確認
-2. タイムアウト設定を確認（`AI_TIMEOUT_MS`）
-3. ネットワーク接続を確認
+**原因:**
+- Gemini Proxy Workers が停止
+- タイムアウト
+- ネットワークエラー
 
-## 📝 ライセンス
+**解決方法:**
+1. Workers URL が稼働しているか確認
+2. `js/config.js` の `AI_TIMEOUT_MS` を増やす（30000推奨）
+3. ブラウザのコンソールでエラーを確認
+
+### HTMLパーツが読み込まれない
+
+**原因:**
+- ファイルパスのミス
+- CORSエラー（ローカル開発時）
+- HTMLファイルの破損
+
+**解決方法:**
+1. `html/` ディレクトリ内のファイル名を確認
+2. ローカルサーバーで実行（`python -m http.server` など）
+3. ブラウザのコンソールでエラーメッセージを確認
+
+---
+
+## 🔄 アップデート履歴
+
+### v1.0.0 (2025-01-08)
+- HTMLモジュール化
+- login.html / pricing.html / viewer.html / creator.html に分割
+- 各ファイルにバージョン番号追加
+- README.md 全面刷新
+
+---
+
+## 📝 今後の予定
+
+- [ ] JSモジュールのさらなる細分化
+- [ ] HTMLパーツの遅延読み込み（Lazy Loading）
+- [ ] バージョン管理システムの強化
+- [ ] ユニットテストの追加
+- [ ] TypeScript化の検討
+
+---
+
+## 📄 ライセンス
 
 このプロジェクトは個人利用・商用利用ともに自由です。
+
+**Proprietary - miyata-connect**
+
+---
 
 ## 🤝 貢献
 
 バグ報告・機能提案は GitHub Issues へ。
+プルリクエストも歓迎します。
+
+---
 
 ## 📞 サポート
 
 質問・要望は GitHub Discussions または Issues へ。
+
+**Repository**: https://github.com/miyata-connect/sugudesu
 
 ---
 
