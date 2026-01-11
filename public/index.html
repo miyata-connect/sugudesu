@@ -548,7 +548,7 @@
         console.log("=== App Initialized ===");
         
         // Firebase初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         console.log("⏰ Firebase initialization wait complete");
         
         await initializeAuthListeners();
