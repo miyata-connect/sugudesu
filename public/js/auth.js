@@ -434,6 +434,17 @@ function unlockProUI() {
 
 // ==================== AUTH STATE LISTENER ====================
 export async function initializeAuthListeners() {
+    // まずonAuthStateChangedでログイン状態を監視
+    onAuthStateChanged(auth, async (user) => {
+        console.log("=== onAuthStateChanged ===", user ? `UID: ${user.uid}` : "Not logged in");
+        if (!user) {
+            setAuthUiLoggedOut();
+            return;
+        }
+        setAuthUiLoggedIn(user);
+        await checkEntitlement(user.uid);
+    });
+
     const hasCustomToken = await trySignInWithCustomTokenFromUrl();
     
     if (!hasCustomToken) {
@@ -442,8 +453,7 @@ export async function initializeAuthListeners() {
             const result = await getRedirectResult(auth);
             if (result && result.user) {
                 console.log("✅ Redirect login successful:", result.user.uid);
-                setAuthUiLoggedIn(result.user);
-                await checkEntitlement(result.user.uid);
+                // onAuthStateChangedが自動的に処理する
                 
                 const cleanUrl = window.location.pathname + window.location.hash;
                 window.history.replaceState({}, "", cleanUrl);
@@ -459,9 +469,7 @@ export async function initializeAuthListeners() {
             window.history.replaceState({}, "", cleanUrl);
         }
     }
-
-    onAuthStateChanged(auth, async (user) => {
-        console.log("=== onAuthStateChanged ===", user ? `UID: ${user.uid}` : "Not logged in");
+}
         if (!user) {
             setAuthUiLoggedOut();
             return;
