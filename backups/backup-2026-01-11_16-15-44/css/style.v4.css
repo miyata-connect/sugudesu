@@ -946,17 +946,14 @@ textarea {
 
 .lp-plan-badge {
     position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: -12px;
+    right: 20px;
     background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
     color: #000;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     font-weight: bold;
-    padding: 6px 20px;
-    border-radius: 20px;
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+    padding: 4px 12px;
+    border-radius: 12px;
 }
 
 .lp-plan-name {
