@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.v4.css">
 </head>
 <body>
 
@@ -63,32 +63,75 @@
         <!-- Pricing Plans -->
         <div class="lp-section">
             <div class="lp-section-title">料金プラン</div>
-            <div class="lp-section-subtitle">無料でも充実の機能・有料版でさらに便利に</div>
+            <div class="lp-section-subtitle">趣味から本格ビジネスまで、用途に合わせた4つのプラン</div>
             
-            <div class="lp-plans">
+            <div class="lp-plans" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto;">
+                <!-- Normal（無料） -->
                 <div class="lp-plan-card">
-                    <div class="lp-plan-name">無料版</div>
+                    <div class="lp-plan-name">Normal</div>
                     <div class="lp-plan-price">¥0<span>/月</span></div>
+                    <div class="lp-plan-target" style="font-size: 0.85em; color: #666; margin: 10px 0; padding: 0 10px; line-height: 1.4;">個人の趣味サイト<br>まずは試したい人<br>サブドメインで十分な人</div>
                     <div class="lp-plan-features">
-                        <div class="lp-plan-feature">簡易HP作成</div>
-                        <div class="lp-plan-feature">SNS・URL表示</div>
-                        <div class="lp-plan-feature">基本情報掲載</div>
-                        <div class="lp-plan-feature">Wi-Fi QR表示</div>
-                        <div class="lp-plan-feature">ブラウザから印刷</div>
+                        <div class="lp-plan-feature">✅ 簡易HP作成</div>
+                        <div class="lp-plan-feature">✅ SNS・URL表示</div>
+                        <div class="lp-plan-feature">✅ 基本情報掲載</div>
+                        <div class="lp-plan-feature">✅ Wi-Fi QR表示</div>
+                        <div class="lp-plan-feature">✅ ブラウザから印刷</div>
+                        <div class="lp-plan-feature" style="color: #999;">📍 sugudesu.jp サブドメイン</div>
                     </div>
                 </div>
 
+                <!-- Plus（980円） -->
                 <div class="lp-plan-card pro">
                     <div class="lp-plan-badge">おすすめ</div>
-                    <div class="lp-plan-name">PRO版</div>
-                    <div class="lp-plan-price">お問い合わせ</div>
+                    <div class="lp-plan-name">Plus</div>
+                    <div class="lp-plan-price">¥980<span style="font-size: 0.6em">/月</span></div>
+                    <div class="lp-plan-target" style="font-size: 0.85em; color: #666; margin: 10px 0; padding: 0 10px; line-height: 1.4;">個人事業主（1店舗）<br>独自ドメインで信頼性向上<br>Web集客メイン</div>
                     <div class="lp-plan-features">
-                        <div class="lp-plan-feature">AI搭載HP作成</div>
-                        <div class="lp-plan-feature">QRコード自動生成</div>
-                        <div class="lp-plan-feature">PDFダウンロード</div>
-                        <div class="lp-plan-feature">Googleマップ連携</div>
-                        <div class="lp-plan-feature">電話・メール直接発信</div>
-                        <div class="lp-plan-feature">Wi-Fi自動設定</div>
+                        <div class="lp-plan-feature">✨ AI搭載HP作成</div>
+                        <div class="lp-plan-feature">✨ QRコード自動生成</div>
+                        <div class="lp-plan-feature">✨ PDFダウンロード</div>
+                        <div class="lp-plan-feature">✨ Googleマップ連携</div>
+                        <div class="lp-plan-feature">✨ 電話・メール直接発信</div>
+                        <div class="lp-plan-feature">✨ Wi-Fi自動設定</div>
+                        <div class="lp-plan-feature">📊 レシート自動保存</div>
+                        <div class="lp-plan-feature" style="color: #999;">🌐 独自ドメイン対応</div>
+                    </div>
+                </div>
+
+                <!-- Business（2,980円） -->
+                <div class="lp-plan-card">
+                    <div class="lp-plan-name">Business</div>
+                    <div class="lp-plan-price">¥2,980<span style="font-size: 0.6em">/月</span></div>
+                    <div class="lp-plan-target" style="font-size: 0.85em; color: #666; margin: 10px 0; padding: 0 10px; line-height: 1.4;">小規模店舗<br>（飲食・美容・小売）<br>POS機能で店舗運営</div>
+                    <div class="lp-plan-features">
+                        <div class="lp-plan-feature">💼 Plus の全機能</div>
+                        <div class="lp-plan-feature">🏪 POS機能</div>
+                        <div class="lp-plan-feature">📊 売上管理</div>
+                        <div class="lp-plan-feature">💰 在庫管理</div>
+                        <div class="lp-plan-feature">👥 顧客管理</div>
+                        <div class="lp-plan-feature">📈 分析レポート</div>
+                        <div class="lp-plan-feature" style="color: #999;">🌐 最大3サイト</div>
+                        <div class="lp-plan-feature" style="color: #999;">🌐 最大3ドメイン</div>
+                    </div>
+                </div>
+
+                <!-- Premium（3,980円） -->
+                <div class="lp-plan-card">
+                    <div class="lp-plan-name">Premium</div>
+                    <div class="lp-plan-price">¥3,980<span style="font-size: 0.6em">/月</span></div>
+                    <div class="lp-plan-target" style="font-size: 0.85em; color: #666; margin: 10px 0; padding: 0 10px; line-height: 1.4;">複数店舗経営<br>チェーン展開<br>制作代行業者</div>
+                    <div class="lp-plan-features">
+                        <div class="lp-plan-feature">🏆 Business の全機能</div>
+                        <div class="lp-plan-feature">♾️ 無制限サイト</div>
+                        <div class="lp-plan-feature">♾️ 無制限ドメイン</div>
+                        <div class="lp-plan-feature">📧 Gmail連携メーラー</div>
+                        <div class="lp-plan-feature">💬 テンプレート返信</div>
+                        <div class="lp-plan-feature">🏷️ 自動ラベル付け</div>
+                        <div class="lp-plan-feature">🔍 メール検索</div>
+                        <div class="lp-plan-feature">📥 CSV一括エクスポート</div>
+                        <div class="lp-plan-feature">🎨 カスタムブランディング</div>
+                        <div class="lp-plan-feature">⚡ 優先処理</div>
                     </div>
                 </div>
             </div>
@@ -113,6 +156,9 @@
             <button id="logout-btn" class="login-btn login-logout" onclick="doLogout()">ログアウト</button>
         </div>
         <div class="sticky-header-uid" id="sticky-header-uid" style="display:none;">UID: <span id="my-uid"></span></div>
+        <div id="receipt-nav-btn" style="display:none; text-align:center; margin-top: 10px;">
+            <button onclick="showReceiptSection()" style="background: #34a853; color: white; border: none; padding: 12px 24px; font-size: 1em; border-radius: 8px; cursor: pointer;">📊 レシート自動保存（PRO版）</button>
+        </div>
         <div class="sticky-header-log" id="auth-log"></div>
     </div>
 </div>
@@ -151,6 +197,43 @@
             <input type="text" class="modal-input" id="sms-code-input" placeholder="認証コード (6桁)" maxlength="6">
             <button class="modal-btn modal-btn-primary" onclick="verifySmsCode()">認証</button>
             <button class="modal-btn modal-btn-secondary" onclick="resetPhoneModal()">戻る</button>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Scanner Section (PRO) -->
+<div id="receipt-section" style="display:none;">
+    <div class="container">
+        <h2 style="text-align:center; margin: 40px 0 20px;">📊 レシート自動保存（PRO版）</h2>
+        
+        <div id="receipt-connect-area" style="display:none; text-align:center; padding: 40px 20px; background: #f9f9f9; border-radius: 12px; margin: 20px 0;">
+            <div style="font-size: 1.2em; margin-bottom: 20px;">✅ Googleスプレッドシートに自動保存</div>
+            <div style="color: #666; margin-bottom: 10px;">✅ どの端末からもアクセス可能</div>
+            <div style="color: #666; margin-bottom: 10px;">✅ データは永久保存・自動バックアップ</div>
+            <div style="color: #666; margin-bottom: 30px;">✅ Googleが管理するので安心</div>
+            <button onclick="connectGoogleSheets()" style="background: #4285f4; color: white; border: none; padding: 16px 32px; font-size: 1.1em; border-radius: 8px; cursor: pointer;">Googleスプレッドシートと連携する</button>
+        </div>
+        
+        <div id="receipt-scanner-area" style="display:none;">
+            <div style="text-align:center; margin-bottom: 30px;">
+                <input type="file" id="receipt-image-input" accept="image/*" capture="environment" style="display:none;" onchange="handleReceiptImage(event)">
+                <button onclick="document.getElementById('receipt-image-input').click()" style="background: #34a853; color: white; border: none; padding: 16px 32px; font-size: 1.1em; border-radius: 8px; cursor: pointer;">📷 レシートを撮影</button>
+            </div>
+            
+            <div id="receipt-preview" style="display:none; text-align:center; margin: 20px 0;">
+                <img id="receipt-preview-img" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="margin-top: 20px;">
+                    <button onclick="analyzeReceipt()" style="background: #fbbc04; color: #333; border: none; padding: 12px 24px; font-size: 1em; border-radius: 8px; cursor: pointer; margin-right: 10px;">🔍 解析して保存</button>
+                    <button onclick="cancelReceipt()" style="background: #ea4335; color: white; border: none; padding: 12px 24px; font-size: 1em; border-radius: 8px; cursor: pointer;">キャンセル</button>
+                </div>
+            </div>
+            
+            <div id="receipt-status" style="text-align:center; padding: 20px; display:none;"></div>
+            
+            <div id="receipt-data" style="display:none; background: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <h3 style="margin-top: 0;">📋 抽出データ</h3>
+                <div id="receipt-data-content"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -455,6 +538,7 @@
 <script type="module" src="js/qr.js"></script>
 <script type="module" src="js/generator.js"></script>
 <script type="module" src="js/viewer.js"></script>
+<script type="module" src="js/receipt.js"></script>
 <script type="module">
     // Initialize app
     import { initializeAuthListeners } from './js/auth.js';
