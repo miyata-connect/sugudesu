@@ -123,19 +123,8 @@ window.appleLogin = async function() {
     }
 };
 
-window.lineLogin = function() {
-    console.log("=== LINE Login Modal Opened ===");
-    document.getElementById("line-modal").classList.add("show");
-};
-
-window.closeLINEModal = function() {
-    document.getElementById("line-modal").classList.remove("show");
-};
-
-window.proceedToLINE = async function() {
-    console.log("=== Proceeding to LINE Auth ===");
-    closeLINEModal();
-    
+window.lineLogin = async function() {
+    console.log("=== LINE Login Started (OIDC) ===");
     ui.authLog().textContent = "LINEへ移動中...";
     ui.authLog().style.color = "#88ccff";
 

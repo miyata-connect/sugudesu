@@ -35,12 +35,6 @@
             <button class="login-btn login-google" onclick="googleLogin()">Googleアカウントでログインする</button>
             <button class="login-btn login-apple" onclick="appleLogin()">Appleアカウントでログインする</button>
             <button class="login-btn login-line" onclick="lineLogin()">LINEアカウントでログインする</button>
-            <div style="font-size: 0.75rem; color: #666; margin: 8px 20px 20px; line-height: 1.5; text-align: left;">
-                📱 <strong>LINEログインについて:</strong><br>
-                • メールアドレス登録済みの方 → メールアドレスでログイン<br>
-                • 電話番号のみで登録の方 → <strong>QRコードログイン</strong>を選択<br>
-                <span style="font-size: 0.7rem; opacity: 0.8;">（スマホのLINEアプリでQRコードを読み取ってログイン）</span>
-            </div>
             <button class="login-btn login-email" onclick="openEmailModal()">メールアドレスでログインする</button>
             <button class="login-btn login-phone" onclick="openPhoneModal()">電話番号でログインする</button>
         </div>
@@ -181,6 +175,50 @@
         <div class="modal-toggle">
             <span id="email-toggle-text">アカウントをお持ちでない方は</span>
             <a id="email-toggle-link" onclick="toggleEmailMode()">新規登録</a>
+        </div>
+    </div>
+</div>
+
+<!-- LINE Login Info Modal -->
+<div class="modal-backdrop" id="line-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeLINEModal()">&times;</button>
+        <div class="modal-title">📱 LINEログインについて</div>
+        
+        <div style="text-align: left; padding: 15px 10px;">
+            <p style="margin-bottom: 15px; font-weight: bold; color: #333;">ログイン方法は2つあります：</p>
+            
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-weight: bold; color: #06c755; margin-bottom: 6px;">✉️ メールアドレスでログイン</div>
+                <div style="font-size: 0.9em; color: #666; line-height: 1.5;">
+                    LINEにメールアドレスを登録済みの方は、メールアドレスとパスワードでログインできます。
+                </div>
+            </div>
+            
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-weight: bold; color: #06c755; margin-bottom: 6px;">📱 QRコードログイン</div>
+                <div style="font-size: 0.9em; color: #666; line-height: 1.5;">
+                    電話番号のみで登録している方は、QRコードログインを選択してください。<br><br>
+                    <strong style="color: #e74c3c;">⚠️ 重要：</strong> QRコードは<strong>別のデバイス</strong>（スマホ等）のLINEアプリで読み取る必要があります。
+                </div>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                <div style="font-weight: bold; margin-bottom: 6px;">📖 QRコード読み取り手順：</div>
+                <ol style="margin: 0; padding-left: 20px; font-size: 0.85em; line-height: 1.7;">
+                    <li>LINE認証画面で「QRコードログイン」を選択</li>
+                    <li>QRコードが表示される</li>
+                    <li><strong>別のスマホ</strong>でLINEアプリを開く</li>
+                    <li>右上の「QRコードリーダー」をタップ</li>
+                    <li>画面のQRコードを読み取る</li>
+                    <li>スマホで「ログイン」を承認</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="modal-btn modal-btn-secondary" onclick="closeLINEModal()" style="flex: 1;">キャンセル</button>
+            <button class="modal-btn modal-btn-primary" onclick="proceedToLINE()" style="flex: 2; background: #06c755;">次へ（LINE認証画面）</button>
         </div>
     </div>
 </div>
