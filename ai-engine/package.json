@@ -1,0 +1,28 @@
+{
+  "name": "sugudesu-ai-engine",
+  "version": "1.0.0",
+  "description": "学習型SkillsMP統合 + 失敗透明性システム for SUGUDESU",
+  "main": "quick-demo.js",
+  "scripts": {
+    "demo": "node quick-demo.js",
+    "integration": "node integration-example.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "multi-agent",
+    "skillsmp",
+    "failure-transparency",
+    "learning-system"
+  ],
+  "author": "康博さん",
+  "license": "MIT",
+  "dependencies": {
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

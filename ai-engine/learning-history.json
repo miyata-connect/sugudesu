@@ -1,0 +1,54 @@
+[
+  {
+    "timestamp": "2026-01-16T08:07:49.384Z",
+    "actionsCount": 4,
+    "actions": [
+      {
+        "failureType": "rate_limit_exceeded",
+        "skillsCount": 3,
+        "priority": 11.5
+      },
+      {
+        "failureType": "invalid_response",
+        "skillsCount": 3,
+        "priority": 11.2
+      },
+      {
+        "failureType": "timeout",
+        "skillsCount": 3,
+        "priority": 10.8
+      },
+      {
+        "failureType": "authentication_failed",
+        "skillsCount": 2,
+        "priority": 10.5
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-16T08:17:19.643Z",
+    "actionsCount": 4,
+    "actions": [
+      {
+        "failureType": "rate_limit_exceeded",
+        "skillsCount": 3,
+        "priority": 13.1
+      },
+      {
+        "failureType": "invalid_response",
+        "skillsCount": 3,
+        "priority": 12.6
+      },
+      {
+        "failureType": "timeout",
+        "skillsCount": 3,
+        "priority": 11.7
+      },
+      {
+        "failureType": "authentication_failed",
+        "skillsCount": 2,
+        "priority": 11
+      }
+    ]
+  }
+]
