@@ -1,12 +1,5 @@
-// Firebase Configuration
-export const firebaseConfig = {
-    apiKey: "AIzaSyAgZ02MBSzbicGoBi1Eb4tgRWgtEHeUeP0",
-    authDomain: "sugudesu-jp.firebaseapp.com",
-    projectId: "sugudesu-jp",
-    storageBucket: "sugudesu-jp.firebasestorage.app",
-    messagingSenderId: "306434861424",
-    appId: "1:306434861424:web:301c48e2cfd8a5681407b5"
-};
+// Firebase Proxy Configuration
+export const FIREBASE_PROXY_URL = "https://firebase-proxy.miyata-connect-jp.workers.dev";
 
 // Cloudinary Configuration
 export const CLOUD_NAME = "dkda2jqxn";
